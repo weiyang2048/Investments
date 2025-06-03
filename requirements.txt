@@ -1,0 +1,31 @@
+# Install local package in editable mode
+-e .
+
+numpy
+pandas
+scipy 
+scikit-learn
+
+## data
+ydata-profiling
+sweetviz
+dataframe_image
+plottable
+
+## Visualization
+matplotlib
+plotly
+seaborn
+
+## jupyter
+ipykernel
+ipywidgets
+
+# robin_stocks 
+# git+https://github.com/jmfernandes/robin_stocks.git
+colorama 
+optuna
+loguru
+yfinance
+country_converter
+
