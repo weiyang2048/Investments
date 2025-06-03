@@ -30,6 +30,16 @@ def get_daily_prices(symbols: List[str], period: str = "1mo") -> pd.DataFrame:
         return pd.DataFrame()
 
     combined_df = pd.concat(dfs)
+    combined_df = combined_df.assign(
+        **{
+            "Year": lambda df: df.index.year,
+            "Month": lambda df: df.index.month,
+        }
+    )
+    # Symbol is the first column
+    combined_df = combined_df[
+        ["Symbol"] + [col for col in combined_df.columns if col != "Symbol"]
+    ]
     return combined_df
 
 
