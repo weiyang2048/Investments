@@ -15,7 +15,7 @@ setup(
     description="A short description of your package",
     long_description=open("README.md").read(),
     long_description_content_type="text/markdown",
-    url="https://github.com/weiyang2048/stonk_trading",
+    url="https://github.com/weiyang2048/Investments",
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
