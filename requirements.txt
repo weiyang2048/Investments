@@ -29,3 +29,5 @@ loguru
 yfinance
 country_converter
 
+# robin_stocks
+robin_stocks

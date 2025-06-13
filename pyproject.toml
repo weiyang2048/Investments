@@ -1,0 +1,32 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "src"
+version = "0.1.0"
+description = "A short description of your package"
+readme = "README.md"
+requires-python = ">=3.6"
+license = "MIT"
+authors = [
+    { name = "Wei Yang", email = "weiyang2048@gmail.com" }
+]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+    # Add your dependencies here
+    # For example:
+    # "requests>=2.25.1",
+    # "pandas>=1.2.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/weiyang2048/Investments"
+Repository = "https://github.com/weiyang2048/Investments.git"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src"] 
