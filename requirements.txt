@@ -16,6 +16,7 @@ plottable
 matplotlib
 plotly
 seaborn
+streamlit
 
 ## jupyter
 ipykernel

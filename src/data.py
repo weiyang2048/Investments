@@ -3,6 +3,8 @@ import pandas as pd
 import yfinance as yf
 from functools import lru_cache
 from loguru import logger
+from functools import lru_cache, cache
+
 
 
 def get_daily_prices(symbols: List[str], period: str = "1mo") -> pd.DataFrame:

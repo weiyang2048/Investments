@@ -1,0 +1,209 @@
+etfs:
+  VTI:
+    symbol: VTI
+    name: Vanguard Total Stock Market ETF
+    region: US
+    type: Blend
+    size: Large
+    management: Passive # Vanguard
+    url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=VTI
+  VOO:
+    symbol: VOO
+    name: Vanguard S&P 500 ETF
+    region: US
+    type: Blend
+    size: Large
+    management: Passive # Vanguard
+    url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=VOO
+  MGV:
+    symbol: MGV
+    name: Vanguard Mega Cap Value ETF
+    region: US
+    type: Value
+    size: Large
+    management: Passive # Vanguard
+    url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=MGV
+  WTV:
+    symbol: WTV
+    name: WisdomTree US Value Fund of Benef Interest
+    region: US
+    type: Value
+    size: Mid
+    management: Active # WisdomTree
+    url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=WTV
+  AVUV:
+    symbol: AVUV
+    name: Avantis U.S. Small Cap Value ETF
+    region: US
+    type: Value
+    size: Small
+    management: Active # Avantis
+    url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=AVUV
+  SPMO:
+    symbol: SPMO
+    name: Invesco S&P 500 Momentum ETF
+    region: US
+    type: Growth
+    size: Large
+    management: Passive # Invesco
+    url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=SPMO
+  VXUS:
+    symbol: VXUS
+    name: Vanguard Total International Stock ETF
+    region: XUS
+    type: Blend
+    size: Large
+    management: Passive # Vanguard
+    url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=VXUS
+  VEU:
+    symbol: VEU
+    name: Vanguard FTSE All-World ex-US Index Fund ETF Shares
+    region: XUS
+    type: Blend
+    size: Large
+    management: Passive # Vanguard
+    url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=VEU
+  DOL:
+    symbol: DOL
+    name: WisdomTree International LargeCap Dividend Fund
+    region: Global
+    type: Value
+    size: Large
+    management: Active # WisdomTree
+    url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=DOL
+  VEA:
+    symbol: VEA
+    name: Vanguard FTSE Developed Markets ETF
+    region: XUS
+    type: Blend
+    size: Large
+    management: Passive # Vanguard
+    url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=VEA
+  FENI:
+    symbol: FENI
+    name: Fidelity Enhanced International ETF
+    region: Global
+    type: Blend
+    size: Large
+    management: Active # Fidelity
+    url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=FENI
+  SPEU:
+    symbol: SPEU
+    name: SPDR Portfolio Europe ETF
+    region: Europe
+    type: Blend
+    size: Large
+    management: Passive # SPDR
+    url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=SPEU
+  IPAC:
+    symbol: IPAC
+    name: iShares Core MSCI Pacific ETF
+    region: Pacific
+    type: Blend
+    size: Large
+    management: Passive # iShares
+    url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=IPAC
+  AIA:
+    symbol: AIA
+    name: iShares Asia 50 ETF
+    region: Asia
+    type: Blend
+    size: Large
+    management: Passive # iShares
+    url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=AIA
+  IXG:
+    symbol: IXG
+    name: iShares Global Financials ETF
+    region: Global
+    type: Value
+    size: Large
+    management: Passive # iShares
+    industry: Financials
+    url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=IXG
+  EUFN:
+    symbol: EUFN
+    name: iShares MSCI Europe Financials ETF
+    region: Europe
+    type: Value
+    size: Large
+    management: Passive # iShares
+    industry: Financials
+    url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=EUFN
+  IGF:
+    symbol: IGF
+    name: iShares Global Infrastructure ETF
+    region: Global
+    type: Value
+    size: Large
+    management: Passive # iShares
+    industry: Infrastructure
+    url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=IGF
+  IFRA:
+    symbol: IFRA
+    name: iShares U.S. Infrastructure ETF
+    region: US
+    type: Blend
+    size: Small
+    management: Passive # iShares
+    industry: Infrastructure
+    url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=IFRA
+  SHLD:
+    symbol: SHLD
+    name: Global X Defense Tech ETF
+    region: Global
+    type: Growth
+    size: Large
+    management: Passive # Global X
+    industry: Defense
+    url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=SHLD
+  EUAD:
+    symbol: EUAD
+    name: Select STOXX Europe Aerospace & Defense ETF
+    region: Europe
+    type: Growth
+    size: Large
+    management: Passive # Select
+    industry: Defense
+    url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=EUAD
+  AIQ:
+    symbol: AIQ
+    name: Global X Artificial Intelligence & Technology ETF
+    region: Global
+    type: Growth
+    size: Large
+    management: Passive # Global X
+    industry: Technology
+    url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=AIQ
+  IAUM:
+    symbol: IAUM
+    name: iShares Gold Trust Micro ETF of Benef Interest
+    management: Passive # iShares
+    industry: Commodity
+    url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=IAUM
+
+globals:
+  - VTI
+  - VOO
+  - MGV
+  - WTV
+  - AVUV
+  - SPMO
+  - VXUS
+  - VEU
+
+sectors:
+  - IXG
+  - EUFN
+  - IGF
+  - IFRA
+  - SHLD
+  - EUAD
+  - AIQ
+  - IAUM
+
+markets:
+  - VTI
+  - VXUS
+  - SPEU
+  - IPAC
+  - AIA

@@ -6,27 +6,29 @@ import numpy as np
 from loguru import logger
 
 
-logger.remove()
+try:
+    # Remove default handler
+    logger.remove()
 
-logger.level("todo", no=15, color="<bg white><black>", icon="🚨")
-logger.add(
-    sys.stderr,
-    format=(
-        "<black>{time:MM-DD HH:mm}</black> | "
-        + "<black>{name}:{function} [{line}]</black> | "
-        + "<lvl>{level}</lvl> {level.icon} | "
-        + "<lvl>{message}</lvl>"
-    ),
-    colorize=True,
-    filter=lambda record: record["level"].name == "todo",
-)
+    # Add custom handler
+    logger.add(
+        sys.stderr,
+        format="<green>{time:YYYY-MM-DD HH:mm:ss}</green> | <level>{level: <8}</level> | <cyan>{name}</cyan>:<cyan>{function}</cyan>:<cyan>{line}</cyan> - <level>{message}</level>",
+        level="INFO",
+    )
 
-# override default logger info level
-# forestgreen
-logger.level("data", no=10, color="<black>", icon="🔍")
-logger.add(
-    sys.stderr,
-    format=("{level.icon} | " + "{message}"),
-    colorize=True,
-    filter=lambda record: record["level"].name == "data",
-)
+    # Add todo level if it doesn't exist
+    if "todo" not in logger._core.levels:
+        logger.level("todo", no=15, color="<bg white><black>", icon="🚨")
+
+    # override default logger info level
+    # forestgreen
+    logger.level("data", no=10, color="<black>", icon="🔍")
+    logger.add(
+        sys.stderr,
+        format=("{level.icon} | " + "{message}"),
+        colorize=True,
+        filter=lambda record: record["level"].name == "data",
+    )
+except Exception as e:
+    print(e)
