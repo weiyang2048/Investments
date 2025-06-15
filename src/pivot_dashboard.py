@@ -1,3 +1,4 @@
+from conf.config_loader import load_portfolios, load_config
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -20,11 +21,9 @@ def setup_page() -> None:
             "About": "# Market Performance Dashboard\nCompare normalized performance across different time periods",
         },
     )
-    st.title("Equity Market Dashboard") 
+    st.title("Equity Market Dashboard")
     st.markdown("Compare normalized performance across different time periods")
     st.sidebar.header("Controls")
-
-
 
 
 @st.cache_data
@@ -42,8 +41,9 @@ def load_data(symbols: List[str], period: str = "10y") -> pd.DataFrame:
     df = get_daily_prices(symbols, period)
     df.reset_index(inplace=True)
     return df.pivot(index="Date", columns="Symbol", values="Close").reset_index()
- 
-def main(etf_config: dict) -> None:
+
+
+def main(etf_config: dict, portfolio_config: dict) -> None:
     """Main function to run the dashboard."""
     setup_page()
 
@@ -51,13 +51,13 @@ def main(etf_config: dict) -> None:
     symbol_type = st.sidebar.radio(
         "Select Symbol Type", ["Markets", "Sectors", "Regions"], index=0
     )
-    symbols = get_symbols(symbol_type, etf_config)
+    symbols = get_symbols(symbol_type, portfolio_config)
 
     # Period selection
     period = st.sidebar.selectbox(
         "Select Time Period", ["1y", "2y", "5y", "10y"], index=2
     )
- 
+
     # Load and process data
     df_pivot = load_data(symbols, period)
 
@@ -74,4 +74,5 @@ def main(etf_config: dict) -> None:
 
 if __name__ == "__main__":
     etf_config = load_config("etf")
-    main(etf_config)
+    portfolio_config = load_portfolios("portfolio")
+    main(etf_config, portfolio_config)

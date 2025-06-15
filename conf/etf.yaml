@@ -6,7 +6,7 @@ etfs:
     type: Blend
     size: Large
     management: Passive # Vanguard
-    color: royalblue
+    color: blue
     url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=VTI
   VOO:
     symbol: VOO
@@ -60,7 +60,7 @@ etfs:
     type: Blend
     size: Large
     management: Passive # Vanguard
-    color: purple
+    color: seagreen
     url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=VXUS
   VEU:
     symbol: VEU
@@ -105,7 +105,7 @@ etfs:
     type: Blend
     size: Large
     management: Passive # SPDR
-    color: black
+    color: royalblue
     url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=SPEU
   IPAC:
     symbol: IPAC
@@ -114,7 +114,7 @@ etfs:
     type: Blend
     size: Large
     management: Passive # iShares
-    color: black
+    color: rgba(28, 169, 201,1)
     url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=IPAC
   AIA:
     symbol: AIA
@@ -123,7 +123,7 @@ etfs:
     type: Blend
     size: Large
     management: Passive # iShares
-    color: black
+    color: coral # red
     url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=AIA
   IXG:
     symbol: IXG
@@ -202,30 +202,3 @@ etfs:
     industry: Commodity
     color: yellow
     url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=IAUM
-
-Regions:
-  - VTI
-  - VOO
-  - MGV
-  - WTV
-  - AVUV
-  - SPMO
-  - VXUS
-  - VEU
-
-Sectors:
-  - IAUM
-  - IXG
-  - EUFN
-  - IGF
-  - IFRA
-  - SHLD
-  - EUAD
-  - AIQ
-
-Markets:
-  - VTI
-  - VXUS
-  - SPEU
-  - IPAC
-  - AIA

@@ -5,7 +5,7 @@ Handles symbol-related operations and filtering.
 
 from typing import List
 
-def get_symbols(symbol_type: str, etf_config: dict) -> List[str]:
+def get_symbols(symbol_type: str, portfolio_config: dict) -> List[str]:
     """
     Get symbols based on the selected type.
 
@@ -16,4 +16,4 @@ def get_symbols(symbol_type: str, etf_config: dict) -> List[str]:
     Returns:
         List of symbol strings
     """
-    return etf_config[symbol_type] 
+    return portfolio_config[symbol_type] 
