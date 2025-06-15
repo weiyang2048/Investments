@@ -2,7 +2,6 @@ import click
 import streamlit.web.cli as stcli
 import sys
 import os
-from pyhere import here
 
 @click.group()
 def cli():
@@ -14,7 +13,7 @@ def cli():
 def run(port):
     """Run the Streamlit dashboard."""
     click.echo(f"🚀 Starting dashboard on port {port}...")
-    sys.argv = ["streamlit", "run", here("src/pivot_dashboard.py"), "--server.port", str(port)]
+    sys.argv = ["streamlit", "run", "src/dashboard/main.py", "--server.port", str(port)]
     sys.exit(stcli.main())
 
 @cli.command()

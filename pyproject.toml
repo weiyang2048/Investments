@@ -15,14 +15,10 @@ classifiers = [
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
 ]
-dependencies = [
-    "click>=8.0.0",
-    "streamlit>=1.0.0",
-    "pandas>=1.2.0",
-]
+dependencies = ["click>=8.0.0", "streamlit>=1.0.0", "pandas>=1.2.0"]
 
 [project.scripts]
-inv-dash = "cli.cli:cli"
+inv-dash = "cli.dashboard:cli"
 
 [project.urls]
 Homepage = "https://github.com/weiyang2048/Investments"
@@ -33,4 +29,4 @@ dashboard = "https://nowei-invest.streamlit.app/"
 packages = ["src"]
 
 [tool.black]
-line-length = 88
+line-length = 99

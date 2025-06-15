@@ -2,4 +2,6 @@ __pycache__
 *.egg-info
 .stock
 *.venv
-*uv.lock
+*uv.lock4
+notebooks/
+uv.lock

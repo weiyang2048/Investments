@@ -2,31 +2,32 @@
 # This file defines the portfolio structure and allocations
 
 # Regional Allocation
+# Regions:
+#   - VTI    # Vanguard Total Stock Market ETF
+#   - VOO    # Vanguard S&P 500 ETF
+#   - MGV    # Vanguard Mega Cap Value ETF
+#   - WTV    # WisdomTree US Value Fund
+#   - AVUV   # Avantis U.S. Small Cap Value ETF
+#   - SPMO   # Invesco S&P 500 Momentum ETF
+#   - VXUS   # Vanguard Total International Stock ETF
+#   - VEU    # Vanguard FTSE All-World ex-US Index Fund
+
+# Market Allocation
 Regions:
-  - VTI    # Vanguard Total Stock Market ETF
-  - VOO    # Vanguard S&P 500 ETF
-  - MGV    # Vanguard Mega Cap Value ETF
-  - WTV    # WisdomTree US Value Fund
-  - AVUV   # Avantis U.S. Small Cap Value ETF
-  - SPMO   # Invesco S&P 500 Momentum ETF
-  - VXUS   # Vanguard Total International Stock ETF
-  - VEU    # Vanguard FTSE All-World ex-US Index Fund
+  - VTI # Vanguard Total Stock Market ETF
+  - VXUS # Vanguard Total International Stock ETF
+  - SPEU # SPDR Portfolio Europe ETF
+  - IPAC # iShares Core MSCI Pacific ETF
+  - AIA # iShares Asia 50 ETF
 
 # Sector Allocation
 Sectors:
-  - IAUM   # iShares Gold Trust Micro ETF
-  - IXG    # iShares Global Financials ETF
-  - EUFN   # iShares MSCI Europe Financials ETF
-  - IGF    # iShares Global Infrastructure ETF
-  - IFRA   # iShares U.S. Infrastructure ETF
-  - SHLD   # Global X Defense Tech ETF
-  - EUAD   # Select STOXX Europe Aerospace & Defense ETF
-  - AIQ    # Global X Artificial Intelligence & Technology ETF
+  - IAUM # iShares Gold Trust Micro ETF
+  - IXG # iShares Global Financials ETF
+  - EUFN # iShares MSCI Europe Financials ETF
+  - IGF # iShares Global Infrastructure ETF
+  - IFRA # iShares U.S. Infrastructure ETF
+  - SHLD # Global X Defense Tech ETF
+  - EUAD # Select STOXX Europe Aerospace & Defense ETF
+  - AIQ # Global X Artificial Intelligence & Technology ETF
 
-# Market Allocation
-Markets:
-  - VTI    # Vanguard Total Stock Market ETF
-  - VXUS   # Vanguard Total International Stock ETF
-  - SPEU   # SPDR Portfolio Europe ETF
-  - IPAC   # iShares Core MSCI Pacific ETF
-  - AIA    # iShares Asia 50 ETF 
