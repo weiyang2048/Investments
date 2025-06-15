@@ -16,11 +16,13 @@ classifiers = [
     "Operating System :: OS Independent",
 ]
 dependencies = [
-    # Add your dependencies here
-    # For example:
-    # "requests>=2.25.1",
-    # "pandas>=1.2.0",
+    "click>=8.0.0",
+    "streamlit>=1.0.0",
+    "pandas>=1.2.0",
 ]
+
+[project.scripts]
+inv-dash = "cli.cli:cli"
 
 [project.urls]
 Homepage = "https://github.com/weiyang2048/Investments"

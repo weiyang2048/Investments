@@ -1,4 +1,14 @@
 etfs:
+# total world stock market
+  VT:
+    symbol: VT
+    name: Vanguard Total World Stock Market ETF
+    region: Global
+    type: Blend
+    size: Large
+    management: Passive # Vanguard
+    color: darkgray
+    url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=VT
   VTI:
     symbol: VTI
     name: Vanguard Total Stock Market ETF

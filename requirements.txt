@@ -6,12 +6,6 @@ pandas
 scipy 
 scikit-learn
 
-## data
-ydata-profiling
-sweetviz
-dataframe_image
-plottable
-
 ## Visualization
 matplotlib
 plotly
@@ -29,6 +23,7 @@ optuna
 loguru
 yfinance
 country_converter
+pyhere
 
 # robin_stocks
 robin_stocks
