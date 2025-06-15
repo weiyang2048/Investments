@@ -1,0 +1,68 @@
+import pandas as pd
+import plotly.graph_objects as go
+from plotly.subplots import make_subplots
+from typing import List, Dict
+
+
+def normalize_prices(df: pd.DataFrame, symbols: List[str]) -> pd.DataFrame:
+    """
+    Normalize price data to start at 1.0.
+
+    Args:
+        df: DataFrame with price data
+        symbols: List of symbols to normalize
+
+    Returns:
+        DataFrame with normalized prices
+    """
+    df_normalized = df.copy()
+    for symbol in symbols:
+        df_normalized[symbol] = df[symbol] / df[symbol].iloc[0]
+    return df_normalized
+
+
+def create_performance_plot(
+    df: pd.DataFrame, symbols: List[str], look_back_days: List[int], colors_dict: dict[str, str]
+) -> go.Figure:
+    """
+    Create a multi-subplot figure showing normalized performance.
+
+    Args:
+        df: DataFrame with price data
+        symbols: List of symbols to plot
+        look_back_days: List of lookback periods in days
+        colors_dict: Dictionary mapping symbols to their colors
+
+    Returns:
+        Plotly figure object
+    """
+    fig = make_subplots(
+        rows=1,
+        cols=len(look_back_days),
+        subplot_titles=[f"{days} trading days" for days in look_back_days],
+    )
+
+    for i, days in enumerate(look_back_days):
+        df_normalized = normalize_prices(df.iloc[-days:], symbols)
+        for symbol in symbols:
+            fig.add_trace(
+                go.Scatter(
+                    x=df_normalized["Date"],
+                    y=df_normalized[symbol],
+                    name=symbol,
+                    line=dict(color=colors_dict[symbol]),
+                    legendgroup=symbol,
+                    showlegend=i == 0,
+                ),
+                row=1, 
+                col=i + 1,
+            )
+
+    fig.update_layout(
+        height=600,
+        showlegend=True,
+        title_text="Normalized Performance Comparison",
+        hovermode="x unified",
+    )
+
+    return fig 

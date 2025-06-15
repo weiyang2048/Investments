@@ -6,6 +6,7 @@ etfs:
     type: Blend
     size: Large
     management: Passive # Vanguard
+    color: royalblue
     url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=VTI
   VOO:
     symbol: VOO
@@ -14,6 +15,7 @@ etfs:
     type: Blend
     size: Large
     management: Passive # Vanguard
+    color: blue
     url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=VOO
   MGV:
     symbol: MGV
@@ -22,6 +24,7 @@ etfs:
     type: Value
     size: Large
     management: Passive # Vanguard
+    color: orange
     url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=MGV
   WTV:
     symbol: WTV
@@ -30,6 +33,7 @@ etfs:
     type: Value
     size: Mid
     management: Active # WisdomTree
+    color: pink
     url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=WTV
   AVUV:
     symbol: AVUV
@@ -38,6 +42,7 @@ etfs:
     type: Value
     size: Small
     management: Active # Avantis
+    color: green
     url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=AVUV
   SPMO:
     symbol: SPMO
@@ -46,6 +51,7 @@ etfs:
     type: Growth
     size: Large
     management: Passive # Invesco
+    color: yellow
     url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=SPMO
   VXUS:
     symbol: VXUS
@@ -54,6 +60,7 @@ etfs:
     type: Blend
     size: Large
     management: Passive # Vanguard
+    color: purple
     url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=VXUS
   VEU:
     symbol: VEU
@@ -62,6 +69,7 @@ etfs:
     type: Blend
     size: Large
     management: Passive # Vanguard
+    color: brown
     url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=VEU
   DOL:
     symbol: DOL
@@ -70,6 +78,7 @@ etfs:
     type: Value
     size: Large
     management: Active # WisdomTree
+    color: black
     url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=DOL
   VEA:
     symbol: VEA
@@ -78,6 +87,7 @@ etfs:
     type: Blend
     size: Large
     management: Passive # Vanguard
+    color: gray
     url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=VEA
   FENI:
     symbol: FENI
@@ -86,6 +96,7 @@ etfs:
     type: Blend
     size: Large
     management: Active # Fidelity
+    color: black
     url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=FENI
   SPEU:
     symbol: SPEU
@@ -94,6 +105,7 @@ etfs:
     type: Blend
     size: Large
     management: Passive # SPDR
+    color: black
     url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=SPEU
   IPAC:
     symbol: IPAC
@@ -102,6 +114,7 @@ etfs:
     type: Blend
     size: Large
     management: Passive # iShares
+    color: black
     url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=IPAC
   AIA:
     symbol: AIA
@@ -110,6 +123,7 @@ etfs:
     type: Blend
     size: Large
     management: Passive # iShares
+    color: black
     url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=AIA
   IXG:
     symbol: IXG
@@ -119,6 +133,7 @@ etfs:
     size: Large
     management: Passive # iShares
     industry: Financials
+    color: rgba(218, 165, 32,0.9) # goldenrod
     url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=IXG
   EUFN:
     symbol: EUFN
@@ -128,6 +143,7 @@ etfs:
     size: Large
     management: Passive # iShares
     industry: Financials
+    color: rgba(218, 165, 32,0.5) # goldenrod
     url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=EUFN
   IGF:
     symbol: IGF
@@ -137,6 +153,7 @@ etfs:
     size: Large
     management: Passive # iShares
     industry: Infrastructure
+    color: rgba(128,128,128,0.9) # grey
     url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=IGF
   IFRA:
     symbol: IFRA
@@ -146,6 +163,7 @@ etfs:
     size: Small
     management: Passive # iShares
     industry: Infrastructure
+    color: rgba(128,128,128,0.5) # grey
     url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=IFRA
   SHLD:
     symbol: SHLD
@@ -155,6 +173,7 @@ etfs:
     size: Large
     management: Passive # Global X
     industry: Defense
+    color: rgba(128,9,9,0.9) # darkred
     url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=SHLD
   EUAD:
     symbol: EUAD
@@ -164,6 +183,7 @@ etfs:
     size: Large
     management: Passive # Select
     industry: Defense
+    color: rgba(128,9,9,0.5)
     url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=EUAD
   AIQ:
     symbol: AIQ
@@ -173,15 +193,17 @@ etfs:
     size: Large
     management: Passive # Global X
     industry: Technology
+    color: yellowgreen
     url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=AIQ
   IAUM:
     symbol: IAUM
     name: iShares Gold Trust Micro ETF of Benef Interest
     management: Passive # iShares
     industry: Commodity
+    color: yellow
     url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=IAUM
 
-globals:
+Regions:
   - VTI
   - VOO
   - MGV
@@ -191,7 +213,8 @@ globals:
   - VXUS
   - VEU
 
-sectors:
+Sectors:
+  - IAUM
   - IXG
   - EUFN
   - IGF
@@ -199,9 +222,8 @@ sectors:
   - SHLD
   - EUAD
   - AIQ
-  - IAUM
 
-markets:
+Markets:
   - VTI
   - VXUS
   - SPEU

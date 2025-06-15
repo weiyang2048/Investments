@@ -31,4 +31,4 @@ try:
         filter=lambda record: record["level"].name == "data",
     )
 except Exception as e:
-    print(e)
+    pass

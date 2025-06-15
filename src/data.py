@@ -6,7 +6,6 @@ from loguru import logger
 from functools import lru_cache, cache
 
 
-
 def get_daily_prices(symbols: List[str], period: str = "1mo") -> pd.DataFrame:
     """
     Get daily price data for multiple symbols using yfinance
