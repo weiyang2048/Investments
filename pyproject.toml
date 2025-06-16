@@ -23,7 +23,7 @@ inv-dash = "cli.dashboard:cli"
 [project.urls]
 Homepage = "https://github.com/weiyang2048/Investments"
 Repository = "https://github.com/weiyang2048/Investments.git"
-dashboard = "https://nowei-invest.streamlit.app/"
+dashboard = "https://nowei-investment.streamlit.app/"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src"]

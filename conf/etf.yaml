@@ -143,7 +143,8 @@ etfs:
     size: Large
     management: Passive # iShares
     industry: Financials
-    color: rgba(218, 165, 32,0.9) # goldenrod
+    color: yellow # goldenrod
+    line_style: dash 
     url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=IXG
   EUFN:
     symbol: EUFN
@@ -153,7 +154,8 @@ etfs:
     size: Large
     management: Passive # iShares
     industry: Financials
-    color: rgba(218, 165, 32,0.5) # goldenrod
+    color: yellow # goldenrod
+    line_style: dot
     url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=EUFN
   IGF:
     symbol: IGF
@@ -174,6 +176,7 @@ etfs:
     management: Passive # iShares
     industry: Infrastructure
     color: rgba(128,128,128,0.5) # grey
+    line_style: dot
     url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=IFRA
   SHLD:
     symbol: SHLD
@@ -194,6 +197,7 @@ etfs:
     management: Passive # Select
     industry: Defense
     color: rgba(128,9,9,0.5)
+    line_style: dot
     url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=EUAD
   AIQ:
     symbol: AIQ
@@ -203,8 +207,62 @@ etfs:
     size: Large
     management: Passive # Global X
     industry: Technology
-    color: yellowgreen
+    color: lightgreen 
     url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=AIQ
+  IXP:
+    symbol: IXP
+    name: iShares Global Communications Services ETF
+    region: Global
+    type: Value
+    size: Large
+    management: Passive # iShares
+    industry: Communications
+    color: seagreen
+    url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=IXP
+  IXC:
+    symbol: IXC
+    name: iShares Global Energy ETF
+    region: Global
+    type: Value
+    size: Large 
+    management: Passive # iShares
+    industry: Energy
+    color: darkgoldenrod  # orange447
+    line_style: dashdot
+    url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=IXC
+  JXI:
+    symbol: JXI
+    name: iShares U.S. Utilities ETF
+    region: US
+    type: Value
+    size: Large
+    management: Passive # iShares
+    industry: Utilities
+    color: lightgoldenrodyellow
+    line_style: dashdot
+    url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=JXI
+  RXI:
+    symbol: RXI
+    name: iShares U.S. Consumer Discretionary ETF
+    region: US
+    type: Blend
+    size: Large
+    management: Passive # iShares 
+    industry: Consumer Discretionary
+    color: darkorange
+    line_style: dashdot
+    url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=RXI
+  KXI:
+    symbol: KXI
+    name: iShares U.S. Consumer Staples ETF
+    region: US
+    type: Value
+    size: Large
+    management: Passive # iShares
+    industry: Consumer Staples
+    color: darkblue
+    line_style: dashdot
+    url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=KXI
   IAUM:
     symbol: IAUM
     name: iShares Gold Trust Micro ETF of Benef Interest

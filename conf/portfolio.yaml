@@ -20,14 +20,20 @@ Regions:
   - IPAC # iShares Core MSCI Pacific ETF
   - AIA # iShares Asia 50 ETF
 
-# Sector Allocation
 Sectors:
-  - IAUM # iShares Gold Trust Micro ETF
-  - IXG # iShares Global Financials ETF
+  - IAUM
+  - IXG
   - EUFN # iShares MSCI Europe Financials ETF
-  - IGF # iShares Global Infrastructure ETF
+  - IGF
   - IFRA # iShares U.S. Infrastructure ETF
-  - SHLD # Global X Defense Tech ETF
+  - IXC # Energy
+  - JXI # Utilities
+  - AIQ
+  - IXP # Communications
+  - SHLD
   - EUAD # Select STOXX Europe Aerospace & Defense ETF
-  - AIQ # Global X Artificial Intelligence & Technology ETF
+  - RXI # Consumer Discretionary
+  - KXI # Consumer Staples
 
+
+ 

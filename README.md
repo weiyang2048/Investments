@@ -1,6 +1,6 @@
 # [Equity Market Dashboard](https://github.com/weiyang2048/Investments)
 
-[Dashboard 🔗](https://nowei-invest.streamlit.app/)
+[Dashboard 🔗](https://nowei-investment.streamlit.app/)
 
 ## Installation
 

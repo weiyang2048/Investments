@@ -7,7 +7,7 @@ from src.data import get_daily_prices
 from src.viz import create_performance_plot
 from conf import load_config, get_symbols, load_dashboard_conf
 
-
+ 
 def setup_page(dashboard_config: dict) -> None:
     """Configure the Streamlit page settings."""
     st.set_page_config(
