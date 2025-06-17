@@ -129,12 +129,21 @@ etfs:
   AIA:
     symbol: AIA
     name: iShares Asia 50 ETF
-    region: Asia
+    region: Middle East & Africa
     type: Blend
     size: Large
     management: Passive # iShares
     color: coral # red
     url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=AIA
+  TRAMX:
+    symbol: TRAMX
+    name: T. Rowe Price Africa & Middle East Fund
+    region: Asia
+    type: Blend
+    size: Mid
+    management: Active # T. Rowe Price
+    color: brown
+    url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=TRAMX
   IXG:
     symbol: IXG
     name: iShares Global Financials ETF

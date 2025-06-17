@@ -1,4 +1,4 @@
-look_back_days: [720, 360, 180, 90, 30, 10]
+look_back_days: [10, 30, 90, 180, 540, 1620]
 style_string: |
   <style>
   [data-testid="stSidebar"][aria-expanded="true"] {
