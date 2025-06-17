@@ -67,8 +67,9 @@ def create_performance_plot(
                         f"<b style='color: {colors_dict[symbol]}'>Name:</b> {etf_config['etfs'][symbol].get('name','-')}<br>"
                         f"<b style='color: {colors_dict[symbol]}'>Region:</b> {etf_config['etfs'][symbol].get('region', '-')}<br>"
                         f"<b style='color: {colors_dict[symbol]}'>Industry:</b> {etf_config['etfs'][symbol].get('industry', '-')}<br>"
-                        "<b>Date:</b> %{x}<br>"
-                        "<b>Normalized Price:</b> %{y:.2f}"
+                        f"<b style='color: {colors_dict[symbol]}'>Date:</b>" + "%{x}<br>"
+                        f"<b style='color: {colors_dict[symbol]}'>Normalized Price:</b>"
+                        + "%{y:.2f}<extra></extra>"
                     ),
                 ),
                 row=(i // 3) + 1,  # Calculate row index
