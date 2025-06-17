@@ -117,6 +117,15 @@ etfs:
     management: Passive # SPDR
     color: royalblue
     url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=SPEU
+  CEE:
+    symbol: CEE
+    name: Central and Eastern Europe Fund
+    region: EasternEurope
+    type: Blend
+    size: Large
+    management: Active # T. Rowe Price
+    color: coral
+    url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=CEE
   IPAC:
     symbol: IPAC
     name: iShares Core MSCI Pacific ETF
@@ -129,20 +138,20 @@ etfs:
   AIA:
     symbol: AIA
     name: iShares Asia 50 ETF
-    region: Middle East & Africa
+    region: Asia
     type: Blend
     size: Large
     management: Passive # iShares
-    color: coral # red
+    color: darkred # red
     url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=AIA
   TRAMX:
     symbol: TRAMX
     name: T. Rowe Price Africa & Middle East Fund
-    region: Asia
+    region: Middle East & Africa
     type: Blend
     size: Mid
     management: Active # T. Rowe Price
-    color: brown
+    color: rosybrown
     url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=TRAMX
   IXG:
     symbol: IXG

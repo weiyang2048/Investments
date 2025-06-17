@@ -3,7 +3,11 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 from typing import List, Dict
 
-def normalize_prices(df: pd.DataFrame, symbols: List[str]) -> pd.DataFrame:
+
+def normalize_prices(
+    df: pd.DataFrame,
+    symbols: List[str],
+) -> pd.DataFrame:
     """
     Normalize price data to start at 1.0.
 
@@ -19,12 +23,14 @@ def normalize_prices(df: pd.DataFrame, symbols: List[str]) -> pd.DataFrame:
         df_normalized[symbol] = df[symbol] / df[symbol].iloc[0]
     return df_normalized
 
+
 def create_performance_plot(
     df: pd.DataFrame,
     symbols: List[str],
     look_back_days: List[int],
     colors_dict: Dict[str, str],
-    line_styles_dict: Dict[str, str], 
+    line_styles_dict: Dict[str, str],
+    etf_config: Dict[str, Dict],
 ) -> go.Figure:
     """
     Create a multi-subplot figure showing normalized performance.
@@ -34,7 +40,7 @@ def create_performance_plot(
         symbols: List of symbols to plot
         look_back_days: List of lookback periods in days
         colors_dict: Dictionary mapping symbols to their colors
-        line_styles_dict: Dictionary mapping symbols to their line styles 
+        line_styles_dict: Dictionary mapping symbols to their line styles
     Returns:
         Plotly figure object
     """
@@ -47,7 +53,7 @@ def create_performance_plot(
 
     for i, days in enumerate(look_back_days):
         df_normalized = normalize_prices(df.iloc[-days:], symbols)
-        for symbol in symbols:
+        for symbol in [x for x in df_normalized.columns if x not in ["Date"]]:
             fig.add_trace(
                 go.Scatter(
                     x=df_normalized["Date"],
@@ -56,16 +62,24 @@ def create_performance_plot(
                     line=dict(color=colors_dict[symbol], dash=line_styles_dict[symbol]),
                     legendgroup=symbol,
                     showlegend=i == 0,
+                    hovertemplate=(
+                        f"<b style='color: {colors_dict[symbol]}'>Symbol:</b> {symbol}<br>"
+                        f"<b style='color: {colors_dict[symbol]}'>Name:</b> {etf_config['etfs'][symbol].get('name','-')}<br>"
+                        f"<b style='color: {colors_dict[symbol]}'>Region:</b> {etf_config['etfs'][symbol].get('region', '-')}<br>"
+                        f"<b style='color: {colors_dict[symbol]}'>Industry:</b> {etf_config['etfs'][symbol].get('industry', '-')}<br>"
+                        "<b>Date:</b> %{x}<br>"
+                        "<b>Normalized Price:</b> %{y:.2f}"
+                    ),
                 ),
                 row=(i // 3) + 1,  # Calculate row index
-                col=(i % 3) + 1,   # Calculate column index
+                col=(i % 3) + 1,  # Calculate column index
             )
 
     fig.update_layout(
         height=1200,
         showlegend=True,
         title_text="Normalized Performance Comparison",
-        hovermode="x unified",
+        hovermode="closest",
         autosize=True,
     )
 

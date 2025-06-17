@@ -49,7 +49,7 @@ def show_market_performance(
     symbols = get_symbols(symbol_type, portfolio_config)
 
     # Period selection
-    period = st.sidebar.selectbox("Select Time Period", ["1y", "2y", "5y", "10y"], index=3)
+    period = st.sidebar.selectbox("Select Time Period", ["1y", "2y", "5y"], index=2)
 
     # Load and process data
     df_pivot = load_data(symbols, period) 
@@ -62,7 +62,7 @@ def show_market_performance(
     line_styles_dict = {
         symbol: etf_config["etfs"].get(symbol, {}).get("line_style", "solid") for symbol in symbols
     }
-    fig = create_performance_plot(df_pivot, symbols, look_back_days, colors_dict, line_styles_dict)
+    fig = create_performance_plot(df_pivot, symbols, look_back_days, colors_dict, line_styles_dict, etf_config)
     st.plotly_chart(fig, use_container_width=True)
  
     # Display raw data option  
