@@ -41,7 +41,7 @@ def show_market_performance(
 ) -> None:
     """Function to show the market performance dashboard."""
     setup_page(dashboard_config)
- 
+
     # Symbol selection
     symbol_type = st.sidebar.radio(
         "Select Symbol Type", [key for key in portfolio_config.keys()], index=0
@@ -52,26 +52,32 @@ def show_market_performance(
     period = st.sidebar.selectbox("Select Time Period", ["1y", "2y", "5y"], index=2)
 
     # Load and process data
-    df_pivot = load_data(symbols, period) 
+    df_pivot = load_data(symbols, period)
 
     # Create and display plot
-    look_back_days = dashboard_config["look_back_days"]  
+    look_back_days = dashboard_config["look_back_days"]
     colors_dict = {
         symbol: etf_config["etfs"].get(symbol, {}).get("color", "snow") for symbol in symbols
     }
     line_styles_dict = {
         symbol: etf_config["etfs"].get(symbol, {}).get("line_style", "solid") for symbol in symbols
     }
-    fig = create_performance_plot(df_pivot, symbols, look_back_days, colors_dict, line_styles_dict, etf_config)
+    fig = create_performance_plot(
+        df_pivot, symbols, look_back_days, colors_dict, line_styles_dict, etf_config
+    )
     st.plotly_chart(fig, use_container_width=True)
- 
-    # Display raw data option  
-    if st.checkbox("Show Raw Data"):    
-        st.dataframe(df_pivot) 
-    
-  
-if __name__ == "__main__":    
-    etf_config = load_config("etf") 
-    portfolio_config = load_portfolios_conf("portfolio")  
-    dashboard_config = load_dashboard_conf("dashboard")    
-    show_market_performance(etf_config, portfolio_config, dashboard_config)                 
+
+    # Display raw data option
+    if st.checkbox("Show Raw Data"):
+        st.dataframe(df_pivot)
+
+
+if __name__ == "__main__":
+    etf_config = load_config("etf")
+    stock_config = load_config("stock")
+    # use stock_config to update etf_config
+    for key, value in stock_config["stocks"].items():
+        etf_config["etfs"][key] = value
+    portfolio_config = load_portfolios_conf("portfolio")
+    dashboard_config = load_dashboard_conf("dashboard")
+    show_market_performance(etf_config, portfolio_config, dashboard_config)

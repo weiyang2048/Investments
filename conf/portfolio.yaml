@@ -20,7 +20,8 @@ Regions:
   - CEE # Central and Eastern Europe Fund
   - IPAC # iShares Core MSCI Pacific ETF
   - AIA # iShares Asia 50 ETF
-  - TRAMX
+  - TRAMX # Middle East & Africa ETF
+
 Sectors:
   - IAUM
   - IXG
@@ -37,4 +38,8 @@ Sectors:
   - KXI # Consumer Staples
 
 
- 
+Insurance:
+  - KIE
+  - KMPR
+  - PGR
+  - ALL

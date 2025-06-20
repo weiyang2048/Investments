@@ -1,5 +1,5 @@
 etfs:
-# total world stock market
+  # total world stock market
   VT:
     symbol: VT
     name: Vanguard Total World Stock Market ETF
@@ -162,7 +162,7 @@ etfs:
     management: Passive # iShares
     industry: Financials
     color: yellow # goldenrod
-    line_style: dash 
+    line_style: dash
     url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=IXG
   EUFN:
     symbol: EUFN
@@ -225,7 +225,7 @@ etfs:
     size: Large
     management: Passive # Global X
     industry: Technology
-    color: lightgreen 
+    color: lightgreen
     url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=AIQ
   IXP:
     symbol: IXP
@@ -242,10 +242,10 @@ etfs:
     name: iShares Global Energy ETF
     region: Global
     type: Value
-    size: Large 
+    size: Large
     management: Passive # iShares
     industry: Energy
-    color: darkgoldenrod  # orange447
+    color: darkgoldenrod # orange447
     line_style: dashdot
     url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=IXC
   JXI:
@@ -265,7 +265,7 @@ etfs:
     region: US
     type: Blend
     size: Large
-    management: Passive # iShares 
+    management: Passive # iShares
     industry: Consumer Discretionary
     color: darkorange
     line_style: dashdot
@@ -281,6 +281,17 @@ etfs:
     color: darkblue
     line_style: dashdot
     url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=KXI
+  KIE:
+    symbol: KIE
+    name: iShares U.S. Insurance ETF
+    region: US
+    type: Value
+    size: Mid
+    management: Passive # iShares
+    industry: Insurance
+    color: goldenrod
+    line_style: dashdot
+    url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=KIE
   IAUM:
     symbol: IAUM
     name: iShares Gold Trust Micro ETF of Benef Interest

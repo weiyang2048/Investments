@@ -49,11 +49,14 @@ def create_performance_plot(
         rows=2,
         cols=3,
         subplot_titles=[f"{days} trading days" for days in look_back_days],
+        # shared_yaxes=True,
+        vertical_spacing=0.1,
+        horizontal_spacing=0.03,
     )
 
     for i, days in enumerate(look_back_days):
         df_normalized = normalize_prices(df.iloc[-days:], symbols)
-        for symbol in [x for x in df_normalized.columns if x not in ["Date"]]:
+        for symbol in symbols:
             fig.add_trace(
                 go.Scatter(
                     x=df_normalized["Date"],
@@ -77,11 +80,12 @@ def create_performance_plot(
             )
 
     fig.update_layout(
-        height=1200,
+        height=800,
         showlegend=True,
         title_text="Normalized Performance Comparison",
         hovermode="closest",
         autosize=True,
+        margin=dict(l=0, r=0, t=60, b=0),
     )
 
     return fig
