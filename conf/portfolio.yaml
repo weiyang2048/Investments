@@ -16,6 +16,7 @@
 Regions:
   - VTI # Vanguard Total Stock Market ETF
   - VXUS # Vanguard Total International Stock ETF
+  - ILF # iShares Latin America 40 ETF
   - SPEU # SPDR Portfolio Europe ETF
   - CEE # Central and Eastern Europe Fund
   - IPAC # iShares Core MSCI Pacific ETF

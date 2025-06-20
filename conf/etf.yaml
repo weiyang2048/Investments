@@ -144,6 +144,15 @@ etfs:
     management: Passive # iShares
     color: darkred # red
     url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=AIA
+  ILF:
+    symbol: ILF
+    name: iShares Latin America 40 ETF
+    region: Latin America
+    type: Value
+    size: Large
+    management: Passive # iShares
+    color: darkolivegreen
+    url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=ILF
   TRAMX:
     symbol: TRAMX
     name: T. Rowe Price Africa & Middle East Fund
