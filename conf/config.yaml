@@ -1,4 +1,4 @@
 defaults:
   - dashboard_layout: [shared]
-  - tickers: [etf, stock]
+  - tickers: [etf, insurance_stocks]
   - portfolio: [etfs_macro]

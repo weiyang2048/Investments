@@ -1,5 +1,5 @@
 if __name__ == "__main__":
-    from src.create_page import setup_page, show_market_performance
+    from src.dashboard.create_page import setup_page, show_market_performance
     import hydra
 
     with hydra.initialize(version_base=None, config_path="../../conf"):

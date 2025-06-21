@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 from typing import List
-from src.data import get_daily_prices
+from src.data import get_daily_prices_list
 from src.viz import create_performance_plot
 
 
@@ -28,7 +28,7 @@ def load_data(symbols: List[str], period: str = "10y") -> pd.DataFrame:
     Returns:
         Pivoted DataFrame with dates as index and symbols as columns
     """
-    df = get_daily_prices(symbols, period)
+    df = get_daily_prices_list(symbols, period)
     df.reset_index(inplace=True)
     return df.pivot(index="Date", columns="Symbol", values="Close").reset_index()
 
