@@ -5,7 +5,11 @@ if __name__ == "__main__":
     with hydra.initialize(version_base=None, config_path="../../conf"):
         config = hydra.compose(
             config_name="config",
-            overrides=["+dashboard_layout=main", "portfolio=etfs_macro"],
+            overrides=[
+                "+dashboard_layout=main",
+                "portfolio=etfs_macro",
+                # "~tickers.insurance_stocks",
+            ],
         )
 
     show_market_performance(config["tickers"], config["portfolio"], config["dashboard_layout"])

@@ -6,3 +6,4 @@ venv/
 *uv.lock4
 notebooks/
 uv.lock
+.devcontainer/
