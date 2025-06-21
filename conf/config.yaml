@@ -3,4 +3,5 @@ defaults:
   - tickers:
       - etf
       - insurance_stocks
+      - Renewable_utilities_stocks
   - portfolio: [etfs_macro]

@@ -6,5 +6,12 @@ Insurance:
   - ALL
   - BRK-B
   - TRV
-# Renewable & Utility:
-  # = AES
+Utility:
+  - AES
+  - VST
+  - NEE
+  - DUK
+  - FLNC
+  - GEV
+  - FSLR
+  - BEP
