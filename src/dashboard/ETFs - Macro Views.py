@@ -1,15 +1,11 @@
 if __name__ == "__main__":
     from src.create_page import setup_page, show_market_performance
     import hydra
-    from conf.config_loader import load_config, load_portfolios_conf
 
     with hydra.initialize(version_base=None, config_path="../../conf"):
-        dashboard_config = hydra.compose(
-            config_name="config", overrides=["+dashboard_layout=main"]
-        )["dashboard_layout"]
+        config = hydra.compose(
+            config_name="config",
+            overrides=["+dashboard_layout=main", "portfolio=etfs_macro"],
+        )
 
-    etf_config = load_config("etf")
-    stock_config = load_config("stock")
-    equity_config = {**etf_config["etfs"], **stock_config["stocks"]}
-    portfolio_config = load_portfolios_conf("main/portfolio")
-    show_market_performance(equity_config, portfolio_config, dashboard_config)
+    show_market_performance(config["tickers"], config["portfolio"], config["dashboard_layout"])

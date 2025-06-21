@@ -1,15 +1,8 @@
-import os
-
-import hydra
-from omegaconf import OmegaConf
-from conf.config_loader import load_portfolios_conf, load_config
 import streamlit as st
 import pandas as pd
-import numpy as np
-from typing import List, Dict, Any
+from typing import List
 from src.data import get_daily_prices
 from src.viz import create_performance_plot
-from conf import load_config, get_symbols, load_dashboard_conf
 
 
 def setup_page(dashboard_config: dict) -> None:
@@ -50,13 +43,12 @@ def show_market_performance(
     symbol_type = st.sidebar.radio(
         "Select Symbol Type", [key for key in portfolio_config.keys()], index=0
     )
-    symbols = get_symbols(symbol_type, portfolio_config)
-
+    symbols = portfolio_config[symbol_type]
     # Period selection
     period = st.sidebar.selectbox("Select Time Period", ["1y", "2y", "5y"], index=2)
 
     # Load and process data
-    df_pivot = load_data(symbols, period)
+    df_pivot = load_data(list(symbols), period)
 
     # Create and display plot
     look_back_days = dashboard_config["look_back_days"]
