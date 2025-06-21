@@ -1,9 +1,9 @@
-from conf import load_config, load_portfolios_conf, load_dashboard_conf
-from src.dashboard.main import show_market_performance
+from src.create_page import setup_page, show_market_performance
 import hydra
+from conf.config_loader import load_config, load_portfolios_conf
+
 
 if __name__ == "__main__":
-    from pyhere import here
 
     with hydra.initialize(version_base=None, config_path="../../../conf"):
         dashboard_config = hydra.compose(

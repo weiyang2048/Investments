@@ -74,16 +74,3 @@ def show_market_performance(
     # Display raw data option
     if st.checkbox("Show Raw Data"):
         st.dataframe(df_pivot)
-
-
-if __name__ == "__main__":
-    with hydra.initialize(version_base=None, config_path="../../conf"):
-        dashboard_config = hydra.compose(
-            config_name="config", overrides=["+dashboard_layout=main"]
-        )["dashboard_layout"]
-
-    etf_config = load_config("etf")
-    stock_config = load_config("stock")
-    equity_config = {**etf_config["etfs"], **stock_config["stocks"]}
-    portfolio_config = load_portfolios_conf("main/portfolio")
-    show_market_performance(equity_config, portfolio_config, dashboard_config)
