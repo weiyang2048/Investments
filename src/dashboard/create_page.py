@@ -12,6 +12,7 @@ def setup_page(dashboard_config: dict) -> None:
     )
     st.title(dashboard_config["title"])
     st.markdown(dashboard_config["description"])
+
     st.sidebar.header("Controls")
     st.markdown(dashboard_config["style_string"], unsafe_allow_html=True)
 
@@ -66,3 +67,14 @@ def show_market_performance(
     # Display raw data option
     if st.checkbox("Show Raw Data"):
         st.dataframe(df_pivot)
+
+    # add a link to my page on the sidebar
+    st.sidebar.markdown(
+        "<span id='homepage-link'>Homepage: <a   href='https://www.noWei.us' target='_blank'>noWei.us</a></span>",
+        unsafe_allow_html=True,
+    )
+    # link to my linkedin page
+    st.sidebar.markdown(
+        "<span id='linkedin-link'>LinkedIn: <a   href='https://www.linkedin.com/in/weiyang2048/' target='_blank'>LinkedIn</a></span>",
+        unsafe_allow_html=True,
+    )
