@@ -20,4 +20,10 @@ stocks:
     industry: Insurance
     color: 'rgb(0, 51, 160)' 
     url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=ALL
- 
+  BRK-B:
+    symbol: BRK-B
+    name: Berkshire Hathaway
+    region: US
+    industry: Insurance
+    color: 'rgb(46, 49, 146)' 
+    url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=BRK-B

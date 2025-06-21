@@ -1,4 +1,7 @@
 import os
+
+import hydra
+from omegaconf import OmegaConf
 from conf.config_loader import load_portfolios_conf, load_config
 import streamlit as st
 import pandas as pd
@@ -74,9 +77,13 @@ def show_market_performance(
 
 
 if __name__ == "__main__":
+    with hydra.initialize(version_base=None, config_path="../../conf"):
+        dashboard_config = hydra.compose(
+            config_name="config", overrides=["+dashboard_layout=main"]
+        )["dashboard_layout"]
+
     etf_config = load_config("etf")
     stock_config = load_config("stock")
     equity_config = {**etf_config["etfs"], **stock_config["stocks"]}
     portfolio_config = load_portfolios_conf("main/portfolio")
-    dashboard_config = load_dashboard_conf("main/page")
     show_market_performance(equity_config, portfolio_config, dashboard_config)

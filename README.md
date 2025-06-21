@@ -8,4 +8,8 @@
 pip install -r requirements.txt
 ```
 
-## Usage
+## Dev
+run streamlit dashboard
+```bash
+inv-dash run
+```
