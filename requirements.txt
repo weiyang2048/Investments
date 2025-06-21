@@ -27,3 +27,7 @@ pyhere
 
 # robin_stocks
 robin_stocks
+
+# conf
+hydra-core
+omegaconf

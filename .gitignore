@@ -2,6 +2,7 @@ __pycache__
 *.egg-info
 .stock
 *.venv
+venv/
 *uv.lock4
 notebooks/
 uv.lock
