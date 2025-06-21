@@ -1,0 +1,32 @@
+look_back_days: [10, 30, 90, 180, 540, 1620]
+style_string: |
+  <style>
+  [data-testid="stSidebar"][aria-expanded="true"] {
+      max-width: 3vw;
+  }
+  .stMainBlockContainer {
+    padding-left: 1%;
+    padding-right: 1%;
+    padding-top: 2%;
+  }
+  h1, p {
+  margin:0;
+  padding:0;
+  }
+  </style>
+
+page_config:
+  initial_sidebar_state: expanded
+  page_title: Sectors - Micro Views
+  page_icon: 📈
+  layout: wide
+  menu_items:
+    "Get Help": "mailto: weiyang2048@gmail.com"
+    "Report a bug": "https://github.com/weiyang2048/Investments"
+    "About": |
+      email: weiyang2048@gmail.com
+
+      personal website: [noWei.us](https://www.noWei.us)
+
+title: Sectors - Micro Views
+description:  Normalized sectoral performance across different time periods 

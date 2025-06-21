@@ -30,7 +30,7 @@ def create_performance_plot(
     look_back_days: List[int],
     colors_dict: Dict[str, str],
     line_styles_dict: Dict[str, str],
-    etf_config: Dict[str, Dict],
+    equity_config: Dict[str, Dict],
 ) -> go.Figure:
     """
     Create a multi-subplot figure showing normalized performance.
@@ -67,9 +67,9 @@ def create_performance_plot(
                     showlegend=i == 0,
                     hovertemplate=(
                         f"<b style='color: {colors_dict[symbol]}'>Symbol:</b> {symbol}<br>"
-                        f"<b style='color: {colors_dict[symbol]}'>Name:</b> {etf_config['etfs'][symbol].get('name','-')}<br>"
-                        f"<b style='color: {colors_dict[symbol]}'>Region:</b> {etf_config['etfs'][symbol].get('region', '-')}<br>"
-                        f"<b style='color: {colors_dict[symbol]}'>Industry:</b> {etf_config['etfs'][symbol].get('industry', '-')}<br>"
+                        f"<b style='color: {colors_dict[symbol]}'>Name:</b> {equity_config[symbol].get('name','-')}<br>"
+                        f"<b style='color: {colors_dict[symbol]}'>Region:</b> {equity_config[symbol].get('region', '-')}<br>"
+                        f"<b style='color: {colors_dict[symbol]}'>Industry:</b> {equity_config[symbol].get('industry', '-')}<br>"
                         f"<b style='color: {colors_dict[symbol]}'>Date:</b>" + "%{x}<br>"
                         f"<b style='color: {colors_dict[symbol]}'>Normalized Price:</b>"
                         + "%{y:.2f}<extra></extra>"

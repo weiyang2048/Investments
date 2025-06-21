@@ -4,20 +4,20 @@ stocks:
     name: Kemper Corporation
     region: US
     industry: Insurance
-    color: crimson # orange447
+    color: '#db2416' 
     url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=KMPR
   PGR:
     symbol: PGR
     name: Progressive Corporation
     region: US
     industry: Insurance
-    color: royalblue # orange447
+    color: 'rgb(0, 83, 186)' 
     url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=PGR
   ALL:
     symbol: ALL
     name: Allstate Corporation
     region: US
     industry: Insurance
-    color: darkblue # orange447
+    color: 'rgb(0, 51, 160)' 
     url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=ALL
  

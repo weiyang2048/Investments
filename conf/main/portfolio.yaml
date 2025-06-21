@@ -13,7 +13,7 @@
 #   - VEU    # Vanguard FTSE All-World ex-US Index Fund
 
 # Market Allocation
-Regions:
+Regional ETFs:
   - VTI # Vanguard Total Stock Market ETF
   - VXUS # Vanguard Total International Stock ETF
   - ILF # iShares Latin America 40 ETF
@@ -23,7 +23,7 @@ Regions:
   - AIA # iShares Asia 50 ETF
   - TRAMX # Middle East & Africa ETF
 
-Sectors:
+Sectoral ETFs:
   - IAUM
   - IXG
   - EUFN # iShares MSCI Europe Financials ETF
@@ -38,9 +38,4 @@ Sectors:
   - RXI # Consumer Discretionary
   - KXI # Consumer Staples
 
-
-Insurance:
-  - KIE
-  - KMPR
-  - PGR
-  - ALL
+ 
