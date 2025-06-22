@@ -34,6 +34,10 @@ style_string: |
   button {
     z-index: 1000000!important;
   }
+  h1 {
+    text-align: center;
+    z-index: 1000000!important;
+  }
   h1, p {
     margin:0;
     padding:0;

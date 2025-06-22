@@ -82,10 +82,17 @@ def create_performance_plot(
     fig.update_layout(
         height=800,
         showlegend=True,
-        title_text="Normalized Performance Comparison",
+        # title_text="Normalized Performance Comparison",
         hovermode="closest",
         autosize=True,
         margin=dict(l=0, r=0, t=60, b=0),
+        legend=dict(
+            orientation="h",
+            yanchor="bottom",
+            y=1.05,
+            xanchor="center",
+            x=0.5,
+        ),
     )
 
     return fig
