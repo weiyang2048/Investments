@@ -1,0 +1,12 @@
+# https://docs.streamlit.io/develop/api-reference/configuration/config.toml
+[theme]
+primaryColor = "lightgreen"
+backgroundColor = "black"
+secondaryBackgroundColor = "snow"
+font = "cool-font, fallback-cool-font, sans-serif"
+
+[client]
+# toolbarMode = "minimal"
+
+[ui]
+# hideTopBar = true

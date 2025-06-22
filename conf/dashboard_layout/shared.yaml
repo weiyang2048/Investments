@@ -16,16 +16,23 @@ style_string: |
   <style>
   [data-testid="stSidebar"][aria-expanded="true"] {
       max-width: 3vw;
+      z-index: 1000001!important;
   }
   .stAppToolbar {
     padding:0!important;
-    margin:0!important;
-    /*background-color: rgba(255, 255, 255, 0.8);*/
+    margin:0!important;s
+    font-size: 1px!important;
+    background-color: rgba(30, 30, 30, 0.5);
+    z-index: -1000!important;
+    position: relative!important;
   }
   .stMainBlockContainer {
     padding-left: 1%;
     padding-right: 1%;
     padding-top: 2%;
+  }
+  button {
+    z-index: 1000000!important;
   }
   h1, p {
     margin:0;
