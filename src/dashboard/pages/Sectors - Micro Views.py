@@ -3,6 +3,12 @@ import hydra
 
 
 if __name__ == "__main__":
+
+    try:
+        hydra.core.global_hydra.GlobalHydra.instance().clear()
+    except:
+        pass
+
     with hydra.initialize(version_base=None, config_path="../../../conf"):
         config = hydra.compose(
             config_name="config",
