@@ -11,6 +11,8 @@ matplotlib
 plotly
 seaborn
 streamlit
+folium
+streamlit-folium
 
 ## jupyter
 ipykernel

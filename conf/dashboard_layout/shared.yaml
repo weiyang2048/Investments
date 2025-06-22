@@ -32,18 +32,7 @@ style_string: |
     padding:0;
   }
   #homepage-link {
-    margin-top: 10vh!important;
-    padding: 5px!important;
-    background-color: #f0f0f0;
-    border-radius: 51px;
-    border: 1px solid #666;
-    text-decoration: none;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    &:hover {
-      color: white;
-      background-color: #666;
-    }
+    margin-top: 60vh!important;
   }
    #homepage-link,#linkedin-link {
     display: block;
