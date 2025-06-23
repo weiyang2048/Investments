@@ -56,5 +56,5 @@ BEP:
   region: US
   industry: Renewable
   color: "rgb(0, 153, 68)"  # Green from Brookfield Renewable logo
-  line_style: dashdot
+  line_style: dot
   url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=BEP
