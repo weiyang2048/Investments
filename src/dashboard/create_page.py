@@ -19,12 +19,12 @@ def setup_page(dashboard_config: dict) -> None:
 
     # add a link to my page on the sidebar
     st.sidebar.markdown(
-        "<a id='homepage-link' href='https://www.noWei.us' target='_blank'>Homepage:  <i>noWei.us</i></a>",
+        "<a id='homepage-link' href='https://www.noWei.us' target='_blank'>Homepage:  <b><i>noWei.us</i></b></a>",
         unsafe_allow_html=True,
     )
     # link to my linkedin page
     st.sidebar.markdown(
-        "<a id='linkedin-link'  href='https://www.linkedin.com/in/weiyang2048/' target='_blank'>LinkedIn: <i>weiyang2048</i></a>",
+        "<a id='linkedin-link'  href='https://www.linkedin.com/in/weiyang2048/' target='_blank'>LinkedIn: <b><i>weiyang2048</i></b></a>",
         unsafe_allow_html=True,
     )
 
