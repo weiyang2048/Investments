@@ -4,4 +4,5 @@ defaults:
       - etf
       - insurance_stocks
       - Renewable_utilities_stocks
+      - it_stocks
   - portfolio: [etfs_macro]

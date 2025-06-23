@@ -1,18 +1,3 @@
-# Portfolio Configuration
-# This file defines the portfolio structure and allocations
-
-# Regional Allocation
-# Regions:
-#   - VTI    # Vanguard Total Stock Market ETF
-#   - VOO    # Vanguard S&P 500 ETF
-#   - MGV    # Vanguard Mega Cap Value ETF
-#   - WTV    # WisdomTree US Value Fund
-#   - AVUV   # Avantis U.S. Small Cap Value ETF
-#   - SPMO   # Invesco S&P 500 Momentum ETF
-#   - VXUS   # Vanguard Total International Stock ETF
-#   - VEU    # Vanguard FTSE All-World ex-US Index Fund
-
-# Market Allocation
 Regional ETFs:
   - VTI # Vanguard Total Stock Market ETF
   - VXUS # Vanguard Total International Stock ETF

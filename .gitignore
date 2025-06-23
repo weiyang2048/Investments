@@ -7,3 +7,4 @@ venv/
 notebooks/
 uv.lock
 .devcontainer/
+outputs/

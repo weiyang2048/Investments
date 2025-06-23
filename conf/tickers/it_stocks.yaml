@@ -1,0 +1,101 @@
+MSFT:
+  symbol: MSFT
+  name: Microsoft Corporation
+  region: US
+  industry: Technology
+  color: "#7EB900"
+  url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=MSFT
+
+AAPL:
+  symbol: AAPL
+  name: Apple Inc.
+  region: US
+  industry: Technology
+  color: gray
+  url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=AAPL
+
+GOOGL:
+  symbol: GOOGL
+  name: Alphabet Inc. (Google)
+  region: US
+  industry: Technology
+  color: "#FBBC04"
+  url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=GOOGL
+
+NVDA:
+  symbol: NVDA
+  name: NVIDIA Corporation
+  region: US
+  industry: Technology
+  color: "#76B900"
+  line_style: dot
+  url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=NVDA
+
+ORCL:
+  symbol: ORCL
+  name: Oracle Corporation
+  region: US
+  industry: Technology
+  color: "#C74634"
+  url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=ORCL
+
+CRM:
+  symbol: CRM
+  name: Salesforce Inc.
+  region: US
+  industry: Technology
+  color: "#00A1E0"
+  url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=CRM
+
+CSCO:
+  symbol: CSCO
+  name: Cisco Systems Inc.
+  region: US
+  industry: Technology
+  color: "#049FD9"
+  line_style: dash
+  url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=CSCO
+
+IBM:
+  symbol: IBM
+  name: International Business Machines Corporation
+  region: US
+  industry: Technology
+  color: "#006699"
+  secondary_color: "#232F3E"
+  url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=IBM
+
+ADBE:
+  symbol: ADBE
+  name: Adobe Inc.
+  region: US
+  industry: Technology
+  color: "#ED2224"
+  secondary_color: "#2D2E2D"
+  url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=ADBE
+
+INTC:
+  symbol: INTC
+  name: Intel Corporation
+  region: US
+  industry: Technology
+  color: "#0068B5"
+  line_style: dot
+  url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=INTC
+
+QCOM:
+  symbol: QCOM
+  name: QUALCOMM Incorporated
+  region: US
+  industry: Technology
+  color: "#3253DC"
+  url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=QCOM
+
+AMZN:
+  symbol: AMZN
+  name: Amazon Web Services
+  region: US
+  industry: Technology
+  color: "#FF9900"
+  secondary_color: "#232F3E"
+  url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=AMZN
