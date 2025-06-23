@@ -1,6 +1,5 @@
-
 page_config:
   page_title: ETFs - Macro Views
 
-title: ETFs - Macro Views
-description:  Normalized regional and sectoral performance across different time periods 
+title: ${dashboard_layout.page_config.page_title}
+description: Normalized regional and sectoral performance across different time periods
