@@ -78,11 +78,16 @@ def create_performance_plot(
                 row=(i // 3) + 1,  # Calculate row index
                 col=(i % 3) + 1,  # Calculate column index
             )
+            fig.update_xaxes(showgrid=False, row=i // 3 + 1, col=i % 3 + 1)
+            fig.update_yaxes(showgrid=False, row=i // 3 + 1, col=i % 3 + 1)
 
     fig.update_layout(
         height=800,
         showlegend=True,
         # title_text="Normalized Performance Comparison",
+        plot_bgcolor='black',
+        paper_bgcolor='black',
+        font=dict(color='white'),
         hovermode="closest",
         autosize=True,
         margin=dict(l=0, r=0, t=60, b=0),
@@ -92,7 +97,10 @@ def create_performance_plot(
             y=1.05,
             xanchor="center",
             x=0.5,
+            font=dict(color='white'),
+            bgcolor='black',
         ),
+
     )
 
     return fig
