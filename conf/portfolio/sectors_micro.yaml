@@ -1,4 +1,3 @@
-
 Insurance:
   - KIE
   - KMPR
@@ -29,3 +28,5 @@ Technology:
   - ADBE
   - INTC
   - AMZN
+
+ALL: ${union:${portfolio.Insurance}, ${portfolio.Utility}, ${portfolio.Technology}}
