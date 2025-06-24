@@ -43,6 +43,7 @@ style_string: |
     margin:0;
     padding:0;
   }
+
   #homepage-link {
     margin-top: 60vh!important;
   }

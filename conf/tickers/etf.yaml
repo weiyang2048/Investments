@@ -169,7 +169,7 @@ IXG:
   size: Large
   management: Passive # iShares
   industry: Financials
-  color: yellow # goldenrod
+  color: gold # goldenrod
   line_style: dash
   url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=IXG
 EUFN:
@@ -180,7 +180,7 @@ EUFN:
   size: Large
   management: Passive # iShares
   industry: Financials
-  color: yellow # goldenrod
+  color: gold # goldenrod
   line_style: dot
   url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=EUFN
 IGF:
@@ -305,5 +305,5 @@ IAUM:
   name: iShares Gold Trust Micro ETF of Benef Interest
   management: Passive # iShares
   industry: Commodity
-  color: yellow
+  color: gold
   url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=IAUM
