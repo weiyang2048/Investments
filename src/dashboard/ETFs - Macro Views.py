@@ -19,6 +19,6 @@ if __name__ == "__main__":
                 # "~tickers.insurance_stocks",
             ],
         )
-    OmegaConf.resolve(config)
+    # OmegaConf.resolve(config)
 
     show_market_performance(config["tickers"], config["portfolio"], config["dashboard_layout"])
