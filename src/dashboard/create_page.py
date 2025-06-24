@@ -29,7 +29,7 @@ def setup_page(dashboard_config: dict) -> None:
     )
 
 
-@st.cache_data
+@st.cache_data(ttl="5min")
 def load_data(symbols: List[str], period: str = "10y") -> pd.DataFrame:
     """
     Load and pivot price data for the given symbols.
