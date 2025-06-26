@@ -1,4 +1,4 @@
-Regional_ETFs:
+Regional:
   - VTI # Vanguard Total Stock Market ETF
   - VXUS # Vanguard Total International Stock ETF
   - ILF # iShares Latin America 40 ETF
@@ -8,7 +8,7 @@ Regional_ETFs:
   - AIA # iShares Asia 50 ETF
   - TRAMX # Middle East & Africa ETF
 
-Sectoral_ETFs:
+Sectoral:
   - IAUM
   - IXG
   - EUFN # iShares MSCI Europe Financials ETF
@@ -23,5 +23,6 @@ Sectoral_ETFs:
   - RXI # Consumer Discretionary
   - KXI # Consumer Staples
 
-ALL: ${union:${portfolio.Sectoral_ETFs}, ${portfolio.Regional_ETFs}}
- 
+Momentum:
+  - SPMO
+ALL: ${union:${portfolio.Sectoral}, ${portfolio.Regional}, ${portfolio.Momentum}}

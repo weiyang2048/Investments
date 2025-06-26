@@ -1,7 +1,6 @@
-from omegaconf import OmegaConf
+from src.yaml import register_resolvers
 
-if not OmegaConf.has_resolver("union"):
-    OmegaConf.register_new_resolver("union", lambda *args: sum(args, []))
+register_resolvers()
 
 if __name__ == "__main__":
     from src.dashboard.create_page import setup_page, show_market_performance

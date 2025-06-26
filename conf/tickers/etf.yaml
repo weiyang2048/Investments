@@ -53,15 +53,6 @@ AVUV:
   management: Active # Avantis
   color: green
   url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=AVUV
-SPMO:
-  symbol: SPMO
-  name: Invesco S&P 500 Momentum ETF
-  region: US
-  type: Growth
-  size: Large
-  management: Passive # Invesco
-  color: yellow
-  url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=SPMO
 VXUS:
   symbol: VXUS
   name: Vanguard Total International Stock ETF
