@@ -161,7 +161,7 @@ IXG:
   management: Passive # iShares
   industry: Financials
   color: gold # goldenrod
-  line_style: dash
+  line_style: dashdot
   url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=IXG
 EUFN:
   symbol: EUFN

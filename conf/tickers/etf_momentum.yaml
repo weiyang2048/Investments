@@ -5,5 +5,114 @@ SPMO:
   type: Growth
   size: Large
   management: Passive # Invesco
-  color: yellow
+  color: darkblue
   url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=SPMO
+XMMO:
+  symbol: XMMO
+  name: Invesco S&P MidCap Momentum ETF
+  region: US
+  type: Growth
+  size: Mid
+  management: Passive # Invesco
+  color: darkblue
+  line_style: dash
+  url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=XMMO
+XSMO:
+  symbol: XSMO
+  name: Invesco S&P SmallCap Momentum ETF
+  region: US
+  type: Growth
+  size: Small
+  management: Passive # Invesco
+  color: darkblue
+  line_style: dot
+  url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=XSMO
+SPVM:
+  symbol: SPVM
+  name: Invesco S&P 500 Value with Momentum ETF
+  region: US
+  type: Value
+  size: Large
+  management: Passive # Invesco
+  color: royalblue
+  url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=SPVM
+XMVM:
+  symbol: XMVM
+  name: Invesco S&P MidCap Value with Momentum ETF
+  region: US
+  type: Value
+  size: Mid
+  management: Passive # Invesco
+  color: royalblue
+  line_style: dash
+  url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=XMVM
+XSVM:
+  symbol: XSVM
+  name: Invesco S&P SmallCap Value with Momentum ETF
+  region: US
+  type: Value
+  size: Small
+  management: Passive # Invesco
+  color: royalblue
+  line_style: dot
+  url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=XSVM
+PDP:
+  symbol: PDP
+  name: Invesco DWA Momentum ETF
+  region: US
+  type: Growth
+  size: Large
+  management: Passive # Invesco
+  color: lightblue
+  line_style: solid
+  url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=PDP
+DWAS:
+  symbol: DWAS
+  name: Invesco DWA SmallCap Momentum ETF
+  region: US
+  type: Growth
+  size: Small
+  management: Passive # Invesco
+  color: lightblue
+  line_style: dash
+  url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=DWAS
+
+IDMO:
+  symbol: IDMO
+  name: Invesco S&P International Developed Momentum ETF
+  region: International
+  type: Growth
+  size: Large
+  management: Passive # Invesco
+  color: seagreen
+  line_style: solid
+  url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=IDMO
+PIZ:
+  symbol: PIZ
+  name: Invesco DWA Developed Markets Momentum ETF
+  region: Developed Markets
+  type: Growth
+  size: Large
+  management: Passive # Invesco
+  color: seagreen
+  line_style: dashdot
+  url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=PIZ
+EEMO:
+  symbol: EEMO
+  name: Invesco S&P Emerging Markets Momentum ETF
+  region: Emerging Markets
+  type: Growth
+  size: Large
+  management: Passive # Invesco
+  color: coral
+  url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=EEMO
+PIE:
+  symbol: PIE
+  name: Invesco DWA Emerging Markets Momentum ETF
+  region: Emerging Markets
+  type: Growth
+  size: Large
+  management: Passive # Invesco
+  color: coral
+  line_style: dashdot
+  url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=PIE

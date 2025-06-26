@@ -1,3 +1,17 @@
+Momentum:
+  - SPMO
+  - XMMO
+  - XSMO
+  - SPVM
+  - XMVM
+  - XSVM
+  - PDP
+  - DWAS
+  - IDMO
+  - PIZ
+  - EEMO
+  - PIE
+
 Regional:
   - VTI # Vanguard Total Stock Market ETF
   - VXUS # Vanguard Total International Stock ETF
@@ -10,19 +24,12 @@ Regional:
 
 Sectoral:
   - IAUM
-  - IXG
-  - EUFN # iShares MSCI Europe Financials ETF
+  - IXG # iShares Global Financials ETF
   - IGF
-  - IFRA # iShares U.S. Infrastructure ETF
   - IXC # Energy
   - JXI # Utilities
   - AIQ
   - IXP # Communications
   - SHLD
-  - EUAD # Select STOXX Europe Aerospace & Defense ETF
-  - RXI # Consumer Discretionary
-  - KXI # Consumer Staples
 
-Momentum:
-  - SPMO
 ALL: ${union:${portfolio.Sectoral}, ${portfolio.Regional}, ${portfolio.Momentum}}
