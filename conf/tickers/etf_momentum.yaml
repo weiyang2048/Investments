@@ -76,6 +76,28 @@ DWAS:
   color: lightblue
   line_style: dash
   url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=DWAS
+PTF:
+  symbol: PTF
+  name: Invesco DWA Technology Momentum ETF
+  region: US
+  type: Growth
+  size: Large
+  management: Passive # Invesco
+  industry: Technology
+  color: gray
+  line_style: solid
+  url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=PTF
+PRN:
+  symbol: PRN
+  name: Invesco DWA Industrials Momentum ETF
+  region: US
+  type: Growth
+  size: Large
+  management: Passive # Invesco
+  industry: Industrials
+  color: gray
+  line_style: dash
+  url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=PRN
 
 IDMO:
   symbol: IDMO
