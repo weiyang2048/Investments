@@ -91,7 +91,7 @@ def create_performance_plot(
         avg_performance = df_normalized.iloc[-1, 1:].mean() - 1
         ratios = (
             (df_normalized.iloc[-1, 1:] - 1) / (df_normalized.iloc[-1, 1:] - 1).sum()
-        ).values.tolist()
+        ).values.tolist() * (1 if avg_performance > 0 else -1)
         fig.add_annotation(
             x=min(df_normalized["Date"]),
             y=max(df_normalized.iloc[-1, 1:]),
