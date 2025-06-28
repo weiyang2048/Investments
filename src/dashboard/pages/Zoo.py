@@ -9,7 +9,7 @@ if __name__ == "__main__":
     with hydra.initialize(version_base=None, config_path="../../../conf"):
         config = hydra.compose(
             config_name="main",
-            overrides=["+dashboard_layout=Sectors", "portfolio=sectors_micro"],
+            overrides=["+dashboard_layout=Zoo", "portfolio=porfolios_zoo"],
         )
 
     show_market_performance(config["tickers"], config["portfolio"], config["dashboard_layout"])

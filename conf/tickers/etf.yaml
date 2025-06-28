@@ -1,94 +1,3 @@
-# total world stock market
-VT:
-  symbol: VT
-  name: Vanguard Total World Stock Market ETF
-  region: Global
-  type: Blend
-  size: Large
-  management: Passive # Vanguard
-  color: darkgray
-  url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=VT
-VTI:
-  symbol: VTI
-  name: Vanguard Total Stock Market ETF
-  region: US
-  type: Blend
-  size: Large
-  management: Passive # Vanguard
-  color: blue
-  url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=VTI
-VOO:
-  symbol: VOO
-  name: Vanguard S&P 500 ETF
-  region: US
-  type: Blend
-  size: Large
-  management: Passive # Vanguard
-  color: blue
-  url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=VOO
-MGV:
-  symbol: MGV
-  name: Vanguard Mega Cap Value ETF
-  region: US
-  type: Value
-  size: Large
-  management: Passive # Vanguard
-  color: orange
-  url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=MGV
-WTV:
-  symbol: WTV
-  name: WisdomTree US Value Fund of Benef Interest
-  region: US
-  type: Value
-  size: Mid
-  management: Active # WisdomTree
-  color: pink
-  url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=WTV
-AVUV:
-  symbol: AVUV
-  name: Avantis U.S. Small Cap Value ETF
-  region: US
-  type: Value
-  size: Small
-  management: Active # Avantis
-  color: green
-  url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=AVUV
-VXUS:
-  symbol: VXUS
-  name: Vanguard Total International Stock ETF
-  region: XUS
-  type: Blend
-  size: Large
-  management: Passive # Vanguard
-  color: seagreen
-  url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=VXUS
-VEU:
-  symbol: VEU
-  name: Vanguard FTSE All-World ex-US Index Fund ETF Shares
-  region: XUS
-  type: Blend
-  size: Large
-  management: Passive # Vanguard
-  color: brown
-  url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=VEU
-DOL:
-  symbol: DOL
-  name: WisdomTree International LargeCap Dividend Fund
-  region: Global
-  type: Value
-  size: Large
-  management: Active # WisdomTree
-  color: black
-  url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=DOL
-VEA:
-  symbol: VEA
-  name: Vanguard FTSE Developed Markets ETF
-  region: XUS
-  type: Blend
-  size: Large
-  management: Passive # Vanguard
-  color: gray
-  url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=VEA
 FENI:
   symbol: FENI
   name: Fidelity Enhanced International ETF
@@ -104,7 +13,7 @@ SPEU:
   region: Europe
   type: Blend
   size: Large
-  management: Passive # SPDR
+  management: Passive
   color: royalblue
   url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=SPEU
 CEE:
@@ -129,10 +38,12 @@ AIA:
   symbol: AIA
   name: iShares Asia 50 ETF
   region: Asia
+  n_holdings: 92
   type: Blend
   size: Large
   management: Passive # iShares
   color: darkred # red
+  line_style: solid
   url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=AIA
 ILF:
   symbol: ILF
@@ -195,16 +106,6 @@ IFRA:
   color: rgba(128,128,128,0.5) # grey
   line_style: dot
   url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=IFRA
-SHLD:
-  symbol: SHLD
-  name: Global X Defense Tech ETF
-  region: Global
-  type: Growth
-  size: Large
-  management: Passive # Global X
-  industry: Defense
-  color: rgba(128,9,9,0.9) # darkred
-  url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=SHLD
 EUAD:
   symbol: EUAD
   name: Select STOXX Europe Aerospace & Defense ETF
@@ -216,26 +117,6 @@ EUAD:
   color: rgba(128,9,9,0.5)
   line_style: dot
   url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=EUAD
-AIQ:
-  symbol: AIQ
-  name: Global X Artificial Intelligence & Technology ETF
-  region: Global
-  type: Growth
-  size: Large
-  management: Passive # Global X
-  industry: Technology
-  color: lightgreen
-  url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=AIQ
-IXP:
-  symbol: IXP
-  name: iShares Global Communications Services ETF
-  region: Global
-  type: Value
-  size: Large
-  management: Passive # iShares
-  industry: Communications
-  color: seagreen
-  url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=IXP
 IXC:
   symbol: IXC
   name: iShares Global Energy ETF
@@ -280,21 +161,11 @@ KXI:
   color: darkblue
   line_style: dashdot
   url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=KXI
-KIE:
-  symbol: KIE
-  name: iShares U.S. Insurance ETF
-  region: US
-  type: Value
-  size: Mid
-  management: Passive # iShares
-  industry: Insurance
-  color: goldenrod
-  line_style: dashdot
-  url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=KIE
 IAUM:
   symbol: IAUM
   name: iShares Gold Trust Micro ETF of Benef Interest
   management: Passive # iShares
   industry: Commodity
   color: gold
+  line_style: dash
   url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=IAUM

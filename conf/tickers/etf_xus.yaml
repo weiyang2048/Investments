@@ -1,0 +1,40 @@
+VXUS:
+  symbol: VXUS
+  name: Vanguard Total International Stock ETF
+  region: XUS
+  n_holdings: 8614
+  type: Blend
+  size: Large
+  management: Passive # Vanguard
+  color: seagreen
+  url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=VXUS
+VEU:
+  symbol: VEU
+  name: Vanguard FTSE All-World ex-US Index Fund ETF Shares
+  region: XUS
+  n_holdings: 3853
+  type: Blend
+  size: Large
+  management: Passive # Vanguard
+  color: brown
+  url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=VEU
+VEA:
+  symbol: VEA
+  name: Vanguard FTSE Developed Markets ETF
+  region: XUS
+  n_holdings: 3886
+  type: Blend
+  size: Large
+  management: Passive # Vanguard
+  color: gray
+  url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=VEA
+DOL:
+  symbol: DOL
+  name: WisdomTree International LargeCap Dividend Fund
+  region: XUS
+  n_holdings: 277
+  type: Value
+  size: Large
+  management: Active # WisdomTree
+  color: black
+  url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=DOL

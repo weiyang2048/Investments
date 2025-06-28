@@ -57,37 +57,56 @@ def create_performance_plot(
     for i, days in enumerate(look_back_days):
         df_normalized = normalize_prices(df.iloc[-days:], symbols)
         for symbol in symbols:
+            keys = ["name", "region", "industry", "n_holdings"]
+            keys = [key for key in keys if key in equity_config[symbol]]
             fig.add_trace(
                 go.Scatter(
                     x=df_normalized["Date"],
                     y=df_normalized[symbol],
                     name=symbol,
+                    mode="lines",
                     line=dict(color=colors_dict[symbol], dash=line_styles_dict[symbol]),
                     legendgroup=symbol,
-                    showlegend=i == 0,
-                    hovertemplate=(
-                        f"<b style='color: {colors_dict[symbol]}'>Symbol:</b> {symbol}<br>"
-                        f"<b style='color: {colors_dict[symbol]}'>Name:</b> {equity_config[symbol].get('name','-')}<br>"
-                        f"<b style='color: {colors_dict[symbol]}'>Region:</b> {equity_config[symbol].get('region', '-')}<br>"
-                        f"<b style='color: {colors_dict[symbol]}'>Industry:</b> {equity_config[symbol].get('industry', '-')}<br>"
-                        f"<b style='color: {colors_dict[symbol]}'>Date:</b>" + "%{x}<br>"
-                        f"<b style='color: {colors_dict[symbol]}'>Normalized Price:</b>"
-                        + "%{y:.2f}<extra></extra>"
-                    ),
+                    showlegend=(i == 0),
+                    hovertemplate=f"<b style='color: {colors_dict[symbol]}'>Symbol:</b> {symbol}<br>"
+                    + "".join(
+                        [
+                            f"<b style='color: {colors_dict[symbol]}'>{key}:</b> {equity_config[symbol].get(key, '-')}<br>"
+                            for key in keys
+                        ]
+                    )
+                    + f"<b style='color: {colors_dict[symbol]}'>Date:</b>"
+                    + "%{x}<br>"
+                    + f"<b style='color: {colors_dict[symbol]}'>Normalized Price:</b>"
+                    + "%{y:.2f}<extra></extra>",
                 ),
                 row=(i // 3) + 1,  # Calculate row index
                 col=(i % 3) + 1,  # Calculate column index
             )
             fig.update_xaxes(showgrid=False, row=i // 3 + 1, col=i % 3 + 1)
             fig.update_yaxes(showgrid=False, row=i // 3 + 1, col=i % 3 + 1)
-
+            # add a text box with the average performance
+        avg_performance = df_normalized.iloc[-1, 1:].mean() - 1
+        fig.add_annotation(
+            x=min(df_normalized["Date"]),
+            y=max(df_normalized.iloc[-1, 1:]),
+            text=f"Average Performance: {"+" if avg_performance > 0 else "-"} {abs(avg_performance):.2%}",
+            font=dict(color="forestgreen" if avg_performance > 0 else "red"),
+            bgcolor="black",
+            opacity=0.5,
+            xanchor="left",
+            yanchor="top",
+            showarrow=False,
+            row=i // 3 + 1,
+            col=i % 3 + 1,
+        )
     fig.update_layout(
         height=800,
         showlegend=True,
         # title_text="Normalized Performance Comparison",
-        plot_bgcolor='black',
-        paper_bgcolor='black',
-        font=dict(color='white'),
+        plot_bgcolor="black",
+        paper_bgcolor="black",
+        font=dict(color="white"),
         hovermode="closest",
         autosize=True,
         margin=dict(l=0, r=0, t=60, b=0),
@@ -97,10 +116,9 @@ def create_performance_plot(
             y=1.05,
             xanchor="center",
             x=0.5,
-            font=dict(color='white'),
-            bgcolor='black',
+            font=dict(color="white"),
+            bgcolor="black",
         ),
-
     )
 
     return fig

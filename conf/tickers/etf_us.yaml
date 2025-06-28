@@ -1,0 +1,62 @@
+VTI:
+  symbol: VTI
+  name: Vanguard Total Stock Market ETF
+  region: US
+  n_holdings: 3561
+  type: Blend
+  size: Large
+  management: Passive # Vanguard
+  color: blue
+  url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=VTI
+VOO:
+  symbol: VOO
+  name: Vanguard S&P 500 ETF
+  region: US
+  n_holdings: 509
+  type: Blend
+  size: Large
+  management: Passive # Vanguard
+  color: blue
+  url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=VOO
+MGV:
+  symbol: MGV
+  name: Vanguard Mega Cap Value ETF
+  region: US
+  n_holdings: 130
+  type: Value
+  size: Large
+  management: Passive # Vanguard
+  color: orange
+  url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=MGV
+WTV:
+  symbol: WTV
+  name: WisdomTree US Value Fund of Benef Interest
+  region: US
+  n_holdings: 155
+  type: Value
+  size: Mid
+  management: Active # WisdomTree
+  color: pink
+  url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=WTV
+AVUV:
+  symbol: AVUV
+  name: Avantis U.S. Small Cap Value ETF
+  region: US
+  n_holdings: 796
+  type: Value
+  size: Small
+  management: Active # Avantis
+  color: green
+  url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=AVUV
+KIE:
+  symbol: KIE
+  name: iShares U.S. Insurance ETF
+  region: US
+  n_holdings: 54
+  type: Value
+  size: Mid
+  management: Passive
+  industry: Insurance
+  color: rgba(0, 148, 215, 0.5)
+  line_style: longdash
+  url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=KIE

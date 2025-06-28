@@ -1,0 +1,5 @@
+page_config:
+  page_title: Zoo
+
+title: ${dashboard_layout.page_config.page_title}
+description: Normalized zoo performance across different time periods

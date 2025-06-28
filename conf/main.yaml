@@ -2,8 +2,12 @@ defaults:
   - dashboard_layout: [shared]
   - tickers:
       - etf
-      - etf_momentum 
-      - insurance_stocks
+      - etf_us
+      - etf_xus
+      - etf_bond
+      - etf_global
+      - etf_momentum
       - Renewable_utilities_stocks
+      - insurance_stocks
       - it_stocks
   - portfolio: [etfs_macro]

@@ -1,4 +1,6 @@
-Insurance:
+Financial:
+  - IXG
+  - EUFN
   - KIE
   - KMPR
   - PGR
@@ -31,4 +33,4 @@ Technology:
   - INTC
   - AMZN
 
-ALL: ${union:${portfolio.Insurance}, ${portfolio.Utility}, ${portfolio.Technology}}
+ALL: ${union:${portfolio.Financial}, ${portfolio.Utility}, ${portfolio.Technology}}

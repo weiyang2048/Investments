@@ -1,0 +1,36 @@
+visual_style_guide:
+
+- line_style:
+    - solid: {regional}
+    - dot: {sectoral}
+    - dashdot: {regional & sectoral}
+    - dash: {commodity}
+    - longdash: {global}
+- color:
+    - green : {techonology} 
+      - <span style="color:rgba(0,200,0,1)">rgba(0,200,0,1)</span> : stocks
+        - <span style="color:rgba(0,200,0,0.5)">rgba(0,200,0,0.5)</span> : etfs
+        - <span style="color:rgba(0,200,0,0.25)">rgba(0,200,0,0.25)</span>
+      - <span style="color:rgba(0,200,100,1)">rgba(0,200,100,1)</span> : stocks
+        - <span style="color:rgba(0,200,100,0.5)">rgba(0,200,100,0.5)</span> : etfs
+        - <span style="color:rgba(0,200,100,0.25)">rgba(0,200,100,0.25)</span>
+      - <span style="color:rgba(100,200,0,1)">rgba(100,200,0,1)</span>
+        - <span style="color:rgba(100,200,0,0.5)">rgba(100,200,0,0.5)</span> : etfs
+        - <span style="color:rgba(100,200,0,0.25)">rgba(100,200,0,0.25)</span>
+      - <span style="color:rgba(100,200,100,1)">rgba(100,200,100,1)</span> : stocks
+        - <span style="color:rgba(100,200,100,0.5)">rgba(100,200,100,0.5)</span> : etfs
+        - <span style="color:rgba(100,200,100,0.25)">rgba(100,200,100,0.25)</span>
+    - red : {industrial} 
+      - <span style="color:rgba(200,0,0,1)">rgba(200,0,0,1)</span> : stocks
+        - <span style="color:rgba(200,0,0,0.5)">rgba(200,0,0,0.5)</span> : etfs
+        - <span style="color:rgba(200,0,0,0.25)">rgba(200,0,0,0.25)</span>  
+      - <span style="color:rgba(200,100,0,1)">rgba(200,100,0,1)</span> : stocks
+        - <span style="color:rgba(200,100,0,0.5)">rgba(200,100,0,0.5)</span> : etfs
+        - <span style="color:rgba(200,100,0,0.25)">rgba(200,100,0,0.25)</span>
+      - <span style="color:rgba(200,0,100,1)">rgba(200,0,100,1)</span> : stocks
+        - <span style="color:rgba(200,0,100,0.5)">rgba(200,0,100,0.5)</span> : etfs
+        - <span style="color:rgba(200,0,100,0.25)">rgba(200,0,100,0.25)</span>
+      - <span style="color:rgba(200,100,100,1)">rgba(200,100,100,1)</span> : stocks
+        - <span style="color:rgba(200,100,100,0.5)">rgba(200,100,100,0.5)</span> : etfs
+        - <span style="color:rgba(200,100,100,0.25)">rgba(200,100,100,0.25)</span>
+    - blue : {financial}

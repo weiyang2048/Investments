@@ -1,0 +1,59 @@
+# total world stock market
+VT:
+  symbol: VT
+  name: Vanguard Total World Stock Market ETF
+  region: Global
+  n_holdings: 9844
+  type: Blend
+  size: Large
+  management: Passive # Vanguard
+  color: darkgray
+  line_style: longdash
+  url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=VT
+AIQ:
+  symbol: AIQ
+  name: Global X Artificial Intelligence & Technology ETF
+  region: Global
+  n_holdings: 91
+  type: Growth
+  size: Large
+  management: Passive # Global X
+  industry: Technology
+  color: rgba(100,200,0,0.5)
+  line_style: dot
+  url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=AIQ
+IXP:
+  symbol: IXP
+  name: iShares Global Communications Services ETF
+  region: Global
+  n_holdings: 68
+  type: Value
+  size: Large
+  management: Passive # iShares
+  industry: Communications
+  color: rgba(0,200,100,0.5)
+  line_style: dot
+  url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=IXP
+EXI:
+  symbol: EXI
+  name: iShares Global Industrials ETF
+  region: Global
+  n_holdings: 238
+  type: Blend
+  size: Large
+  management: Passive # iShares
+  industry: Industrials
+  color: rgba(200,100,0,0.5)
+  line_style: dot
+  url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=EXI
+SHLD:
+  symbol: SHLD
+  name: Global X Defense Tech ETF
+  region: Global
+  type: Growth
+  size: Large
+  management: Passive # Global X
+  industry: Defense
+  color: rgba(200,0,0,0.5)
+  line_style: dot
+  url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=SHLD

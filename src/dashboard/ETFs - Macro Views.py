@@ -11,7 +11,7 @@ if __name__ == "__main__":
 
     with hydra.initialize(version_base=None, config_path="../../conf"):
         config = hydra.compose(
-            config_name="config",
+            config_name="main",
             overrides=[
                 "+dashboard_layout=main",
                 "portfolio=etfs_macro",

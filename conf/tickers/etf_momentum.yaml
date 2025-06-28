@@ -5,7 +5,8 @@ SPMO:
   type: Growth
   size: Large
   management: Passive # Invesco
-  color: darkblue
+  color: steelblue
+  line_style: solid
   url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=SPMO
 XMMO:
   symbol: XMMO
@@ -14,8 +15,8 @@ XMMO:
   type: Growth
   size: Mid
   management: Passive # Invesco
-  color: darkblue
-  line_style: dash
+  color: steelblue
+  line_style: solid
   url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=XMMO
 XSMO:
   symbol: XSMO
@@ -24,8 +25,8 @@ XSMO:
   type: Growth
   size: Small
   management: Passive # Invesco
-  color: darkblue
-  line_style: dot
+  color: steelblue
+  line_style: solid
   url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=XSMO
 SPVM:
   symbol: SPVM
@@ -64,7 +65,7 @@ PDP:
   size: Large
   management: Passive # Invesco
   color: lightblue
-  line_style: solid
+  line_style: dash
   url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=PDP
 DWAS:
   symbol: DWAS
@@ -84,8 +85,8 @@ PTF:
   size: Large
   management: Passive # Invesco
   industry: Technology
-  color: gray
-  line_style: solid
+  color: rgba(0,200,0,0.5)
+  line_style: dashdot
   url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=PTF
 PRN:
   symbol: PRN
@@ -96,9 +97,8 @@ PRN:
   management: Passive # Invesco
   industry: Industrials
   color: gray
-  line_style: dash
+  line_style: dashdot
   url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=PRN
-
 IDMO:
   symbol: IDMO
   name: Invesco S&P International Developed Momentum ETF
