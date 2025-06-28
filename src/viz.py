@@ -88,10 +88,10 @@ def create_performance_plot(
             fig.update_xaxes(showgrid=False, row=i // 3 + 1, col=i % 3 + 1)
             fig.update_yaxes(showgrid=False, row=i // 3 + 1, col=i % 3 + 1)
             # add a text box with the average performance
-        avg_performance = df_normalized.iloc[-1, 1:].mean() - 1
-        ratios = (
-            (df_normalized.iloc[-1, 1:] - 1) / (df_normalized.iloc[-1, 1:] - 1).sum()
-        ).values.tolist() * (1 if avg_performance > 0 else -1)
+        final_row = df_normalized.iloc[-1, 1:] - 1
+        avg_performance = final_row.mean()
+        none_zero_sum = final_row[final_row > 0].sum()
+        ratios = [x / none_zero_sum if x > 0 else 0 for x in final_row]
         fig.add_annotation(
             x=min(df_normalized["Date"]),
             y=max(df_normalized.iloc[-1, 1:]),
