@@ -1,12 +1,14 @@
 # size based on number of tickers
 Small:
   - USHY
+  - PRN
+  - PTF
   - SPMO
   - IDMO
-  - AIA
-  - IXP
 
-Mid: ${union:[AIQ, EXI, GHY], ${portfolio.Small}, [SPEU,SHLD]}
+Small+: ${union:${portfolio.Small}, [AIA, IXP]}
+
+Mid: ${union:[AIQ, EXI, GHY], ${portfolio.Small}}
 
 Large: ${drop:${union:[IAUM, VXUS, VTI, IXG, SHLD, EUAD, IGF],${portfolio.Mid}}, [USHY, GHY]}
 

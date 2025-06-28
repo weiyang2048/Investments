@@ -56,6 +56,8 @@ def create_performance_plot(
 
     for i, days in enumerate(look_back_days):
         df_normalized = normalize_prices(df.iloc[-days:], symbols)
+        # reorder the columns to match the order of the symbols
+        df_normalized = df_normalized[["Date"] + symbols]
         for symbol in symbols:
             keys = ["name", "region", "industry", "n_holdings"]
             keys = [key for key in keys if key in equity_config[symbol]]
@@ -87,13 +89,17 @@ def create_performance_plot(
             fig.update_yaxes(showgrid=False, row=i // 3 + 1, col=i % 3 + 1)
             # add a text box with the average performance
         avg_performance = df_normalized.iloc[-1, 1:].mean() - 1
+        ratios = (
+            (df_normalized.iloc[-1, 1:] - 1) / (df_normalized.iloc[-1, 1:] - 1).sum()
+        ).values.tolist()
         fig.add_annotation(
             x=min(df_normalized["Date"]),
             y=max(df_normalized.iloc[-1, 1:]),
-            text=f"Average Performance: {"+" if avg_performance > 0 else "-"} {abs(avg_performance):.2%}",
-            font=dict(color="forestgreen" if avg_performance > 0 else "red"),
+            text=f"AVG Perf: {"+" if avg_performance > 0 else "-"} {abs(avg_performance):.2%}<br>"
+            + f"{"<span style='color: snow'>|</span>".join([f"<span style='color: {colors_dict[symbol]}'>{ratio*100:.0f}</span>" for symbol, ratio in zip(symbols, ratios)])}",
+            font=dict(color="lightgreen" if avg_performance > 0 else "coral"),
+            opacity=1,
             bgcolor="black",
-            opacity=0.5,
             xanchor="left",
             yanchor="top",
             showarrow=False,
