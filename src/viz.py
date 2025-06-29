@@ -77,7 +77,7 @@ def create_performance_plot(
             + "<span style='color: snow; opacity: 0.3'>|</span>"
             + f"{"<span style='color: snow; opacity: 0.3'>|</span>".join([f"<span style='color: {colors_dict[symbol]}'>{ratio*100:.0f}</span>{'<span style="color: snow; opacity: 0.3">|</span><br>' if i!=0 and i%9==0 else ''}" for i,symbol, ratio in zip(range(len(symbols)),symbols, stats.ratios)])}"
             + f"{'<span style="color: snow; opacity: 0.3">|</span><br>' if len(symbols) % 10 != 0 else ''}"
-            + f"ALT: {"+" if stats.alternative_return > 0 else "-"} {abs(stats.alternative_return):.2%}, <span style='color: violet; '> {stats.weighted_mean_std(stats.ratios)[1]*100:.2f}</span>"
+            + f"<br>ALT: {"+" if stats.alternative_return > 0 else "-"} {abs(stats.alternative_return):.2%}, <span style='color: violet; '> {stats.weighted_mean_std(stats.ratios)[1]*100:.2f}</span>"
         )
         fig.add_annotation(
             x=min(df_normalized["Date"]),
