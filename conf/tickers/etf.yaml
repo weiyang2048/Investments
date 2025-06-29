@@ -32,7 +32,7 @@ IPAC:
   type: Blend
   size: Large
   management: Passive # iShares
-  color: rgba(28, 169, 201,1)
+  color: rgba(0,255,255,1)
   url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=IPAC
 AIA:
   symbol: AIA

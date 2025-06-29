@@ -85,7 +85,9 @@ Asia <br>
 </td>
 </tr>
 <tr>
-<td><span style="color:rgba(255,255,0,1); font-weight: bold;">rgba(255,255,0,1)</span><br>
+<td>
+Financial
+<span style="color:rgba(255,255,0,1); font-weight: bold;">rgba(255,255,0,1)</span><br>
 <span style="color:rgba(255,255,0,0.5); font-weight: bold;">rgba(255,255,0,0.5)</span><br>
 <span style="color:rgba(255,255,0,0.25); font-weight: bold;">rgba(255,255,0,0.25)</span>
 </td>
@@ -108,7 +110,9 @@ Europe <br>
 <span style="color:rgba(150,255,255,0.5); font-weight: bold;">rgba(150,255,255,0.5)</span><br>
 <span style="color:rgba(150,255,255,0.25); font-weight: bold;">rgba(150,255,255,0.25)</span>
 </td>
-<td><span style="color:rgba(0,255,255,1); font-weight: bold;">rgba(0,255,255,1)</span><br>
+<td>
+Pacific <br>
+<span style="color:rgba(0,255,255,1); font-weight: bold;">rgba(0,255,255,1)</span><br>
 <span style="color:rgba(0,255,255,0.5); font-weight: bold;">rgba(0,255,255,0.5)</span><br>
 <span style="color:rgba(0,255,255,0.25); font-weight: bold;">rgba(0,255,255,0.25)</span>
 </td>

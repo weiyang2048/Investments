@@ -65,8 +65,8 @@ IXG:
   size: Large
   management: Passive # iShares
   industry: Financials
-  color: gold # goldenrod
-  line_style: dashdot
+  color: rgba(255,255,0,1) # goldenrod
+  line_style: dot
   url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=IXG
 IXC:
   symbol: IXC
