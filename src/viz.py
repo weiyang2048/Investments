@@ -2,6 +2,7 @@ import pandas as pd
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 from typing import List, Dict
+import numpy as np
 
 
 def normalize_prices(
@@ -90,13 +91,20 @@ def create_performance_plot(
             # add a text box with the average performance
         final_row = df_normalized.iloc[-1, 1:] - 1
         avg_performance = final_row.mean()
-        none_zero_sum = final_row[final_row > 0].sum()
-        ratios = [x / none_zero_sum if x > 0 else 0 for x in final_row]
+        none_zero_ss = final_row[final_row > 0].apply(lambda x: x**2).sum()
+        ratios = [x**2 / none_zero_ss if x > 0 else 0 for x in final_row]
+        alternative_performance = np.dot(final_row, ratios)
+        annotations = (
+            f"AVG Perf: {"+" if avg_performance > 0 else "-"} {abs(avg_performance):.2%}<br>"
+            + "<span style='color: snow; opacity: 0.3'>|</span>"
+            + f"{"<span style='color: snow; opacity: 0.3'>|</span>".join([f"<span style='color: {colors_dict[symbol]}'>{int(ratio*100) if ratio>0 else ''}</span>{'<span style="color: snow; opacity: 0.3">|</span><br>' if i!=0 and i%9==0 else ''}" for i,symbol, ratio in zip(range(len(symbols)),symbols, ratios)])}"
+            + f"{'<span style="color: snow; opacity: 0.3">|</span><br>' if len(symbols) % 10 != 0 else ''}"
+            + f"Alt Perf: {"+" if alternative_performance > 0 else "-"} {abs(alternative_performance):.2%}"
+        )
         fig.add_annotation(
             x=min(df_normalized["Date"]),
             y=max(df_normalized.iloc[-1, 1:]),
-            text=f"AVG Perf: {"+" if avg_performance > 0 else "-"} {abs(avg_performance):.2%}<br>"
-            + f"{"<span style='color: snow'>|</span>".join([f"<span style='color: {colors_dict[symbol]}'>{ratio*100:.0f}</span>" for symbol, ratio in zip(symbols, ratios)])}",
+            text=annotations,
             font=dict(color="lightgreen" if avg_performance > 0 else "coral"),
             opacity=1,
             bgcolor="black",

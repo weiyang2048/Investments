@@ -6,7 +6,7 @@ USHY:
   size: Large
   management: Passive # iShares
   industry: Bonds
-  color: rgba(255, 255, 0, 0.5)
+  color: rgba(255,255,255,1)
   line_style: solid
   url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=USHY
 GHY:
@@ -17,6 +17,6 @@ GHY:
   size: Large
   management: Passive # iShares
   industry: Bonds
-  color: rgba(255, 255, 0, 0.5)
+  color: rgba(255, 255, 255, 0.5)
   line_style: dash
   url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=GHY

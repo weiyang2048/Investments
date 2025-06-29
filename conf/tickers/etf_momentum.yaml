@@ -2,10 +2,11 @@ SPMO:
   symbol: SPMO
   name: Invesco S&P 500 Momentum ETF
   region: US
+  n_holdings: 101
   type: Growth
   size: Large
   management: Passive # Invesco
-  color: steelblue
+  color: rgba(100,100,200,1)
   line_style: solid
   url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=SPMO
 XMMO:
@@ -85,7 +86,7 @@ PTF:
   size: Large
   management: Passive # Invesco
   industry: Technology
-  color: rgba(0,200,0,0.5)
+  color: rgba(0,200,0,1)
   line_style: dashdot
   url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=PTF
 PRN:
@@ -96,24 +97,26 @@ PRN:
   size: Large
   management: Passive # Invesco
   industry: Industrials
-  color: gray
+  color: rgba(255,150,0,1)
   line_style: dashdot
   url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=PRN
 IDMO:
   symbol: IDMO
   name: Invesco S&P International Developed Momentum ETF
-  region: International
+  region: XUS
+  n_holdings: 204
   type: Growth
   size: Large
   management: Passive # Invesco
-  color: seagreen
+  color: rgba(155,155,55,1)
   line_style: solid
   url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=IDMO
 PIZ:
   symbol: PIZ
   name: Invesco DWA Developed Markets Momentum ETF
-  region: Developed Markets
+  region: XUS
   type: Growth
+  n_holdings: 115
   size: Large
   management: Passive # Invesco
   color: seagreen

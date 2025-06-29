@@ -6,10 +6,12 @@ Small:
   - SPMO
   - IDMO
 
-Small+: ${union:${portfolio.Small}, [AIA, IXP]}
+Small+: ${union:${portfolio.Small}, [AIA, CEE, EUAD, EUFN, IXC]}
 
-Mid: ${union:[AIQ, EXI, GHY], ${portfolio.Small}}
+Mid: ${drop:${union:${portfolio.Small},[GHY,EXI, AIQ, IXG, SHLD]},[PRN,USHY, PTF]}
 
-Large: ${drop:${union:[IAUM, VXUS, VTI, IXG, SHLD, EUAD, IGF],${portfolio.Mid}}, [USHY, GHY]}
+Mid+: ${union:${portfolio.Mid}, [TRAMX, ILF, IPAC]}
 
-Ex-Large: ${union:[PRN, PTF],${portfolio.Large}}
+Large: ${drop:${union:${portfolio.Mid},[IAUM, VXUS, VTI, IGF]}, [GHY]}
+
+Large+: ${union:${portfolio.Large}, [PRN, PTF]}

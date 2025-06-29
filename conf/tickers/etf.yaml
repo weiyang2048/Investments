@@ -23,7 +23,7 @@ CEE:
   type: Blend
   size: Large
   management: Active # T. Rowe Price
-  color: coral
+  color: rgba(250,200,150,1)
   url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=CEE
 IPAC:
   symbol: IPAC
@@ -42,7 +42,7 @@ AIA:
   type: Blend
   size: Large
   management: Passive # iShares
-  color: darkred # red
+  color: rgba(255,90,90,1) # red
   line_style: solid
   url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=AIA
 ILF:
@@ -52,7 +52,7 @@ ILF:
   type: Value
   size: Large
   management: Passive # iShares
-  color: darkolivegreen
+  color: rgba(75,120,50,1)
   url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=ILF
 TRAMX:
   symbol: TRAMX
@@ -61,19 +61,8 @@ TRAMX:
   type: Blend
   size: Mid
   management: Active # T. Rowe Price
-  color: rosybrown
+  color: rgba(250,200,150,0.5)
   url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=TRAMX
-IXG:
-  symbol: IXG
-  name: iShares Global Financials ETF
-  region: Global
-  type: Value
-  size: Large
-  management: Passive # iShares
-  industry: Financials
-  color: gold # goldenrod
-  line_style: dashdot
-  url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=IXG
 EUFN:
   symbol: EUFN
   name: iShares MSCI Europe Financials ETF
@@ -114,20 +103,9 @@ EUAD:
   size: Large
   management: Passive # Select
   industry: Defense
-  color: rgba(128,9,9,0.5)
-  line_style: dot
-  url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=EUAD
-IXC:
-  symbol: IXC
-  name: iShares Global Energy ETF
-  region: Global
-  type: Value
-  size: Large
-  management: Passive # iShares
-  industry: Energy
-  color: darkgoldenrod # orange447
+  color: rgba(150,0,0,1)
   line_style: dashdot
-  url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=IXC
+  url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=EUAD
 JXI:
   symbol: JXI
   name: iShares U.S. Utilities ETF
