@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 from typing import List
 from src.data import get_daily_prices_list
-
+from src.data import pivot_data
 from src.viz import create_performance_plot
 
 
@@ -29,23 +29,6 @@ def setup_page(dashboard_config: dict) -> None:
     )
 
 
-@st.cache_data(ttl="5min")
-def load_data(symbols: List[str], period: str = "10y") -> pd.DataFrame:
-    """
-    Load and pivot price data for the given symbols.
-
-    Args:
-        symbols: List of symbols to load data for
-        period: Time period to load (e.g., "1y", "5y")
-
-    Returns:
-        Pivoted DataFrame with dates as index and symbols as columns
-    """
-    df = get_daily_prices_list(symbols, period)
-    df.reset_index(inplace=True)
-    return df.pivot(index="Date", columns="Symbol", values="Close").reset_index()
-
-
 def show_market_performance(
     equity_config: dict, portfolio_config: dict, dashboard_config: dict
 ) -> None:
@@ -63,7 +46,7 @@ def show_market_performance(
             period = "7y"
 
             # Load and process data
-            df_pivot = load_data(list(symbols), period)
+            df_pivot = pivot_data(list(symbols), period, streamlit=True)
 
             # Create and display plot
             look_back_days = dashboard_config["look_back_days"]
@@ -82,4 +65,3 @@ def show_market_performance(
             # Display raw data option
             if st.checkbox("Show Raw Data", key=f"raw_data_{symbol_type}"):
                 st.dataframe(df_pivot)
-

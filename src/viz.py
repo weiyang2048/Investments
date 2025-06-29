@@ -3,26 +3,8 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 from typing import List, Dict
 import numpy as np
-
-
-def normalize_prices(
-    df: pd.DataFrame,
-    symbols: List[str],
-) -> pd.DataFrame:
-    """
-    Normalize price data to start at 1.0.
-
-    Args:
-        df: DataFrame with price data
-        symbols: List of symbols to normalize
-
-    Returns:
-        DataFrame with normalized prices
-    """
-    df_normalized = df.copy()
-    for symbol in symbols:
-        df_normalized[symbol] = df[symbol] / df[symbol].iloc[0]
-    return df_normalized
+from src.stats import Stats
+from src.data import normalize_prices
 
 
 def create_performance_plot(
@@ -89,23 +71,19 @@ def create_performance_plot(
             fig.update_xaxes(showgrid=False, row=i // 3 + 1, col=i % 3 + 1)
             fig.update_yaxes(showgrid=False, row=i // 3 + 1, col=i % 3 + 1)
             # add a text box with the average performance
-        final_row = df_normalized.iloc[-1, 1:] - 1
-        avg_performance = final_row.mean()
-        none_zero_ss = final_row[final_row > 0].apply(lambda x: x**2).sum()
-        ratios = [x**2 / none_zero_ss if x > 0 else 0 for x in final_row]
-        alternative_performance = np.dot(final_row, ratios)
+        stats = Stats(df_normalized)
         annotations = (
-            f"AVG Perf: {"+" if avg_performance > 0 else "-"} {abs(avg_performance):.2%}<br>"
+            f"AVG: {"+" if stats.avg_return > 0 else "-"} {abs(stats.avg_return):.2%}, <span style='color: violet; '> {stats.weighted_mean_std()[1]*100:.2f}</span><br>"
             + "<span style='color: snow; opacity: 0.3'>|</span>"
-            + f"{"<span style='color: snow; opacity: 0.3'>|</span>".join([f"<span style='color: {colors_dict[symbol]}'>{int(ratio*100) if ratio>0 else ''}</span>{'<span style="color: snow; opacity: 0.3">|</span><br>' if i!=0 and i%9==0 else ''}" for i,symbol, ratio in zip(range(len(symbols)),symbols, ratios)])}"
+            + f"{"<span style='color: snow; opacity: 0.3'>|</span>".join([f"<span style='color: {colors_dict[symbol]}'>{ratio*100:.0f}</span>{'<span style="color: snow; opacity: 0.3">|</span><br>' if i!=0 and i%9==0 else ''}" for i,symbol, ratio in zip(range(len(symbols)),symbols, stats.ratios)])}"
             + f"{'<span style="color: snow; opacity: 0.3">|</span><br>' if len(symbols) % 10 != 0 else ''}"
-            + f"Alt Perf: {"+" if alternative_performance > 0 else "-"} {abs(alternative_performance):.2%}"
+            + f"ALT: {"+" if stats.alternative_return > 0 else "-"} {abs(stats.alternative_return):.2%}, <span style='color: violet; '> {stats.weighted_mean_std(stats.ratios)[1]*100:.2f}</span>"
         )
         fig.add_annotation(
             x=min(df_normalized["Date"]),
             y=max(df_normalized.iloc[-1, 1:]),
             text=annotations,
-            font=dict(color="lightgreen" if avg_performance > 0 else "coral"),
+            font=dict(color="lightgreen" if stats.avg_return > 0 else "coral"),
             opacity=1,
             bgcolor="black",
             xanchor="left",

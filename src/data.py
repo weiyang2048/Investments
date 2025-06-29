@@ -4,6 +4,7 @@ import pandas as pd
 import yfinance as yf
 from loguru import logger
 from functools import lru_cache, cache
+import streamlit as st
 
 
 def get_daily_prices(symbol: str, period: str = "1mo") -> pd.DataFrame:
@@ -15,7 +16,19 @@ def get_daily_prices(symbol: str, period: str = "1mo") -> pd.DataFrame:
     return df
 
 
-def get_daily_prices_list(symbols: List[str], period: str = "1mo") -> pd.DataFrame:
+@st.cache_data(ttl="5min")
+def get_daily_prices_streamlit(symbol: str, period: str = "1mo") -> pd.DataFrame:
+    """
+    Get daily price data for a single symbol using yfinance
+    """
+    ticker = yf.Ticker(symbol)
+    df = ticker.history(period=period)
+    return df
+
+
+def get_daily_prices_list(
+    symbols: List[str], period: str = "1mo", streamlit: bool = False
+) -> pd.DataFrame:
     """
     Get daily price data for multiple symbols using yfinance
 
@@ -28,7 +41,10 @@ def get_daily_prices_list(symbols: List[str], period: str = "1mo") -> pd.DataFra
     """
     dfs = []
     for symbol in symbols:
-        df = get_daily_prices(symbol, period)
+        if streamlit:
+            df = get_daily_prices_streamlit(symbol, period)
+        else:
+            df = get_daily_prices(symbol, period)
         df["Symbol"] = symbol
         dfs.append(df)
         logger.opt(ansi=True).log(
@@ -45,26 +61,31 @@ def get_daily_prices_list(symbols: List[str], period: str = "1mo") -> pd.DataFra
             "Month": lambda df: df.index.month,
         }
     )
-    # Symbol is the first column
     combined_df = combined_df[["Symbol"] + [col for col in combined_df.columns if col != "Symbol"]]
-    # if time before 9:30 est, get the ticker.info['preMarketPrice']
-    # if time after 9:30 est, get the ticker.info['regularMarketPrice']
-    # nyse = yf.Market('NYSE')
-    # nyse = nyse.status
-    # if nyse.get("status") == "closed":
-    #     if "WILL_OPEN" in nyse.get("yfit_market_status","").upper():
-    #         today = datetime.now().date()
-    #         for symbol in symbols:
-    #             ticker = yf.Ticker(symbol)
-    #             pre_market_price = ticker.info['preMarketPrice']
-    #             # add a row to the combined_df
-    #             combined_df = pd.concat([combined_df, pd.DataFrame({
-    #                 "Symbol": symbol,
-    #                 "Date": today,
-    #                 "Close": pre_market_price
-    #             })], ignore_index=True)
 
     return combined_df
+
+
+def pivot_data(symbols: List[str], period: str = "1mo", streamlit: bool = False) -> pd.DataFrame:
+    """
+    Transforms daily price data into a pivot table format.
+
+    Args:
+        symbols (List[str]): A list of stock symbols to fetch data for.
+        period (str): The time period for which to fetch data (default is "1mo").
+
+    Returns:
+        pd.DataFrame: A DataFrame pivoted to have dates as rows and symbols as columns,
+                      with closing prices as values.
+    """
+    df = get_daily_prices_list(symbols, period, streamlit)
+    df.reset_index(inplace=True)
+    return df.pivot(index="Date", columns="Symbol", values="Close").reset_index()
+
+
+def normalize_prices(df: pd.DataFrame, symbols: List[str]) -> pd.DataFrame:
+    """Normalize price data to start at 1.0."""
+    return df.assign(**{symbol: df[symbol] / df[symbol].iloc[0] for symbol in symbols})
 
 
 if __name__ == "__main__":

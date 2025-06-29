@@ -10,6 +10,15 @@ VT:
   color: darkgray
   line_style: longdash
   url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=VT
+IAUM:
+  symbol: IAUM
+  name: iShares Gold Trust Micro ETF of Benef Interest
+  management: Passive # iShares
+  region: Global
+  industry: Commodity
+  color: gold
+  line_style: dash
+  url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=IAUM
 AIQ:
   symbol: AIQ
   name: Global X Artificial Intelligence & Technology ETF
@@ -79,3 +88,13 @@ IXC:
   color: darkgoldenrod # orange447
   line_style: dashdot
   url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=IXC
+IGF:
+  symbol: IGF
+  name: iShares Global Infrastructure ETF
+  region: Global
+  type: Value
+  size: Large
+  management: Passive # iShares
+  industry: Infrastructure
+  color: rgba(128,128,128,0.9) # grey
+  url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=IGF

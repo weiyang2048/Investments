@@ -1,11 +1,13 @@
+Regional+: ${drop:${union:${portfolio.Regional},[SPMO, IDMO, EEMO]},[VTI]}
+
 Regional:
   - VTI # Vanguard Total Stock Market ETF
-  - VXUS # Vanguard Total International Stock ETF
   - ILF # iShares Latin America 40 ETF
   - SPEU # SPDR Portfolio Europe ETF
   - CEE # Central and Eastern Europe Fund
   - IPAC # iShares Core MSCI Pacific ETF
   - AIA # iShares Asia 50 ETF
+  - ASEA # Global X FTSE Southeast Asia ETF
   - TRAMX # Middle East & Africa ETF
 
 Sectoral:
