@@ -31,6 +31,7 @@ class Stats:
         self.df = df
         self.final_return = df.iloc[-1, 1:] - 1
         self.df.fillna(1, inplace=True)
+        self.final_return = self.final_return.fillna(0)
         self.avg_return = self.final_return.mean()
 
     @property
