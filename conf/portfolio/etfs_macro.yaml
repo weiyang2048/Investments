@@ -29,20 +29,4 @@ Sectoral:
   - EXI
   - AIQ
 
-# Momentum:
-#   - SPMO
-#   - XMMO
-#   - XSMO
-#   - SPVM
-#   - XMVM
-#   - XSVM
-#   - PDP
-#   - DWAS
-#   - PTF
-#   - PRN
-#   - IDMO
-#   - PIZ
-#   - EEMO
-#   - PIE
-
-ALL: ${union:${portfolio.Sectoral+}, ${portfolio.Regional+}}
+ALL: ${union:${portfolio.Tripartite},${portfolio.Regional},${portfolio.Sectoral+}}
