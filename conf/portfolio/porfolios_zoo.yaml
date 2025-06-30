@@ -1,14 +1,30 @@
-# size based on number of tickers
-tripartite:
+# # size based on number of tickers
+# tripartite:
+#   - SPMO
+#   - IDMO
+#   - EEMO
+#   - IAUM
+#   - IXC
+# Mid: ${union:${portfolio.tripartite}, [ IXG, IGF, EXI, SHLD,  AIQ]}
+
+# Mid+: ${union:${portfolio.Mid}, [TRAMX, ILF, IPAC]}
+
+# Large: ${drop:${union:${portfolio.Mid},[IAUM, VXUS, VTI, IGF]}, [GHY]}
+
+# Large+: ${union:${portfolio.Large}, [PRN, PTF]}
+
+Momentum:
   - SPMO
+  - XMMO
+  - XSMO
+  - SPVM
+  - XMVM
+  - XSVM
+  - PDP
+  - DWAS
+  - PTF
+  - PRN
   - IDMO
+  - PIZ
   - EEMO
-  - IAUM
-  - IXC
-Mid: ${union:${portfolio.tripartite}, [ IXG, IGF, EXI, SHLD,  AIQ]}
-
-Mid+: ${union:${portfolio.Mid}, [TRAMX, ILF, IPAC]}
-
-Large: ${drop:${union:${portfolio.Mid},[IAUM, VXUS, VTI, IGF]}, [GHY]}
-
-Large+: ${union:${portfolio.Large}, [PRN, PTF]}
+  - PIE
