@@ -8,6 +8,7 @@ class Stats:
     def __init__(self, df: pd.DataFrame):
         self.df = df
         self.final_return = df.iloc[-1, 1:] - 1
+        self.df.fillna(1, inplace=True)
         self.final_return = self.final_return.replace(np.inf, 0)
         self.final_return = self.final_return.replace(np.nan, 0)
         self.avg_return = self.final_return.mean()
