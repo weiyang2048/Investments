@@ -13,7 +13,7 @@
 
 # Large+: ${union:${portfolio.Large}, [PRN, PTF]}
 
-Momentum:
+InvescoMomentum:
   - SPMO
   - XMMO
   - XSMO
