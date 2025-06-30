@@ -11,3 +11,4 @@ defaults:
       - insurance_stocks
       - it_stocks
   - portfolio: [etfs_macro]
+
