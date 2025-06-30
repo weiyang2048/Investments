@@ -5,7 +5,7 @@ Tripartite:
   - IAUM
   - IXC
 
-Regional+: ${drop:${union:${portfolio.Tripartite},${portfolio.Regional}},[VTI, IAUM ]}
+Regional+: ${drop:${union:${portfolio.Tripartite},${portfolio.Regional}},[VTI, IAUM, IXC ]}
 
 Regional:
   - VTI # Vanguard Total Stock Market ETF
