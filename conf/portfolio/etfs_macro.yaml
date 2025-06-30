@@ -1,12 +1,11 @@
+Tripartite+: ${union:${portfolio.Tripartite},[IAUM, IXC, SHLD]}
+
 Tripartite:
   - SPMO
   - IDMO
   - EEMO
-  - IAUM
-  - IXC
-  - SHLD
-
-Regional+: ${drop:${union:${portfolio.Tripartite},${portfolio.Regional}},[VTI, IAUM, IXC, SHLD]}
+  
+Regional+: ${drop:${union:${portfolio.Tripartite},${portfolio.Regional}},[VTI]}
 
 Regional:
   - VTI # Vanguard Total Stock Market ETF
@@ -30,4 +29,4 @@ Sectoral:
   - EXI
   - AIQ
 
-ALL: ${union:${portfolio.Tripartite},${portfolio.Regional},${portfolio.Sectoral+}}
+ALL: ${union:${portfolio.Tripartite+},${portfolio.Regional},${portfolio.Sectoral}}
