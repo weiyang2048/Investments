@@ -1,3 +1,25 @@
+EUFN:
+  symbol: EUFN
+  name: iShares MSCI Europe Financials ETF
+  region: Europe
+  type: Value
+  size: Large
+  management: Passive # iShares
+  industry: Financials
+  color: gold # goldenrod
+  line_style: dot
+  url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=EUFN
+EUAD:
+  symbol: EUAD
+  name: Select STOXX Europe Aerospace & Defense ETF
+  region: Europe
+  type: Growth
+  size: Large
+  management: Passive # Select
+  industry: Defense
+  color: rgba(150,0,0,1)
+  line_style: dashdot
+  url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=EUAD
 SPEU:
   symbol: SPEU
   name: SPDR Portfolio Europe ETF
@@ -54,28 +76,6 @@ TRAMX:
   management: Active # T. Rowe Price
   color: rgba(250,200,150,0.5)
   url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=TRAMX
-EUFN:
-  symbol: EUFN
-  name: iShares MSCI Europe Financials ETF
-  region: Europe
-  type: Value
-  size: Large
-  management: Passive # iShares
-  industry: Financials
-  color: gold # goldenrod
-  line_style: dot
-  url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=EUFN
-EUAD:
-  symbol: EUAD
-  name: Select STOXX Europe Aerospace & Defense ETF
-  region: Europe
-  type: Growth
-  size: Large
-  management: Passive # Select
-  industry: Defense
-  color: rgba(150,0,0,1)
-  line_style: dashdot
-  url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=EUAD
 ASEA:
   symbol: ASEA
   name: Global X FTSE Southeast Asia ETF

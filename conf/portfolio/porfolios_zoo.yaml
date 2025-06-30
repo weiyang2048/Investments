@@ -1,14 +1,11 @@
 # size based on number of tickers
-Small:
-  - USHY
-  - PRN
-  - PTF
+tripartite:
   - SPMO
   - IDMO
-
-Small+: ${union:${portfolio.Small}, [AIA, CEE, EUAD, EUFN, IXC]}
-
-Mid: ${drop:${union:${portfolio.Small},[GHY,EXI, AIQ, IXG, SHLD]},[PRN,USHY, PTF]}
+  - EEMO
+  - IAUM
+  - IXC
+Mid: ${union:${portfolio.tripartite}, [ IXG, IGF, EXI, SHLD,  AIQ]}
 
 Mid+: ${union:${portfolio.Mid}, [TRAMX, ILF, IPAC]}
 

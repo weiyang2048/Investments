@@ -8,6 +8,8 @@ class Stats:
     def __init__(self, df: pd.DataFrame):
         self.df = df
         self.final_return = df.iloc[-1, 1:] - 1
+        self.final_return = self.final_return.replace(np.inf, 0)
+        self.final_return = self.final_return.replace(np.nan, 0)
         self.avg_return = self.final_return.mean()
 
     @property
@@ -37,6 +39,6 @@ class Stats:
 
     def weighted_mean_std(self, weights: List[float] = None) -> Tuple[float, float]:
         return (
-            self.weighted_return_series(weights).mean(),
-            self.weighted_return_series(weights).std(),
+            self.weighted_return_series(weights).mean(numeric_only=True, skipna=True),
+            self.weighted_return_series(weights).std(numeric_only=True, skipna=True),
         )

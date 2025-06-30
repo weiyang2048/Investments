@@ -1,4 +1,11 @@
-Regional+: ${drop:${union:${portfolio.Regional},[SPMO, IDMO, EEMO]},[VTI]}
+tripartite:
+  - SPMO
+  - IDMO
+  - EEMO
+  - IAUM
+  - IXC
+
+Regional+: ${drop:${union:${portfolio.tripartite},${portfolio.Regional}},[VTI, IAUM, IXC]}
 
 Regional:
   - VTI # Vanguard Total Stock Market ETF
@@ -10,15 +17,18 @@ Regional:
   - ASEA # Global X FTSE Southeast Asia ETF
   - TRAMX # Middle East & Africa ETF
 
+Sectoral+: ${union:${portfolio.Sectoral},[PRN, PTF]}
+
 Sectoral:
   - IAUM
   - IXG # iShares Global Financials ETF
-  - IGF
-  - IXC # Energy
-  - JXI # Utilities
-  - AIQ
   - IXP # Communications
   - SHLD
+  - IGF
+  - IXC # Energy
+  # - JXI # Utilities
+  - EXI
+  - AIQ
 
 Momentum:
   - SPMO

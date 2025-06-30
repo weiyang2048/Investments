@@ -1,3 +1,4 @@
+
 visual_guide:
 
 
@@ -74,7 +75,9 @@ Asia <br>
 <span style="color:rgba(0,150,255,0.5); font-weight: bold;">rgba(0,150,255,0.5)</span><br>
 <span style="color:rgba(0,150,255,0.25); font-weight: bold;">rgba(0,150,255,0.25)</span>
 </td>
-<td><span style="color:rgba(150,0,255,1); font-weight: bold;">rgba(150,0,255,1)</span><br>
+<td>
+Energy <br>
+<span style="color:rgba(150,0,255,1); font-weight: bold;">rgba(150,0,255,1)</span><br>
 <span style="color:rgba(150,0,255,0.5); font-weight: bold;">rgba(150,0,255,0.5)</span><br>
 <span style="color:rgba(150,0,255,0.25); font-weight: bold;">rgba(150,0,255,0.25)</span>
 </td>
