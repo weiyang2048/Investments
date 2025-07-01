@@ -1,3 +1,5 @@
+Tripartite++: ${union:${portfolio.Tripartite+},[VTI, VXUS, GHY]}
+
 Tripartite+: ${union:${portfolio.Tripartite},[IAUM, IXC, SHLD]}
 
 Tripartite:
@@ -5,7 +7,7 @@ Tripartite:
   - IDMO
   - EEMO
   
-Regional+: ${drop:${union:${portfolio.Tripartite},${portfolio.Regional}},[VTI]}
+# Regional+: ${drop:${union:${portfolio.Tripartite},${portfolio.Regional}},[VTI]}
 
 Regional:
   - VTI # Vanguard Total Stock Market ETF
