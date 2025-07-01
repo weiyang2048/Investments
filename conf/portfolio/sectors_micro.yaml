@@ -1,3 +1,18 @@
+Sectoral+: ${union:${portfolio.Sectoral},[AIQ, EUFN,EUAD,IXC,IAUM]}
+
+Sectoral:
+  # - IAUM
+  - IXN
+  - IXG # iShares Global Financials ETF
+  - EXI
+  - RXI
+  - IXJ
+  # - AIQ
+  # - SHLD
+  # - IGF
+  # - IXC # Energy
+  # - IXP # Communications
+
 Financial:
   - IXG
   - EUFN
@@ -15,9 +30,9 @@ Utility:
   - NEE
   - DUK
   - FLNC
-  - GEV
-  - FSLR
-  - BEP
+  # - GEV
+  # - FSLR
+  # - BEP
 Technology:
   - AIQ
   - IXP
@@ -26,11 +41,11 @@ Technology:
   - AAPL
   - GOOGL
   - NVDA
-  - ORCL
-  - CRM
-  - CSCO
-  - ADBE
-  - INTC
+  # - ORCL
+  # - CRM
+  # - CSCO
+  # - ADBE
+  # - INTC
   - AMZN
 
 ALL: ${union:${portfolio.Financial}, ${portfolio.Utility}, ${portfolio.Technology}}

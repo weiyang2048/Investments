@@ -19,6 +19,18 @@ IAUM:
   color: gold
   line_style: dash
   url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=IAUM
+IXN:
+  symbol: IXN
+  name: iShares Global Tech ETF
+  n_holdings: 147
+  region: Global
+  type: Growth
+  size: Large
+  management: Passive # iShares
+  industry: Technology
+  color: rgba(0,200,0,1) # matching the Technology color from README
+  line_style: dot
+  url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=IXN
 AIQ:
   symbol: AIQ
   name: Global X Artificial Intelligence & Technology ETF
@@ -99,3 +111,26 @@ IGF:
   color: rgba(128,128,128,0.9) # grey
   line_style: dot
   url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=IGF
+RXI:
+  symbol: RXI
+  name: iShares Global Consumer Discretionary ETF
+  region: Global
+  type: Growth
+  size: Large
+  management: Passive # iShares
+  industry: Consumer Discretionary
+  color: rgba(0,255,150,0.5) # light green
+  line_style: dot
+  url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=RXI
+IXJ:
+  symbol: IXJ
+  name: iShares Global Healthcare ETF
+  n_holdings: 147
+  region: Global
+  type: Growth
+  size: Large
+  management: Passive # iShares
+  industry: Healthcare
+  color: rgba(0,0,200,1) # blue
+  line_style: dot
+  url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=IXJ

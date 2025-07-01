@@ -17,16 +17,6 @@ Regional:
   - ASEA # Global X FTSE Southeast Asia ETF
   - TRAMX # Middle East & Africa ETF
 
-Sectoral+: ${union:${portfolio.Sectoral},[PRN, PTF]}
 
-Sectoral:
-  - IAUM
-  - IXG # iShares Global Financials ETF
-  - IXP # Communications
-  - SHLD
-  - IGF
-  - IXC # Energy
-  - EXI
-  - AIQ
 
-ALL: ${union:${portfolio.Tripartite+},${portfolio.Regional},${portfolio.Sectoral}}
+ALL: ${union:${portfolio.Tripartite+},${portfolio.Regional}}
