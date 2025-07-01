@@ -10,5 +10,5 @@ defaults:
       - Renewable_utilities_stocks
       - insurance_stocks
       - it_stocks
-  - portfolio: [etfs_macro]
+  - portfolio: [regions]
 

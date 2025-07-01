@@ -14,7 +14,7 @@ if __name__ == "__main__":
             config_name="main",
             overrides=[
                 "+dashboard_layout=main",
-                "portfolio=etfs_macro",
+                "portfolio=regions",
                 # "~tickers.insurance_stocks",
             ],
         )

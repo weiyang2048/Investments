@@ -13,7 +13,7 @@ def cli():
 def run(port):
     """Run the Streamlit dashboard."""
     click.echo(f"🚀 Starting dashboard on port {port}...")
-    sys.argv = ["streamlit", "run", "src/dashboard/ETFs - Macro Views.py", "--server.port", str(port)]
+    sys.argv = ["streamlit", "run", "src/dashboard/Regions.py", "--server.port", str(port)]
     sys.exit(stcli.main())
 
 @cli.command()

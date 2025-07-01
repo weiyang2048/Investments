@@ -1,6 +1,6 @@
-Tripartite++: ${union:${portfolio.Tripartite+},[VTI, VXUS, GHY]}
+Tripartite++: ${union:${portfolio.Tripartite+},[IAUM, IXC, SHLD]}
 
-Tripartite+: ${union:${portfolio.Tripartite},[IAUM, IXC, SHLD]}
+Tripartite+: ${union:${portfolio.Tripartite},[VTI, VXUS, GHY]}
 
 Tripartite:
   - SPMO
@@ -21,4 +21,4 @@ Regional:
 
 
 
-ALL: ${union:${portfolio.Tripartite+},${portfolio.Regional}}
+ALL: ${union:${portfolio.Tripartite++},${portfolio.Regional}}
