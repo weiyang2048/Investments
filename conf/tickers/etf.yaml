@@ -7,7 +7,7 @@ EUFN:
   management: Passive # iShares
   industry: Financials
   color: gold # goldenrod
-  line_style: dot
+  line_style: dashdot
   url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=EUFN
 EUAD:
   symbol: EUAD
