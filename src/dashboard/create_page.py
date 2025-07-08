@@ -57,13 +57,13 @@ def show_market_performance(
                 symbol: equity_config.get(symbol, {}).get("line_style", "solid")
                 for symbol in symbols
             }
-            fig = create_performance_plot(
+            fig, df_normalized = create_performance_plot(
                 df_pivot, symbols, look_back_days, colors_dict, line_styles_dict, equity_config
             )
             st.plotly_chart(
                 fig, use_container_width=True, config=dashboard_config["plotly_config"]
             )
 
-            # Display raw data option
-            if st.checkbox("Show Raw Data", key=f"raw_data_{symbol_type}"):
-                st.dataframe(df_pivot)
+            # Display normalized data option
+            if st.checkbox("Show Normalized Data", key=f"raw_data_{symbol_type}"):
+                st.dataframe(df_normalized)

@@ -5,7 +5,7 @@ Tripartite+: ${union:${portfolio.Tripartite},[VTI, VXUS, GHY]}
 Tripartite:
   - SPMO
   - IDMO
-  - EEMO
+  - IEMG
   
 # Regional+: ${drop:${union:${portfolio.Tripartite},${portfolio.Regional}},[VTI]}
 

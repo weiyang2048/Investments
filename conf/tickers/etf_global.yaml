@@ -19,6 +19,17 @@ IAUM:
   color: gold
   line_style: dash
   url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=IAUM
+IEMG:
+  symbol: IEMG
+  name: iShares Core MSCI Emerging Markets ETF
+  region: Global
+  n_holdings: 4431
+  type: Blend
+  size: Large
+  management: Passive # iShares
+  color: rgba(255,0,100,1) # green
+  line_style: solid
+  url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=IEMG
 IXN:
   symbol: IXN
   name: iShares Global Tech ETF

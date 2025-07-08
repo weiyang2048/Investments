@@ -113,4 +113,4 @@ def create_performance_plot(
         ),
     )
 
-    return fig
+    return fig, df_normalized
