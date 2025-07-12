@@ -20,3 +20,14 @@ GHY:
   color: rgba(255, 255, 255, 0.5)
   line_style: dash
   url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=GHY
+GHYG:
+  symbol: GHYG
+  name: iShares Global High Yield Corporate Bond ETF
+  region: Global
+  type: Value
+  size: Large
+  management: Passive # iShares
+  industry: Bonds
+  color: rgba(200, 200, 200, 0.7)
+  line_style: longdash
+  url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=GHYG

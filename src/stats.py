@@ -31,7 +31,8 @@ class Stats:
         self.df = df
         self.final_return = df.iloc[-1, 1:] - 1
         self.df.fillna(1, inplace=True)
-        self.final_return = self.final_return.fillna(0)
+        with pd.option_context("future.no_silent_downcasting", True):
+            self.final_return = self.final_return.fillna(0).infer_objects(copy=False)
         self.avg_return = self.final_return.mean()
 
     @property

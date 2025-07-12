@@ -7,7 +7,7 @@ name = "src"
 version = "0.1.0"
 description = "A short description of your package"
 readme = "README.md"
-requires-python = ">=3.6"
+requires-python = ">=3.12"
 license = "MIT"
 authors = [{ name = "Wei Yang", email = "weiyang2048@gmail.com" }]
 classifiers = [

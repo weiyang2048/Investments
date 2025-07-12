@@ -1,6 +1,6 @@
 Tripartite++: ${union:${portfolio.Tripartite+},[IAUM, IXC, SHLD]}
 
-Tripartite+: ${union:${portfolio.Tripartite},[VTI, VXUS, GHY]}
+Tripartite+: ${union:${portfolio.Tripartite},[VTI, VXUS, GHYG]}
 
 Tripartite:
   - SPMO

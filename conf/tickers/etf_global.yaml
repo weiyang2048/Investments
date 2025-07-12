@@ -130,7 +130,7 @@ RXI:
   size: Large
   management: Passive # iShares
   industry: Consumer Discretionary
-  color: rgba(0,255,150,0.5) # light green
+  color: rgba(0,255,150,0.15) 
   line_style: dot
   url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=RXI
 IXJ:
