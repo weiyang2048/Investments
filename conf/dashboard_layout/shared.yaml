@@ -49,7 +49,7 @@ style_string: |
   }
 
   #homepage-link {
-    margin-top: 60vh!important;
+    margin-top: 50vh!important;
   }
    #homepage-link,#linkedin-link {
     display: block;
