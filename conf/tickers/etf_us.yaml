@@ -61,17 +61,6 @@ IFRA:
   color: rgba(128,128,128,0.5) # grey
   line_style: dot
   url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=IFRA
-JXI:
-  symbol: JXI
-  name: iShares U.S. Utilities ETF
-  region: US
-  type: Value
-  size: Large
-  management: Passive # iShares
-  industry: Utilities
-  color: lightgoldenrodyellow
-  line_style: dashdot
-  url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=JXI
 RXI:
   symbol: RXI
   name: iShares U.S. Consumer Discretionary ETF

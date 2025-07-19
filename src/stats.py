@@ -1,4 +1,4 @@
-from typing import List, Tuple
+from typing import Callable, List, Tuple
 import numpy as np
 import pandas as pd
 from functools import cache
@@ -35,18 +35,21 @@ class Stats:
             self.final_return = self.final_return.fillna(0).infer_objects(copy=False)
         self.avg_return = self.final_return.mean()
 
-    @property
-    def ratios(self) -> List[float]:
+    def ratios(self, transformation: Callable[[float], float] = lambda x: np.exp(x)) -> List[float]:
         """
         Computes the squared ratios of non-zero final returns.
+
+        Args:
+            transformation (Callable[[float], float]): A function to transform the returns. 
+                                                     Defaults to exponential function.
 
         Returns:
             List[float]: A list of squared ratios.
         """
-        none_zero_ss = self.final_return[self.final_return > 0].apply(lambda x: x**2).sum()
-        ratios = [x**2 / none_zero_ss if x > 0 else 0 for x in self.final_return]
+        none_zero_ss = self.final_return[self.final_return > 0].apply(transformation).sum()
+        ratios = [transformation(x) / none_zero_ss if x > 0 else 0 for x in self.final_return]
         return ratios
-    
+
     def alternative_return(self, ratios: List[float] = None) -> float:
         """
         Calculate the alternative return using the computed ratios.
@@ -82,7 +85,10 @@ class Stats:
             .reset_index(drop=True)
         )
 
-    def weighted_return_series(self, weights: List[float] = None) -> pd.Series:
+    def weighted_return_series(
+        self,
+        weights: List[float] = None,
+    ) -> pd.Series:
         """
         Computes a weighted return series.
 

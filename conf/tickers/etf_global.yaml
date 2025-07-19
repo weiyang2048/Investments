@@ -111,6 +111,17 @@ IXC:
   color: rgba(150,0,255,1) # orange447
   line_style: dot
   url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=IXC
+JXI:
+  symbol: JXI
+  name: iShares Global Utilities ETF
+  region: Global
+  type: Value
+  size: Large
+  management: Passive # iShares
+  industry: Utilities
+  color: lightgoldenrodyellow
+  line_style: dot
+  url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=JXI
 IGF:
   symbol: IGF
   name: iShares Global Infrastructure ETF
@@ -130,7 +141,7 @@ RXI:
   size: Large
   management: Passive # iShares
   industry: Consumer Discretionary
-  color: rgba(0,255,150,0.15) 
+  color: rgba(0,255,150,0.35) 
   line_style: dot
   url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=RXI
 IXJ:
@@ -145,3 +156,14 @@ IXJ:
   color: rgba(0,0,200,1) # blue
   line_style: dot
   url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=IXJ
+REET:
+  symbol: REET
+  name: iShares Global REIT ETF
+  region: Global
+  type: Value
+  size: Large
+  management: Passive # iShares
+  industry: Real Estate
+  color: rgba(128,128,128,1) # gray
+  line_style: dot
+  url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=REET

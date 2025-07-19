@@ -21,4 +21,4 @@ Regional:
 
 
 
-ALL: ${union:${portfolio.Tripartite+},${portfolio.Regional}}
+ALL: ${union:${portfolio.Tripartite},${portfolio.Regional}}
