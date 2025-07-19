@@ -37,10 +37,18 @@ def create_performance_plot(
         horizontal_spacing=0.03,
     )
     stats = Stats(normalize_prices(df, symbols))
-    df_long_term = normalize_prices(df[-look_back_days[-1]:], symbols)
+    df_long_term = normalize_prices(df[-look_back_days[-1] :], symbols)
     df_long_term = df_long_term[["Date"] + symbols]
     long_term_stats = Stats(df_long_term)
     long_term_weights = long_term_stats.ratios
+    df_mid_term = normalize_prices(df[-look_back_days[-3] :], symbols)
+    df_mid_term = df_mid_term[["Date"] + symbols]
+    mid_term_stats = Stats(df_mid_term)
+    mid_term_weights = mid_term_stats.ratios
+    df_short_term = normalize_prices(df[-look_back_days[-5] :], symbols)
+    df_short_term = df_short_term[["Date"] + symbols]
+    short_term_stats = Stats(df_short_term)
+    short_term_weights = short_term_stats.ratios
     for i, days in enumerate(look_back_days):
         df_normalized = normalize_prices(df.iloc[-days:], symbols)
         # reorder the columns to match the order of the symbols
@@ -82,7 +90,21 @@ def create_performance_plot(
             + f"{"<span style='color: snow; opacity: 0.3'>|</span>".join([f"<span style='color: {colors_dict[symbol]}'>{ratio*100:.0f}</span>{'<span style="color: snow; opacity: 0.3">|</span><br>' if (i+1)!=1 and (i+1)%10==0 else ''}" for i,symbol, ratio in zip(range(len(symbols)),symbols, stats.ratios)])}"
             + f"{'<span style="color: snow; opacity: 0.3">|</span><br>' if len(symbols) % 10 != 0 else ''}"
             + f"ALT: {"+" if stats.alternative_return() > 0 else "-"} {abs(stats.alternative_return()):.2%}, <span style='color: violet; '> {stats.weighted_mean_std(stats.ratios)[1]*100:.2f}</span><br>"
-            + (f"ALT L: {"+" if stats.alternative_return(long_term_weights) > 0 else "-"} {abs(stats.alternative_return(long_term_weights)):.2%}, <span style='color: violet; '> {stats.weighted_mean_std(long_term_weights)[1]*100:.2f}</span>" if i != len(look_back_days) - 1 else "")
+            + (
+                f"ALT S: {"+" if stats.alternative_return(short_term_weights) > 0 else "-"} {abs(stats.alternative_return(short_term_weights)):.2%}, <span style='color: violet; '> {stats.weighted_mean_std(short_term_weights)[1]*100:.2f}</span><br>"
+                if i < len(look_back_days) - 5
+                else ""
+            )
+            + (
+                f"ALT M: {"+" if stats.alternative_return(mid_term_weights) > 0 else "-"} {abs(stats.alternative_return(mid_term_weights)):.2%}, <span style='color: violet; '> {stats.weighted_mean_std(mid_term_weights)[1]*100:.2f}</span><br>"
+                if i < len(look_back_days) - 3
+                else ""
+            )
+            + (
+                f"ALT L: {"+" if stats.alternative_return(long_term_weights) > 0 else "-"} {abs(stats.alternative_return(long_term_weights)):.2%}, <span style='color: violet; '> {stats.weighted_mean_std(long_term_weights)[1]*100:.2f}</span>"
+                if i < len(look_back_days) - 1
+                else ""
+            )
         )
         fig.add_annotation(
             x=min(df_normalized["Date"]),
