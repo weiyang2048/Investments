@@ -1,6 +1,7 @@
 defaults:
   - dashboard_layout: [shared]
   - tickers:
+      - funds
       - etf
       - etf_us
       - etf_xus

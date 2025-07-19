@@ -67,15 +67,6 @@ ILF:
   management: Passive # iShares
   color: rgba(75,120,50,1)
   url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=ILF
-TRAMX:
-  symbol: TRAMX
-  name: T. Rowe Price Africa & Middle East Fund
-  region: Middle East & Africa
-  type: Blend
-  size: Mid
-  management: Active # T. Rowe Price
-  color: rgba(250,200,150,0.5)
-  url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=TRAMX
 ASEA:
   symbol: ASEA
   name: Global X FTSE Southeast Asia ETF
