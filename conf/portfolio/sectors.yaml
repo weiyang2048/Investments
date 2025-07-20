@@ -1,15 +1,11 @@
-Sectoral:
+Sectoral-:
   - IXN # iShares Global Technology ETF
   - IXG # iShares Global Financials ETF
   - EXI # iShares Global Industrials ETF
-  - RXI # iShares Global Consumer Discretionary ETF
-  - IXJ # iShares Global Healthcare ETF
   - IXP # iShares Global Communications Services ETF
-  - KXI # iShares Global Consumer Staples ETF
-  - MXI # iShares Global Materials ETF
-  - IXC # iShares Global Energy ETF
-  - REET # iShares Global REIT ETF
   - JXI # iShares Global Utilities ETF
+
+Sectoral: ${union:${portfolio.Sectoral-},[IXJ, RXI, KXI, MXI, IXC, REET, JXI]}
 
 Sectoral+: ${union:${portfolio.Sectoral},[SHLD,AIQ, IAUM]}
 

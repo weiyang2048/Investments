@@ -141,7 +141,7 @@ RXI:
   size: Large
   management: Passive # iShares
   industry: Consumer Discretionary
-  color: darkblue
+  color: rgba(100, 150,255, 1) # lightblue
   line_style: dot
   url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=RXI
 IXJ:
@@ -175,7 +175,7 @@ KXI:
   size: Large
   management: Passive # iShares
   industry: Consumer Staples
-  color: blue
+  color:  rgba(100, 200,255, 1) 
   line_style: dot
   url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=KXI
 MXI:
