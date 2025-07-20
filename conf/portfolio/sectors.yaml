@@ -1,6 +1,3 @@
-
-Sectoral+: ${union:${portfolio.Sectoral},[SHLD,AIQ, IAUM]}
-
 Sectoral:
   - IXN # iShares Global Technology ETF
   - IXG # iShares Global Financials ETF
@@ -13,6 +10,8 @@ Sectoral:
   - IXC # iShares Global Energy ETF
   - REET # iShares Global REIT ETF
   - JXI # iShares Global Utilities ETF
+
+Sectoral+: ${union:${portfolio.Sectoral},[SHLD,AIQ, IAUM]}
 
 Industrials:
   - EXI
