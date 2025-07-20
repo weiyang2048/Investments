@@ -72,14 +72,15 @@ RXI:
   color: darkorange
   line_style: dashdot
   url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=RXI
-KXI:
-  symbol: KXI
-  name: iShares U.S. Consumer Staples ETF
+ITA:
+  symbol: ITA
+  name: iShares U.S. Aerospace & Defense ETF
   region: US
-  type: Value
+  n_holdings: 33
+  type: Blend
   size: Large
   management: Passive # iShares
-  industry: Consumer Staples
-  color: darkblue
+  industry: Aerospace & Defense
+  color: rgba(255, 0, 200, 0.7) # red
   line_style: dashdot
-  url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=KXI
+  url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=ITA

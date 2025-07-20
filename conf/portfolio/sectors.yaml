@@ -1,0 +1,59 @@
+
+Sectoral+: ${union:${portfolio.Sectoral},[SHLD,AIQ, IAUM]}
+
+Sectoral:
+  - IXN # iShares Global Technology ETF
+  - IXG # iShares Global Financials ETF
+  - EXI # iShares Global Industrials ETF
+  - RXI # iShares Global Consumer Discretionary ETF
+  - IXJ # iShares Global Healthcare ETF
+  - IXP # iShares Global Communications Services ETF
+  - KXI # iShares Global Consumer Staples ETF
+  - MXI # iShares Global Materials ETF
+  - IXC # iShares Global Energy ETF
+  - REET # iShares Global REIT ETF
+  - JXI # iShares Global Utilities ETF
+
+Industrials:
+  - EXI
+  - SHLD
+  - ITA
+  - EUAD
+  
+Financial:
+  - IXG
+  - EUFN
+  - KIE
+  - KMPR
+  - PGR
+  - ALL
+  - BRK-B
+  - TRV
+Utility:
+  - IXC
+  - JXI
+  - AES
+  - VST
+  - NEE
+  - DUK
+  - FLNC
+  # - GEV
+  # - FSLR
+  # - BEP
+Technology:
+  - IXN
+  - AIQ
+  - IXP
+  - PTF
+  - MSFT
+  - AAPL
+  - GOOGL
+  - NVDA
+  # - ORCL
+  # - CRM
+  # - CSCO
+  # - ADBE
+  # - INTC
+  - AMZN
+
+ALL: ${union:${portfolio.Financial}, ${portfolio.Utility}, ${portfolio.Technology}}

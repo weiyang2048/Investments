@@ -23,7 +23,7 @@ def setup_page(dashboard_config: dict) -> None:
     # st.sidebar.header("Transformation Options")
     transformation_option = st.sidebar.selectbox(
         "Weights Transformation",
-        ["x", "x²", "x^3"],
+        ["x", "x²", "x^3", "exp(x)"],
         help="Choose the transformation function for calculating ratios\n",
     )
 
@@ -35,6 +35,8 @@ def setup_page(dashboard_config: dict) -> None:
             return lambda x: x**2
         elif option == "x^3":
             return lambda x: x**3
+        elif option == "exp(x)":
+            return lambda x: np.exp(x)-1
         else:
             return lambda x: x  # default
 
