@@ -12,7 +12,16 @@
 # Large: ${drop:${union:${portfolio.Mid},[IAUM, VXUS, VTI, IGF]}, [GHY]}
 
 # Large+: ${union:${portfolio.Large}, [PRN, PTF]}
-
+FidelityHSA:
+  - SPMO
+  - IDMO
+  - IEMG
+  - SHLD
+  - GHYG
+  - USHY
+OptumHSA:
+  - FLPKX
+  - VFIAX
 InvescoMomentum:
   - SPMO
   - XMMO
@@ -28,8 +37,3 @@ InvescoMomentum:
   - PIZ
   - EEMO
   - PIE
-
-OptumHSA:
-  - FLPKX
-  - VFIAX
-  
