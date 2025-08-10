@@ -1,12 +1,18 @@
 # Install local package in editable mode
 -e .
 
+# * Data
 numpy
 pandas
-scipy 
-scikit-learn
+scipy
+duckdb
 
-## Visualization
+# * Finance
+yfinance
+robin_stocks
+yahooquery
+
+# * Visualization
 matplotlib
 plotly
 seaborn
@@ -14,22 +20,20 @@ streamlit
 folium
 streamlit-folium
 
-## jupyter
+# * jupyter
 ipykernel
 ipywidgets
 
 # robin_stocks 
 # git+https://github.com/jmfernandes/robin_stocks.git
 colorama 
-optuna
-loguru
-yfinance
+# optuna
+# scikit-learn
 country_converter
-pyhere
 
-# robin_stocks
-robin_stocks
 
-# conf
+# * conf & system
 hydra-core
 omegaconf
+loguru
+pyhere
