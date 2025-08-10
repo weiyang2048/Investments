@@ -65,12 +65,12 @@ IXP:
   industry: Communications
   color: rgba(150,255,150,1)
   line_style: dot
-  url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=IXP
+  url: https://digital.fidelity.com/prgwi/digital/research/quote/dashboard/view-all?symbol=IXP
 EXI:
   symbol: EXI
   name: iShares Global Industrials ETF
   region: Global
-  n_holdings: 238
+  n_holdings: 234 # 08-09-25 16:33
   type: Blend
   size: Large
   management: Passive # iShares
@@ -86,9 +86,21 @@ SHLD:
   size: Large
   management: Passive # Global X
   industry: Defense
-  color: rgba(150,0,0,1)
+  color: rgba(150,0,0,0.5)
   line_style: dot
   url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=SHLD
+NATO:
+  symbol: NATO
+  name: iShares Global Defense ETF
+  region: Global
+  n_holdings: 80 # 08-09-25 12:31
+  type: Growth #
+  size: Large #
+  management: Passive #
+  industry: Defense #
+  color: rgba(150,0,0,1)
+  line_style: dot
+  url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=NATO
 IXG:
   symbol: IXG
   name: iShares Global Financials ETF
@@ -175,7 +187,7 @@ KXI:
   size: Large
   management: Passive # iShares
   industry: Consumer Staples
-  color:  rgba(100, 200,255, 1) 
+  color: rgba(100, 200,255, 1)
   line_style: dot
   url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=KXI
 MXI:

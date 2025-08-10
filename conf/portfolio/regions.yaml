@@ -1,13 +1,18 @@
 # Tripartite++: ${union:${portfolio.Tripartite+},[IAUM, IXC, SHLD]}
 
-Tripartite+: ${union:${portfolio.Tripartite},[GHYG, IAUM, SHLD, IXC]}
+# Tripartite+: ${union:${portfolio.Tripartite},[XMMO, AVUV, AVDV]}
 
-Tripartite:
+# Tripartite:
+#   - SPMO
+#   - IDMO
+#   - IEMG
+# Regional+: ${drop:${union:${portfolio.Tripartite},${portfolio.Regional}},[VTI]}
+US_xUS:
   - SPMO
   - IDMO
-  - IEMG
-  
-# Regional+: ${drop:${union:${portfolio.Tripartite},${portfolio.Regional}},[VTI]}
+  - AVUV
+  - AVDV
+# US_xUS+: ${union:${portfolio.US_xUS}, [IDHQ, SPHQ]}
 
 Regional:
   - VTI # Vanguard Total Stock Market ETF
@@ -19,6 +24,5 @@ Regional:
   - ASEA # Global X FTSE Southeast Asia ETF
   - TRAMX # Middle East & Africa ETF
 
-
-
-ALL: ${union:${portfolio.Tripartite},${portfolio.Regional}}
+All: ${union:${portfolio.US_xUS},${portfolio.Regional}}
+# ALL: ${union:${portfolio.Tripartite},${portfolio.Regional}}

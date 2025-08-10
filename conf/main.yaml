@@ -1,5 +1,5 @@
 defaults:
-  - dashboard_layout: [shared]
+  - dashboard_layout: [shared_configs]
   - tickers:
       - funds
       - etf
@@ -12,4 +12,3 @@ defaults:
       - insurance_stocks
       - it_stocks
   - portfolio: [regions]
-

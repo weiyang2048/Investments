@@ -12,16 +12,17 @@
 # Large: ${drop:${union:${portfolio.Mid},[IAUM, VXUS, VTI, IGF]}, [GHY]}
 
 # Large+: ${union:${portfolio.Large}, [PRN, PTF]}
-FidelityHSA:
-  - SPMO
-  - IDMO
-  - IEMG
-  - SHLD
-  - GHYG
-  - USHY
+
 OptumHSA:
-  - FLPKX
   - VFIAX
+  - FLPKX
+  - VTMGX
+ARK:
+  - ARKK
+  - ARKW
+  - ARKF
+  - ARKG
+  - ARKQ
 InvescoMomentum:
   - SPMO
   - XMMO

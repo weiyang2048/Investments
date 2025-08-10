@@ -38,6 +38,28 @@ FENI:
   management: Active # Fidelity
   color: rgba(155,155,55,1)
   url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=FENI
+VTMGX:
+  symbol: VTMGX
+  name: Vanguard Total International Stock ETF
+  region: XUS
+  n_holdings: 8614
+  type: Blend
+  size: Large
+  management: Passive # Vanguard
+  color: seagreen
+  url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=VTMGX
+# ! Value
+AVDV:
+  symbol: AVDV
+  name: Avantis International Small Cap Value ETF
+  region: XUS
+  n_holdings: 1445
+  type: Value
+  size: Small
+  management: Active
+  color: rgba(50,255,100,0.5)
+  line_style: dash
+  url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=AVDV
 DOL:
   symbol: DOL
   name: WisdomTree International LargeCap Dividend Fund
@@ -48,3 +70,22 @@ DOL:
   management: Active # WisdomTree
   color: black
   url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=DOL
+
+# ! Quality
+IDHQ:
+  symbol: IDHQ
+  name: iShares U.S. Quality ETF
+  region: XUS
+  n_holdings: 209 # 08-09-25 12:31
+  type: Quality
+  size: Large
+  management: Passive # iShares
+  color: rgba(0,255,0,1)
+  line_style: dash
+  url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=IDHQ
+
+
+
+
+
+

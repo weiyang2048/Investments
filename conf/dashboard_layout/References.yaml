@@ -1,0 +1,77 @@
+page_config:
+  page_title: References
+
+title: ${dashboard_layout.page_config.page_title}
+description: Useful URLs and resources for investment research and analysis
+
+Tools:
+  Equity:
+    ETFs:
+      - title: Yahoo Finance Top ETFs
+        url: https://finance.yahoo.com/markets/etfs/top/?start=0&count=20
+      - title: ETFDB Power Rankings
+        url: https://etfdb.com/etfs/investment-style/#investment_style-power-rankings__aum-leaderboard&sort_name=performance_position&sort_order=asc&page=1
+      - title: US News ETFs Rankings
+        url: https://money.usnews.com/investing/rankings/etfs
+    Sectors:
+      - title: Sector Tracker
+        url: https://www.sectorspdrs.com/sectortracker
+      - title: ETF Country Exposure Tool
+        url: https://etfdb.com/tool/etf-country-exposure-tool/
+    Portfolio Builder:
+      - title: Portfolio Visualizer
+        url: https://www.portfoliovisualizer.com/markets#sectors
+      - title: Total Real Returns
+        url: https://totalrealreturns.com/
+  Money:
+    Crypto:
+      - title: CoinMarketCap
+        url: https://coinmarketcap.com/
+      - title: CoinGecko
+        url: https://www.coingecko.com/
+    Credit:
+      - title: Calculator.net
+        url: https://www.calculator.net/
+      - title: SmartAsset
+        url: https://smartasset.com/
+    Mortgage:
+      - title: Bankrate
+        url: https://www.bankrate.com/calculators/
+      - title: Zillow
+        url: https://www.zillow.com/mortgage-calculator/
+References:
+  Economic Data & Research:
+    FRED [Federal Reserve Economic Data]:
+      - title: FRED Economic Data
+        url: https://fred.stlouisfed.org/
+      - title: CPI
+        url: https://fred.stlouisfed.org/series/CPIAUCSL
+      - title: Unemployment Rate
+        url: https://fred.stlouisfed.org/series/UNRATE
+      - title: GDP
+        url: https://fred.stlouisfed.org/series/GDP
+      - title: Federal Funds Rate
+        url: https://fred.stlouisfed.org/series/FEDFUNDS
+    BLS [Bureau of Labor Statistics]:
+      - title: BLS Economic Data
+        url: https://www.bls.gov/
+      - title: CPI
+        url: https://www.bls.gov/cpi/
+      - title: Unemployment Rate
+        url: https://www.bls.gov/lau/
+      - title: Labor Productivity
+        url: https://data.bls.gov/timeseries/PRS85006092
+    BEA [Bureau of Economic Analysis]:
+      - title: BEA Economic Data
+        url: https://www.bea.gov/
+      - title: International Transactions
+        url: https://www.bea.gov/data/intl-trade-investment/international-transactions
+    Research:
+      - title: NBER [National Bureau of Economic Research]
+        url: https://www.nber.org/
+      - title: IMF [International Monetary Fund]
+        url: https://www.imf.org/
+      - title: World Bank
+        url: https://www.worldbank.org/
+      - title: OECD [Organization for Economic Cooperation and Development]
+        url: https://www.oecd.org/

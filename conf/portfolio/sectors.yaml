@@ -1,18 +1,17 @@
 Sectoral-:
   - IXN # iShares Global Technology ETF
+  - IXP # iShares Global Communications Services ETF
   - IXG # iShares Global Financials ETF
   - EXI # iShares Global Industrials ETF
-  - IXP # iShares Global Communications Services ETF
-  - JXI # iShares Global Utilities ETF
-  - RXI
 
-Sectoral: ${union:${portfolio.Sectoral-},[IXJ,  KXI, MXI, IXC, REET, JXI]}
+Sectoral: ${union:${portfolio.Sectoral-},[RXI, JXI,IXJ, KXI, MXI, IXC, REET, JXI]}
 
 Sectoral+: ${union:${portfolio.Sectoral},[SHLD,AIQ, IAUM]}
 
 Industrials:
   - EXI
   - SHLD
+  - NATO
   - ITA
   - EUAD
 

@@ -1,0 +1,54 @@
+ARKK:
+  symbol: ARKK
+  name: ARK Innovation ETF
+  region: US
+  n_holdings: 35
+  type: Growth
+  size: Large
+  management: Active # ARK Invest
+  color: rgba(255,99,71,1) # tomato
+  url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=ARKK
+
+ARKW:
+  symbol: ARKW
+  name: ARK Next Generation Internet ETF
+  region: US
+  n_holdings: 40
+  type: Growth
+  size: Large
+  management: Active # ARK Invest
+  color: rgba(30,144,255,1) # dodgerblue
+  url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=ARKW
+
+ARKF:
+  symbol: ARKF
+  name: ARK Fintech Innovation ETF
+  region: US
+  n_holdings: 45
+  type: Growth
+  size: Large
+  management: Active # ARK Invest
+  color: rgba(34,139,34,1) # forestgreen
+  url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=ARKF
+
+ARKG:
+  symbol: ARKG
+  name: ARK Genomic Revolution ETF
+  region: US
+  n_holdings: 50
+  type: Growth
+  size: Large
+  management: Active # ARK Invest
+  color: rgba(255,215,0,1) # gold
+  url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=ARKG
+
+ARKQ:
+  symbol: ARKQ
+  name: ARK Autonomous Technology & Robotics ETF
+  region: US
+  n_holdings: 30
+  type: Growth
+  size: Large
+  management: Active # ARK Invest
+  color: rgba(75,0,130,1) # indigo
+  url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=ARKQ
