@@ -2,27 +2,31 @@ page_config:
   page_title: References
 
 title: ${dashboard_layout.page_config.page_title}
-description: Useful URLs and resources for investment research and analysis
+
+color_dict:
+  yFinance: rgba(128,0,128,1)
 
 Tools:
   Equity:
     ETFs:
-      - title: Yahoo Finance Top ETFs
+      - title: yFinance Top ETFs
         url: https://finance.yahoo.com/markets/etfs/top/?start=0&count=20
-      - title: ETFDB Power Rankings
-        url: https://etfdb.com/etfs/investment-style/#investment_style-power-rankings__aum-leaderboard&sort_name=performance_position&sort_order=asc&page=1
+        color: purple
       - title: US News ETFs Rankings
         url: https://money.usnews.com/investing/rankings/etfs
     Sectors:
+      - title: yFinance US Sectors
+        url: https://finance.yahoo.com/sectors/
+        color: purple
       - title: Sector Tracker
         url: https://www.sectorspdrs.com/sectortracker
+    Portfolio Builder:
       - title: ETF Country Exposure Tool
         url: https://etfdb.com/tool/etf-country-exposure-tool/
-    Portfolio Builder:
-      - title: Portfolio Visualizer
-        url: https://www.portfoliovisualizer.com/markets#sectors
       - title: Total Real Returns
         url: https://totalrealreturns.com/
+      - title: Testfolio ETF Analytics
+        url: https://testfol.io/
   Money:
     Crypto:
       - title: CoinMarketCap

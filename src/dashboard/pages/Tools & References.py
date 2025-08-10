@@ -4,19 +4,13 @@ import hydra
 
 
 def show_references_page(dashboard_config: dict) -> None:
-    """Function to show the references page with useful URLs."""
     st.set_page_config(
         **dashboard_config["page_config"],
     )
     st.title(dashboard_config["title"])
 
-    # Add description from YAML if available
-    if "description" in dashboard_config:
-        st.markdown(f"*{dashboard_config['description']}*")
-
     st.markdown(dashboard_config["style_string"], unsafe_allow_html=True)
 
-    # Add sidebar links
     st.sidebar.markdown(
         "<a id='homepage-link' href='https://www.noWei.us' target='_blank'>Homepage:  <b><i>noWei.us</i></b></a>",
         unsafe_allow_html=True,
@@ -26,7 +20,6 @@ def show_references_page(dashboard_config: dict) -> None:
         unsafe_allow_html=True,
     )
 
-    # Display references from YAML file
     for section in ["Tools", "References"]:
         st.markdown(f"## {section}")
         for item_type, items in dashboard_config[section].items():
@@ -38,13 +31,20 @@ def show_references_page(dashboard_config: dict) -> None:
                     with cols[i]:
                         st.markdown(f"**{key}**")
                         for item in value:
+                            color = dashboard_config["color_dict"].get(
+                                item["title"].split(" ")[0], "rgba(100,100,255,1)"
+                            )
                             st.markdown(
-                                f"- [{item['title']}]({item['url']})", unsafe_allow_html=True
+                                f"- <a href='{item['url']}' target='_blank' style='color: {color}'>{item['title']}</a>",
+                                unsafe_allow_html=True,
                             )
             else:
                 for i, item in enumerate(items):
                     with cols[i]:
-                        st.markdown(f"- [{item['title']}]({item['url']})", unsafe_allow_html=True)
+                        st.markdown(
+                            f"- <a href='{item['url']}' target='_blank' style='color: {color}'>{item['title']}</a>",
+                            unsafe_allow_html=True,
+                        )
             st.markdown("")
 
 

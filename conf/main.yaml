@@ -8,6 +8,7 @@ defaults:
       - etf_bond
       - etf_global
       - etf_momentum
+      - etf_ark
       - Renewable_utilities_stocks
       - insurance_stocks
       - it_stocks
