@@ -55,7 +55,7 @@ if __name__ == "__main__":
     with hydra.initialize(version_base=None, config_path="../../../conf"):
         config = hydra.compose(
             config_name="main",
-            overrides=["+dashboard_layout=References"],
+            overrides=["+style_conf=References"],
         )
 
-    show_references_page(config["dashboard_layout"])
+    show_references_page(config["style_conf"])

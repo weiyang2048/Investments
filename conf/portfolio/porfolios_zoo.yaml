@@ -14,9 +14,11 @@
 # Large+: ${union:${portfolio.Large}, [PRN, PTF]}
 
 OptumHSA:
-  - VFIAX
-  - FLPKX
-  - VTMGX
+  - VOO
+  - VTI
+  - VXUS
+  - FZROX
+  - FZILX
 ARK:
   - ARKK
   - ARKW

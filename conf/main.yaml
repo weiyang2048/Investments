@@ -1,5 +1,5 @@
 defaults:
-  - dashboard_layout: [shared_configs]
+  - style_conf: [shared_configs, color_line_styles]
   - tickers:
       - funds
       - etf

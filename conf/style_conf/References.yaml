@@ -1,11 +1,12 @@
 page_config:
   page_title: References
 
-title: ${dashboard_layout.page_config.page_title}
+title: ${style_conf.page_config.page_title}
 
 color_dict:
   yFinance: rgba(128,0,128,1)
 
+# TODO: these should not be in the style_conf
 Tools:
   Equity:
     ETFs:

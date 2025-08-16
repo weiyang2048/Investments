@@ -6,6 +6,7 @@ import numpy as np
 from src.stats import Stats
 from src.data import normalize_prices
 from typing import Callable
+from src.configurations import get_random_style
 
 def create_performance_plot(
     df: pd.DataFrame,
@@ -56,7 +57,7 @@ def create_performance_plot(
         df_normalized = df_normalized[["Date"] + symbols]
         for symbol in symbols:
             keys = ["name", "region", "industry", "n_holdings"]
-            keys = [key for key in keys if key in equity_config[symbol]]
+            keys = [key for key in keys if key in equity_config.get(symbol, {})]
             fig.add_trace(
                 go.Scatter(
                     x=df_normalized["Date"],

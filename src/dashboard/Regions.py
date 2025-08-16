@@ -1,4 +1,5 @@
-from src.yaml import register_resolvers
+from src.configurations.yaml import register_resolvers
+import streamlit as st
 
 register_resolvers()
 
@@ -13,11 +14,11 @@ if __name__ == "__main__":
         config = hydra.compose(
             config_name="main",
             overrides=[
-                "+dashboard_layout=main",
+                # "+style_conf=main",
                 "portfolio=regions",
                 # "~tickers.insurance_stocks",
             ],
         )
     # OmegaConf.resolve(config)
-
-    show_market_performance(config["tickers"], config["portfolio"], config["dashboard_layout"])
+    st.title("Regions")
+    show_market_performance(config["tickers"], config["portfolio"], config["style_conf"])

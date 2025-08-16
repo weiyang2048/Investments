@@ -1,5 +1,0 @@
-page_config:
-  page_title: Sectors - Micro Views
-
-title: ${dashboard_layout.page_config.page_title}
-description:  Normalized sectoral performance across different time periods 
