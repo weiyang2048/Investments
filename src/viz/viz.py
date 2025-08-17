@@ -8,6 +8,7 @@ from src.data import normalize_prices
 from typing import Callable
 from src.configurations import get_random_style
 
+
 def create_performance_plot(
     df: pd.DataFrame,
     symbols: List[str],

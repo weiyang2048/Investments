@@ -76,6 +76,14 @@ style_string: |
   .stMarkdown {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   }
+
+  /*
+  Headers
+  */
+
+  h1{
+    color: white!important;
+  }
   .stMarkdown h2 {
       color: #1f77b4;
       border-bottom: 2px solid #1f77b4;
@@ -99,5 +107,13 @@ style_string: |
     align-items: center;
     margin: auto!important;
     padding: 0!important;
+  }
+
+  /*
+  folium map
+  */
+  #map_div {
+    width: 100%!important;
+    height: 100%!important;
   }
   </style>

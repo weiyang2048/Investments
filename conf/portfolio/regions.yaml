@@ -8,6 +8,8 @@
 #   - IEMG
 # Regional+: ${drop:${union:${portfolio.Tripartite},${portfolio.Regional}},[VTI]}
 US_xUS:
+  - VTI
+  - VXUS
   - SPMO
   - IDMO
   - AVUV

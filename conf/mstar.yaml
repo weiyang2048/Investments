@@ -1,0 +1,163 @@
+sector_code_to_name:
+  101: "Basic Materials"
+  102: "Consumer Cyclical"
+  103: "Financial Services"
+  104: "Real Estate"
+  205: "Consumer Defensive"
+  206: "Healthcare"
+  207: "Utilities"
+  308: "Communication Services"
+  309: "Energy"
+  310: "Industrials"
+  311: "Technology"
+
+country_code_to_name:
+  ARE: "United Arab Emirates"
+  AUS: "Australia"
+  AUT: "Austria"
+  BEL: "Belgium"
+  BRA: "Brazil"
+  BHR: "Bahrain"
+  CAN: "Canada"
+  CHE: "Switzerland"
+  CHL: "Chile"
+  CHN: "China"
+  CMR: "Cameroon"
+  COL: "Colombia"
+  CZE: "Czech Republic"
+  DEU: "Germany"
+  DNK: "Denmark"
+  EGY: "Egypt"
+  ESP: "Spain"
+  FIN: "Finland"
+  FRA: "France"
+  GBR: "United Kingdom"
+  GRC: "Greece"
+  HUN: "Hungary"
+  IDN: "Indonesia"
+  IND: "India"
+  IRL: "Ireland"
+  IRQ: "Iraq"
+  ISL: "Iceland"
+  ISR: "Israel"
+  ITA: "Italy"
+  JPN: "Japan"
+  KHM: "Cambodia"
+  KOR: "South Korea"
+  KWT: "Kuwait"
+  LIE: "Liechtenstein"
+  LTU: "Lithuania"
+  LUX: "Luxembourg"
+  MAC: "Macao"
+  MEX: "Mexico"
+  MHL: "Marshall Islands"
+  MUS: "Mauritius"
+  MYS: "Malaysia"
+  NLD: "Netherlands"
+  NZL: "New Zealand"
+  PER: "Peru"
+  PHL: "Philippines"
+  POL: "Poland"
+  PRI: "Puerto Rico"
+  PRT: "Portugal"
+  QAT: "Qatar"
+  RUS: "Russia"
+  SAU: "Saudi Arabia"
+  SGP: "Singapore"
+  SWE: "Sweden"
+  THA: "Thailand"
+  TUR: "Turkey"
+  TWN: "Taiwan"
+  USA: "United States"
+  ZAF: "South Africa"
+
+useful_keys:
+  - name
+  - asset_type # etf
+  - holdings # func-> df
+  - dataPoint # func, dataPoint(["standardDeviation"])
+  - snapshot:
+      - InvestmentStrategy
+  - performanceTable:
+      - table
+        - columnDefs
+  - trailingReturn:
+      - name
+      - overallMorningstarRating
+      - morningstarRatingFor3Year
+      - morningstarRatingFor5Year
+      - morningstarRatingFor10Year
+      - columnDefs
+      - totalReturnPrice
+      - totalReturnNAV
+      - categoryName
+      - totalReturnCategory
+      - totalReturnCategoryNew
+      - indexName
+      - totalReturnIndex
+      - totalReturnIndexNew
+      - returnRank # percentile, 1 is the best
+  - allocationWeighting # Large/Mid/Small + Value/Blend/Growth
+  - analystRating # list[dict]
+  - analystRatingTopFunds # dict
+not_useful_keys:
+  - snapshot:
+      - dbgtime
+      - Id
+      - HasPriceEntitlement
+      - InceptionDate
+      - Isin
+      - InvestmentType
+      - BrandingCompanyId
+      - BrandingCompanyName
+      - Exchange
+      - Type
+      - Name
+      - LegalName
+      - NetAssetValues
+      - Domicile
+      - RealtimeId
+      - DividendDistributionFrequency
+      - IndexingApproach
+  - allocationMap
+  - TimeSeries # error, could be useful for getting historical data, daily, monthly, quarterly
+  - trailingReturn:
+      - netReturn
+      - hasDailyData
+      - investorRankApplicable
+      - adjustedTaxReturnApplicable
+      - duration
+      - netOfFeesReturn
+      - totalReturnNavEPFlag
+      - totalReturnCategoryPrice
+      - totalReturnCategoryEPFlag
+      - fundNumber
+      - fundNumberPrice
+      - extendedPerformanceFlag
+      - investorReturn
+      - investorReturnRank
+      - taxAdjustedReturn
+      - taxAdjustedReturnRank
+      - taxCostRatio
+      - ePUsedForOverallRating
+      - ePUsedFor3YearRating
+      - ePUsedFor5YearRating
+      - ePUsedFor10YearRating
+      - fundReturnDate
+      - fundPriceReturnDate
+      - ratingDate
+      - categoryDate
+      - indexDate
+      - fundInvestorDate
+      - indexId
+      - isDailyData
+      - isMonthlyData
+      - returnMarketPriceRank
+      - isQuarterlyData
+      - inceptionDate
+      - potentialCapitalGainsExposure
+      - startDate
+      - cur
+      - isUKCefTemplateAvailable
+custom_keys:
+  - countryWeighting
