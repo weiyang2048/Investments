@@ -29,4 +29,4 @@ dashboard = "https://nowei-investment.streamlit.app/"
 packages = ["src"]
 
 [tool.black]
-line-length = 99
+line-length = 150

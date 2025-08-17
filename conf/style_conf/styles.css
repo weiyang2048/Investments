@@ -1,0 +1,145 @@
+/* * sidebar */
+[data-testid="stSidebar"][aria-expanded="true"] {
+    max-width: 3vw;
+    display: block !important;
+    z-index: 1000001 !important;
+
+    /* * last div, this is where we added our links */
+    div:last-child {
+        /* Style for the last div inside the expanded sidebar */
+        /* /* display: block !important; */
+        position: relative !important;
+        width: 100% !important;
+        /* margin: 0 !important; */
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+        display: block !important;
+
+        [data-baseweb="select"] {
+            width: 100% !important;
+
+            div {
+                background-color: black !important;
+                color: white !important;
+                min-width: fit-content !important;
+            }
+        }
+
+        input {
+            background-color: black !important;
+            color: white !important;
+        }
+
+        #homepage-link {
+            margin-top: 20vh !important;
+            margin-bottom: 2vh !important;
+        }
+
+        #homepage-link,
+        #linkedin-link {
+            display: block !important;
+            margin-left: auto !important;
+            margin-right: auto !important;
+            padding: 5px !important;
+            text-align: center !important;
+            font-size: 12px !important;
+            color: white !important;
+            background-color: black !important;
+            border-radius: 51px !important;
+            border: 1px solid #666 !important;
+            cursor: pointer !important;
+            transition: all 0.3s ease !important;
+
+            &:hover {
+                scale: 1.05 !important;
+                color: black !important;
+                background-color: white !important;
+            }
+        }
+    }
+
+}
+
+/* * top toolbar */
+.stAppToolbar {
+    padding: 0 !important;
+    margin: 0 !important;
+    font-size: 1px !important;
+    background-color: rgba(30, 30, 30, 0.5);
+    z-index: -1000 !important;
+    position: relative !important;
+}
+
+/* * main body */
+.stMainBlockContainer {
+    padding-left: 1%;
+    padding-right: 1%;
+    padding-top: 2%;
+    background-color: black;
+}
+
+button {
+    z-index: 1000000 !important;
+}
+
+h1 {
+    display: block;
+    text-align: center;
+    z-index: 1000000 !important;
+}
+
+h1,
+p {
+    margin: 0;
+    padding: 0;
+}
+
+
+.stMarkdown {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/*
+Headers
+*/
+
+h1 {
+    color: white !important;
+}
+
+.stMarkdown h2 {
+    color: #1f77b4;
+    border-bottom: 2px solid #1f77b4;
+    padding-bottom: 5px;
+}
+
+.stMarkdown h3 {
+    color: #ff7f0e;
+    margin-top: 20px;
+}
+
+.stMarkdown a {
+    color: #2e86ab;
+    text-decoration: none;
+}
+
+.stMarkdown a:hover {
+    text-decoration: underline;
+    color: #1f77b4;
+}
+
+.stColumn .stVerticalBlock>* {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: auto !important;
+    padding: 0 !important;
+}
+
+/*
+folium map
+*/
+#map_div {
+    width: 100% !important;
+    height: 100% !important;
+}
