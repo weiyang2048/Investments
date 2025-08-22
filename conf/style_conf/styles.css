@@ -143,3 +143,12 @@ folium map
     width: 100% !important;
     height: 100% !important;
 }
+
+.data {
+    color: lightblue;
+}
+
+.field {
+    font-weight: bold;
+    color: lightgray;
+}
