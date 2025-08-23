@@ -35,13 +35,18 @@ def create_plotly_bar_chart(
     )
     ```
     """
+
     fig = px.bar(df, x=x_col, y=y_col, text=text, hover_data=hover_data)
-    hover_template = "<b>%{x}</b><br>{y_col}: %{y:.2f}<extra></extra>".replace("{y_col}", y_col)
+    hover_template = "<b>%{x:.2f if str(x).isnumeric() else x}</b><br> <b>%{y:.2f if str(y).isnumeric() else y}</b><extra></extra>"
     fig.update_traces(
         texttemplate="%{text:.2f}",
         textposition="outside",
         hovertemplate=hover_template,
     )
+    if df[y_col].dtype == "string":
+        fig.update_yaxes(
+            type="category",
+        )
     fig.update_layout(plotly_config["layout"].update(layout))
     return fig
 

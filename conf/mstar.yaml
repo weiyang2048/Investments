@@ -90,6 +90,7 @@ useful_keys:
   - holdings # func-> df
   - dataPoint # func, dataPoint(["standardDeviation"])
   - snapshot:
+  
       - InvestmentStrategy
   - performanceTable:
       - table
@@ -116,6 +117,7 @@ useful_keys:
 not_useful_keys:
   - snapshot:
       - dbgtime
+      - Symbol
       - Id
       - HasPriceEntitlement
       - InceptionDate
@@ -126,12 +128,34 @@ not_useful_keys:
       - Exchange
       - Type
       - Name
+      - CompanyName
+      - Country
       - LegalName
-      - NetAssetValues
+      - InvestmentStrategy
+      - NumberOfHoldings
+      - Sector
+      - Industry
+      - Currency
+      - TotalExpenseRatio
+      - ManagementFee
+      - ActualManagementFee
+      - YieldHistory
+      - PurchaseDetails
+      - CompanyId
+      # - NetAssetValues
+      - CountryExposure
+      - TradingCurrency
+      - ProviderCompany
+      - AdministratorCompany
+      - AdvisorCompanies
+      - ManagerList
       - Domicile
+      - LegalStructure
       - RealtimeId
-      - DividendDistributionFrequency
+      # - DividendDistributionFrequency
       - IndexingApproach
+      - Documents
+      - GrowthOf10K
   - allocationMap
   - TimeSeries # error, could be useful for getting historical data, daily, monthly, quarterly
   - trailingReturn:

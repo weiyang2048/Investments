@@ -1,4 +1,4 @@
-/* * sidebar */
+/* @ sidebar */
 [data-testid="stSidebar"][aria-expanded="true"] {
     max-width: 3vw;
     display: block !important;
@@ -144,6 +144,8 @@ folium map
     height: 100% !important;
 }
 
+
+/* * user defined styles */
 .data {
     color: lightblue;
 }
@@ -153,7 +155,6 @@ folium map
     color: lightgray;
 }
 
-/* * keys */
 .st-key-random_button {
     position: absolute;
     /* SCALE */
