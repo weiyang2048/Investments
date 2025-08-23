@@ -13,6 +13,7 @@ import requests
 from src.data.mstar import get_number_of_holdings
 from src.viz import create_plotly_bar_chart, create_plotly_choropleth
 import random
+import plotly.express as px
 
 with open("conf/mstar.yaml", "r") as f:
     mstar_config = yaml.safe_load(f)
@@ -129,16 +130,16 @@ def create_country_exposure_table(exposure_df: pd.DataFrame):
     Create a table showing country exposure for a given symbol.
     """
     fig = create_plotly_bar_chart(
-        exposure_df,
-        x_col="Country",
-        y_col="Exposure %",
+        exposure_df.sort_values("Exposure %", ascending=True),
+        x_col="Exposure %",
+        y_col="Country",
         text="Exposure %",
         hover_data={"Country": True, "Exposure %": ":.2f"},
         layout={
             "xaxis_tickangle": -45,
             "yaxis_title": "Exposure (%)",
             "xaxis_title": "Country",
-            "margin": {"l": 20, "r": 20, "t": 40, "b": 80},
+            "margin": {"l": 0, "r": 0, "t": 0, "b": 0},
             "height": 400,
         },
     )
@@ -153,7 +154,7 @@ def display_country_exposure_map_streamlit(snap: dict):
     Args:
         symbol: The fund/ETF symbol
     """
-    st.markdown(f"### Country Exposure for {snap.get('Symbol')}")
+    st.markdown(f"### Country Exposure for <span style='color:gold; font-weight:bold;'>{snap.get('Symbol')}</span>", unsafe_allow_html=True)
 
     with st.spinner(f"Loading country exposure data for {snap.get('Symbol')}..."):
         exposure_data = get_country_exposure(snap)
@@ -168,6 +169,7 @@ def display_country_exposure_map_streamlit(snap: dict):
         col1, col2 = st.columns([1, 1])
         with col1:
             st.plotly_chart(create_country_exposure_table(exposure_df), use_container_width=True)
+
         with col2:
             world_map = create_plotly_choropleth(
                 exposure_df,
@@ -182,9 +184,6 @@ def display_country_exposure_map_streamlit(snap: dict):
                 },
             )
             st.plotly_chart(world_map, use_container_width=True)
-        # button show df data
-        if st.button("Show Country Exposure Data", key="show_country_exposure_data"):
-            st.write(exposure_df.to_dict(orient="records"))
 
 
 def main_fund_inspect_page(selections: list):
@@ -203,9 +202,22 @@ def main_fund_inspect_page(selections: list):
     col1, col2 = st.columns(2)
     with col1:
         basic_info = (
-            f"<span class='field'>Symbol : </span> <span class='data'>{snap.get('Symbol')}</span>"
+            f"<span class='field'>Symbol : </span> <span class='data' style='color:gold; font-weight:bold;'>{snap.get('Symbol')}</span>"
             + f"<br><span class='field'>Fund Name : </span> <span class='data'>{snap.get('Name')}</span>"
             + f"<br><span class='field'>Number of Holdings : </span> <span class='data'>{get_number_of_holdings(snap)}</span>"
+            + f"<br><span class='field'>Total Expense : </span> <span class='data'>{snap.get('TotalExpenseRatio')}%</span>"
+            + f"<br><span class='field'>Yield : </span> <span class='data'>{snap.get('YieldHistory').get('Value')}% [{snap.get('YieldHistory').get('Type')}]</span>"
+            + (
+                f"<br><span class='field'>Sector : </span> <span class='data'>{snap.get('Sector').get('SectorName')} [{snap.get('Sector').get('SectorCode')}]</span>"
+                if snap.get("Sector")
+                else ""
+            )
+            + (
+                f"<br><span class='field'>Industry : </span> <span class='data'>{snap.get('Industry').get('IndustryName')} [{snap.get('Industry').get('IndustryCode')}]</span>"
+                if snap.get("Industry")
+                else ""
+            )
+            + f"<br><span class='field'>Company : </span> <span class='data'>{snap.get('CompanyName', snap.get('BrandingCompanyName'))}</span>"
         )
         st.markdown(basic_info, unsafe_allow_html=True)
 
@@ -219,10 +231,30 @@ def main_fund_inspect_page(selections: list):
             st.markdown("**No investment strategy information available.**")
     display_country_exposure_map_streamlit(snap)
 
+    # display pandas df from records snap.get("GrowthOf10K")
+    if snap.get("GrowthOf10K"):
+        st.markdown("### Performances")
+        growth_df = pd.DataFrame(snap.get("GrowthOf10K")[0]["HistoryDetails"])
+        initial_value = growth_df.iloc[0]["Value"]
+        end_value = growth_df.iloc[-1]["Value"]
+        annualized_return = ((end_value / initial_value) ** (12 / len(growth_df))) - 1
+        fig = px.line(
+            growth_df,
+            x="EndDate",
+            y="Value",
+            markers=True,
+            title=f"Growth of $10K Over Time, Annualized Return: {annualized_return:.2%}",
+            labels={"EndDate": "Date", "Value": "Value"},
+            hover_data={"EndDate": True, "Value": ":.2f"},
+        )
+
+        st.plotly_chart(fig, use_container_width=True)
+
     # if local machine, show button to show config
     if "weiya" in os.path.expanduser("~"):
-        if st.button("Show All Snapshot Data", key="show_all_snapshot_data"):
-            st.write(snap)
+        # if st.button("Show All Snapshot Data", key="show_all_snapshot_data"):
+        st.write({key: snap[key] for key in random.sample(list(snap.keys()), 30) if key not in mstar_config["not_useful_keys"][0]["snapshot"]})
+
         if st.button("Show Config", key="show_config"):
             keys = {key: config[key].keys() for key in config.keys()}
             st.write(keys)
@@ -245,9 +277,9 @@ if __name__ == "__main__":
     portfolios = config["portfolio"]
     popular_funds = {portfolio: [fund for fund in portfolios[portfolio]] for portfolio in portfolios}
 
-    random_category_index = random.choice(range(len(portfolios)))
-    random_category = list(portfolios.keys())[random_category_index]
-    random_fund_index = random.choice(range(len(popular_funds[random_category])))
-    st.session_state.random_category_index = random_category_index
-    st.session_state.random_fund_index = random_fund_index
+    # random_category_index = random.choice(range(len(portfolios)))
+    # random_category = list(portfolios.keys())[random_category_index]
+    # random_fund_index = random.choice(range(len(popular_funds[random_category])))
+    # st.session_state.random_category_index = random_category_index
+    # st.session_state.random_fund_index = random_fund_index
     main_fund_inspect_page(selections)
