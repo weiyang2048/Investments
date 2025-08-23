@@ -245,4 +245,9 @@ if __name__ == "__main__":
     portfolios = config["portfolio"]
     popular_funds = {portfolio: [fund for fund in portfolios[portfolio]] for portfolio in portfolios}
 
+    random_category_index = random.choice(range(len(portfolios)))
+    random_category = list(portfolios.keys())[random_category_index]
+    random_fund_index = random.choice(range(len(popular_funds[random_category])))
+    st.session_state.random_category_index = random_category_index
+    st.session_state.random_fund_index = random_fund_index
     main_fund_inspect_page(selections)
