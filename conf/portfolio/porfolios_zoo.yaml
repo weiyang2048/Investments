@@ -13,12 +13,12 @@
 
 # Large+: ${union:${portfolio.Large}, [PRN, PTF]}
 
-OptumHSA:
-  - VOO
-  - VTI
-  - VXUS
-  - FZROX
-  - FZILX
+# OptumHSA:
+#   - VOO
+#   - VTI
+#   - VXUS
+#   - FZROX
+#   - FZILX
 ARK:
   - ARKK
   - ARKW

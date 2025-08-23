@@ -8,6 +8,7 @@ from src.data import normalize_prices
 from typing import Callable
 from src.configurations import get_random_style
 
+
 def create_performance_plot(
     df: pd.DataFrame,
     symbols: List[str],
@@ -68,12 +69,7 @@ def create_performance_plot(
                     legendgroup=symbol,
                     showlegend=(i == 0),
                     hovertemplate=f"<b style='color: {colors_dict[symbol]}'>Symbol:</b> {symbol}<br>"
-                    + "".join(
-                        [
-                            f"<b style='color: {colors_dict[symbol]}'>{key}:</b> {equity_config[symbol].get(key, '-')}<br>"
-                            for key in keys
-                        ]
-                    )
+                    + "".join([f"<b style='color: {colors_dict[symbol]}'>{key}:</b> {equity_config[symbol].get(key, '-')}<br>" for key in keys])
                     + f"<b style='color: {colors_dict[symbol]}'>Date:</b>"
                     + "%{x}<br>"
                     + f"<b style='color: {colors_dict[symbol]}'>Normalized Price:</b>"
