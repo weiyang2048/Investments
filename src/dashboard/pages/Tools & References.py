@@ -8,8 +8,12 @@ def show_references_page(dashboard_config: dict) -> None:
         **dashboard_config["page_config"],
     )
     st.title(dashboard_config["title"])
-
-    st.markdown(dashboard_config["style_string"], unsafe_allow_html=True)
+    # % style string
+    style_css_url = dashboard_config["style_css_url"]
+    with open(style_css_url, "r") as f:
+        style_string = f.read()
+    st.markdown(f"<style>{style_string}</style>", unsafe_allow_html=True)
+    # st.markdown(dashboard_config["style_string"], unsafe_allow_html=True)
 
     st.sidebar.markdown(
         "<a id='homepage-link' href='https://www.noWei.us' target='_blank'>Homepage:  <b><i>noWei.us</i></b></a>",
@@ -31,9 +35,7 @@ def show_references_page(dashboard_config: dict) -> None:
                     with cols[i]:
                         st.markdown(f"**{key}**")
                         for item in value:
-                            color = dashboard_config["color_dict"].get(
-                                item["title"].split(" ")[0], "rgba(100,100,255,1)"
-                            )
+                            color = dashboard_config["color_dict"].get(item["title"].split(" ")[0], "rgba(100,100,255,1)")
                             st.markdown(
                                 f"- <a href='{item['url']}' target='_blank' style='color: {color}'>{item['title']}</a>",
                                 unsafe_allow_html=True,
