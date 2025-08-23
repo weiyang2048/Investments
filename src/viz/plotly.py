@@ -1,6 +1,10 @@
 import numpy as np
 import plotly.express as px
 import pandas as pd
+import yaml
+
+with open("conf/style_conf/plotly.yaml", "r") as f:
+    plotly_config = yaml.safe_load(f)
 
 
 def create_plotly_bar_chart(
@@ -9,7 +13,7 @@ def create_plotly_bar_chart(
     y_col: str,
     text: str,
     hover_data: dict,
-    layout: dict = None,
+    layout: dict = dict(),
 ):
     """
     Create a bar chart using Plotly Express.
@@ -38,8 +42,7 @@ def create_plotly_bar_chart(
         textposition="outside",
         hovertemplate=hover_template,
     )
-    if layout:
-        fig.update_layout(layout)
+    fig.update_layout(plotly_config["layout"].update(layout))
     return fig
 
 
@@ -54,7 +57,7 @@ def create_plotly_choropleth(
     locationmode: str = "country names",
     colorbar_title: str = "Value",
     log_scale: bool = True,
-    lower_bound: float = 0,
+    lower_bound: float = None,
 ):
     """
     Create a Plotly choropleth map.
@@ -73,15 +76,12 @@ def create_plotly_choropleth(
     Returns:
         Plotly Figure object.
     """
-    df_copy = df.loc[df[color_col] > lower_bound].copy()
+    df_copy = df.loc[df[color_col] > (lower_bound or -np.inf)].copy()
 
     if log_scale:
         df_copy[color_col] = df_copy[color_col] + (1 - df_copy[color_col].min()) + 0.00001
         df_copy[color_col + "_log"] = np.log(df_copy[color_col])
-    custom_data = [color_col + "_log" if log_scale else color_col]
-    hover_template = (
-        "<b>%{hover_name}</b><br>%{custom_data[0]}: %{custom_data[0]:.2f}<extra></extra>"
-    )
+
     fig = px.choropleth(
         df_copy,
         locations=locations_col,
@@ -90,12 +90,11 @@ def create_plotly_choropleth(
         color_continuous_scale=color_scale,
         projection=projection,
         locationmode=locationmode,
-        custom_data=custom_data,
+        hover_data={"Country": False, color_col: ":.2f", color_col + "_log": False},
     )
-    fig.update_traces(hovertemplate=hover_template)
-    # no colorbar
-    # fig.update_layout(coloraxis_showscale=False)
 
-    if layout:
-        fig.update_layout(layout)
+    # no colorbar
+    fig.update_layout(coloraxis_showscale=False)
+
+    fig.update_layout(plotly_config["layout"].update(layout))
     return fig

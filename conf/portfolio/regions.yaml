@@ -19,12 +19,14 @@ US_xUS:
 Regional:
   - VTI # Vanguard Total Stock Market ETF
   - ILF # iShares Latin America 40 ETF
-  - SPEU # SPDR Portfolio Europe ETF
-  - CEE # Central and Eastern Europe Fund
+  # - SPEU # SPDR Portfolio Europe ETF
+  - FEP # First Trust Europe AlphaDEX Fund
+  # - CEE # Central and Eastern Europe Fund
   - IPAC # iShares Core MSCI Pacific ETF
   - AIA # iShares Asia 50 ETF
   - ASEA # Global X FTSE Southeast Asia ETF
-  - TRAMX # Middle East & Africa ETF
+  - AFK
+  # - TRAMX # Middle East & Africa ETF
 
 All: ${union:${portfolio.US_xUS},${portfolio.Regional}}
 # ALL: ${union:${portfolio.Tripartite},${portfolio.Regional}}

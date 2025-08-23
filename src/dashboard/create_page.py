@@ -5,7 +5,7 @@ from typing import List
 from src.configurations.style_picker import get_random_style
 from src.data import get_daily_prices_list
 from src.data import pivot_data
-from src.viz import create_performance_plot
+from src.viz.viz import create_performance_plot
 from typing import Callable
 
 
@@ -21,7 +21,11 @@ def setup_page_and_sidebar(dashboard_config: dict, add_to_sidebar: Callable = No
     if description:
         st.markdown(description)
 
-    st.sidebar.markdown(dashboard_config["style_string"], unsafe_allow_html=True)
+    # % style string
+    style_css_url = dashboard_config["style_css_url"]
+    with open(style_css_url, "r") as f:
+        style_string = f.read()
+    st.markdown(f"<style>{style_string}</style>", unsafe_allow_html=True)
     res = None
     if add_to_sidebar:
         res = add_to_sidebar()
@@ -50,7 +54,10 @@ def setup_page(dashboard_config: dict) -> None:
     # st.markdown(dashboard_config["description"])
 
     # st.sidebar.header("Controls")
-    st.markdown(dashboard_config["style_string"], unsafe_allow_html=True)
+    style_css_url = dashboard_config["style_css_url"]
+    with open(style_css_url, "r") as f:
+        style_string = f.read()
+    st.markdown(f"<style>{style_string}</style>", unsafe_allow_html=True)
 
     # Transformation selector
     # st.sidebar.header("Transformation Options")
@@ -112,16 +119,8 @@ def show_market_performance(
 
             # Create and display plot
             look_back_days = dashboard_config["look_back_days"]
-            colors_dict = {
-                symbol: equity_config.get(symbol, {}).get("color", get_random_style("color"))
-                for symbol in symbols
-            }
-            line_styles_dict = {
-                symbol: equity_config.get(symbol, {}).get(
-                    "line_style", get_random_style("line_style")
-                )
-                for symbol in symbols
-            }
+            colors_dict = {symbol: equity_config.get(symbol, {}).get("color", get_random_style("color")) for symbol in symbols}
+            line_styles_dict = {symbol: equity_config.get(symbol, {}).get("line_style", get_random_style("line_style")) for symbol in symbols}
             fig, df_normalized = create_performance_plot(
                 df_pivot,
                 symbols,
@@ -131,9 +130,7 @@ def show_market_performance(
                 equity_config,
                 transformation,
             )
-            st.plotly_chart(
-                fig, use_container_width=True, config=dashboard_config["plotly_config"]
-            )
+            st.plotly_chart(fig, use_container_width=True, config=dashboard_config["plotly_config"])
 
             # Display normalized data option
             if st.checkbox("Show Normalized Data", key=f"raw_data_{symbol_type}"):

@@ -12,4 +12,4 @@ defaults:
       - Renewable_utilities_stocks
       - insurance_stocks
       - it_stocks
-  - portfolio: [regions]
+  - portfolio: [regions, sectors, porfolios_zoo]

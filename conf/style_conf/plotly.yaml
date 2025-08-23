@@ -1,0 +1,12 @@
+layout:
+  plot_bgcolor: black
+  paper_bgcolor: black
+  font:
+    color: white
+  hovermode: closest
+  autosize: true
+  margin:
+    l: 0
+    r: 0
+    t: 60
+    b: 0
