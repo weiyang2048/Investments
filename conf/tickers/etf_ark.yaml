@@ -52,3 +52,14 @@ ARKQ:
   management: Active # ARK Invest
   color: rgba(75,0,130,1) # indigo
   url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=ARKQ
+
+ARKX:
+  symbol: ARKX
+  name: Ark SpAce Exploration & Innovation ETF
+  region: US
+  n_holdings: 30
+  type: Growth
+  size: Mid
+  management: Active # ARK Invest
+  color: rgba(186, 85, 211, 1) # lightpurple
+  url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=ARKX

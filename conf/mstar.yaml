@@ -116,6 +116,8 @@ useful_keys:
   - analystRatingTopFunds # dict
 not_useful_keys:
   - snapshot:
+      - CategoryBroadAssetClass
+      - InstrumentStatus
       - dbgtime
       - Symbol
       - Id
