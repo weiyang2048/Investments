@@ -47,7 +47,8 @@ def create_plotly_bar_chart(
         fig.update_yaxes(
             type="category",
         )
-    fig.update_layout(plotly_config["layout"].update(layout))
+    plotly_config["layout"].update(layout)
+    fig.update_layout(plotly_config["layout"])
     return fig
 
 
@@ -58,7 +59,7 @@ def create_plotly_choropleth(
     hover_name_col: str = None,
     color_scale: str = "YlOrRd",
     projection: str = "natural earth",
-    layout: dict = None,
+    layout: dict = dict(),
     locationmode: str = "country names",
     colorbar_title: str = "Value",
     log_scale: bool = True,
@@ -100,6 +101,7 @@ def create_plotly_choropleth(
 
     # no colorbar
     fig.update_layout(coloraxis_showscale=False)
-
-    fig.update_layout(plotly_config["layout"].update(layout))
+    plotly_config["layout"].update(layout)
+    print(plotly_config["layout"])
+    fig.update_layout(plotly_config["layout"])
     return fig

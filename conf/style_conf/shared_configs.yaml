@@ -1,8 +1,5 @@
 look_back_days: [10, 30, 90, 180, 540, 1620]
 
-plotly_config:
-  displayModeBar: false
-
 page_config:
   initial_sidebar_state: expanded
   page_icon: 📈

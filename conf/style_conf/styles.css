@@ -60,7 +60,7 @@
 
 }
 
-/* * top toolbar */
+/* @ top toolbar */
 .stAppToolbar {
     padding: 0 !important;
     margin: 0 !important;
@@ -70,42 +70,31 @@
     position: relative !important;
 }
 
-/* * main body */
+/* @ main body */
 .stMainBlockContainer {
     padding-left: 1%;
     padding-right: 1%;
     padding-top: 2%;
     background-color: black;
+
+    button {
+        z-index: 1000000 !important;
+    }
+
+    h1 {
+        display: block;
+        color: white !important;
+        text-align: center;
+        z-index: 1000000 !important;
+    }
+
 }
 
-button {
-    z-index: 1000000 !important;
-}
-
-h1 {
-    display: block;
-    text-align: center;
-    z-index: 1000000 !important;
-}
-
-h1,
-p {
-    margin: 0;
-    padding: 0;
-}
-
-
-.stMarkdown {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
 
 /*
 Headers
 */
 
-h1 {
-    color: white !important;
-}
 
 .stMarkdown h2 {
     color: #1f77b4;
@@ -173,3 +162,8 @@ folium map
     /* height: 100% !important; */
     /* color: white !important; */
 }
+
+/* .stDataFrameGlideDataEditor {
+    margin: auto !important;
+    display: block !important;
+} */
