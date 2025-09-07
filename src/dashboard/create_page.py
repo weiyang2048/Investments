@@ -130,7 +130,7 @@ def show_market_performance(
                 equity_config,
                 transformation,
             )
-            st.plotly_chart(fig, use_container_width=True, config=dashboard_config["plotly_config"])
+            st.plotly_chart(fig, use_container_width=True, config={"displayModeBar": False})
 
             # Display normalized data option
             if st.checkbox("Show Normalized Data", key=f"raw_data_{symbol_type}"):

@@ -23,14 +23,23 @@ def get_fund_snap(symbol: str) -> dict:
             itemRange += 1
 
     except Exception as e:
-        fund = ms.Funds(
-            symbol,
-            # filters={"domicile": "USA"},
-            page=1,
-            pageSize=10,
-            itemRange=0,
-            sortby="alpha",
-        )
+        try:
+            fund = ms.Funds(
+                symbol,
+                # filters={"domicile": "USA"},
+                page=1,
+                pageSize=10,
+                itemRange=0,
+                sortby="alpha",
+            )
+            snap = fund.snapshot()
+            if snap.get("Symbol") == symbol:
+                return snap
+            else:
+                raise e
+        except Exception as e:
+            print(e)
+            return None
     return snap
 
 

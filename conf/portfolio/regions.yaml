@@ -8,12 +8,14 @@
 #   - IEMG
 # Regional+: ${drop:${union:${portfolio.Tripartite},${portfolio.Regional}},[VTI]}
 US_xUS:
-  - VTI
-  - VXUS
-  - SPMO
-  - IDMO
-  - AVUV
   - AVDV
+  - AVUV
+  - PIE
+  - IDMO
+  - SPMO
+  # - VXUS
+  # - VTI
+
 # US_xUS+: ${union:${portfolio.US_xUS}, [IDHQ, SPHQ]}
 
 Regional:
@@ -21,12 +23,12 @@ Regional:
   - ILF # iShares Latin America 40 ETF
   # - SPEU # SPDR Portfolio Europe ETF
   - FEP # First Trust Europe AlphaDEX Fund
-  # - CEE # Central and Eastern Europe Fund
+  - CEE # Central and Eastern Europe Fund https://www.morningstar.com/cefs/xnys/cee/quote
   - IPAC # iShares Core MSCI Pacific ETF
   - AIA # iShares Asia 50 ETF
   - ASEA # Global X FTSE Southeast Asia ETF
   - AFK
-  # - TRAMX # Middle East & Africa ETF
+  - TRAMX # Middle East & Africa ETF https://www.morningstar.com/funds/xnas/tramx/portfolio
 
-All: ${union:${portfolio.US_xUS},${portfolio.Regional}}
+# All: ${union:${portfolio.US_xUS},${portfolio.Regional}}
 # ALL: ${union:${portfolio.Tripartite},${portfolio.Regional}}

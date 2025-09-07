@@ -35,14 +35,20 @@ def create_plotly_bar_chart(
     )
     ```
     """
+
     fig = px.bar(df, x=x_col, y=y_col, text=text, hover_data=hover_data)
-    hover_template = "<b>%{x}</b><br>{y_col}: %{y:.2f}<extra></extra>".replace("{y_col}", y_col)
+    hover_template = "<b>%{x:.2f if str(x).isnumeric() else x}</b><br> <b>%{y:.2f if str(y).isnumeric() else y}</b><extra></extra>"
     fig.update_traces(
         texttemplate="%{text:.2f}",
         textposition="outside",
         hovertemplate=hover_template,
     )
-    fig.update_layout(plotly_config["layout"].update(layout))
+    if df[y_col].dtype == "string":
+        fig.update_yaxes(
+            type="category",
+        )
+    plotly_config["layout"].update(layout)
+    fig.update_layout(plotly_config["layout"])
     return fig
 
 
@@ -53,7 +59,7 @@ def create_plotly_choropleth(
     hover_name_col: str = None,
     color_scale: str = "YlOrRd",
     projection: str = "natural earth",
-    layout: dict = None,
+    layout: dict = dict(),
     locationmode: str = "country names",
     colorbar_title: str = "Value",
     log_scale: bool = True,
@@ -95,6 +101,7 @@ def create_plotly_choropleth(
 
     # no colorbar
     fig.update_layout(coloraxis_showscale=False)
-
-    fig.update_layout(plotly_config["layout"].update(layout))
+    plotly_config["layout"].update(layout)
+    print(plotly_config["layout"])
+    fig.update_layout(plotly_config["layout"])
     return fig

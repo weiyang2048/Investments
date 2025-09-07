@@ -36,7 +36,6 @@ AVUV:
   type: Value
   size: Small
   management: Active # Avantis
-  color: green
   url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=AVUV
 KIE:
   symbol: KIE
