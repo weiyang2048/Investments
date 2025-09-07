@@ -34,9 +34,6 @@ def create_fund_symbol_selector() -> str:
     popular_funds = {portfolio: [fund for fund in portfolios[portfolio]] for portfolio in portfolios}
     # % Option 1: Select from popular categories
     fund_list = list(popular_funds.keys())
-    # random.shuffle(fund_list)
-    # fund_symbols = popular_funds[fund_list[0]]
-    # random.shuffle(fund_symbols)
 
     selected_category = st.sidebar.selectbox(
         "Select Category:",
@@ -135,13 +132,6 @@ def create_country_exposure_table(exposure_df: pd.DataFrame):
         y_col="Country",
         text="Exposure %",
         hover_data={"Country": True, "Exposure %": ":.2f"},
-        layout={
-            "xaxis_tickangle": -45,
-            "yaxis_title": "Exposure (%)",
-            "xaxis_title": "Country",
-            "margin": {"l": 0, "r": 0, "t": 0, "b": 0},
-            "height": 400,
-        },
     )
 
     return fig
@@ -177,11 +167,6 @@ def display_country_exposure_map_streamlit(snap: dict):
                 "Exposure %",
                 hover_name_col="Country",
                 color_scale="YlOrRd",
-                layout={
-                    "margin": {"l": 0, "r": 0, "t": 0, "b": 0},
-                    "paper_bgcolor": "rgba(255, 255, 255, 1)",
-                    "plot_bgcolor": "rgba(255, 255, 255, 1)",
-                },
             )
             st.plotly_chart(world_map, use_container_width=True)
 
@@ -197,9 +182,11 @@ def main_fund_inspect_page(selections: list):
 
     # Display the country exposure map
     snap = get_fund_snap(selected_symbol)
-
+    if not snap:
+        st.error(f"No data found for {selected_symbol}")
+        return
     # Display the selected fund's symbol and name
-    col1, col2 = st.columns(2)
+    col1, col2, col3 = st.columns(3)
     with col1:
         basic_info = (
             f"<span class='field'>Symbol : </span> <span class='data' style='color:gold; font-weight:bold;'>{snap.get('Symbol')}</span>"
@@ -222,10 +209,28 @@ def main_fund_inspect_page(selections: list):
         st.markdown(basic_info, unsafe_allow_html=True)
 
     with col2:
+        style_box_breakdown = snap.get("Portfolios")[0].get("StyleBoxBreakdown")[0].get("BreakdownValues")
+        # Prepare matrix
+        matrix = [[None for _ in range(3)] for _ in range(3)]  # rows: Large/Mid/Small, cols: Value/Blend/Growth
+        labels_row = ["Large", "Mid", "Small"]
+        labels_col = ["Value", "Blend", "Growth"]
+        for i, cell in enumerate(style_box_breakdown):
+            row = i // 3
+            col = i % 3
+            matrix[row][col] = cell["Value"]
+        style_box_df = pd.DataFrame(matrix, index=labels_row, columns=labels_col)
+        st.markdown("<span class='field'>Style Box Breakdown </span>", unsafe_allow_html=True)
+        st.dataframe(
+            style_box_df.style.format("{:.2f}").background_gradient(cmap="Reds", axis=None),
+            use_container_width=False,
+            width=250,
+        )
+
+    with col3:
         investment_strategy = snap.get("InvestmentStrategy") or snap.get("Investment Strategy")
         investment_strategy = "<span style='color:lightblue'>" + investment_strategy + "</span>"
         if investment_strategy:
-            st.markdown("<span class='field'>Investment Strategy : </span>", unsafe_allow_html=True)
+            st.markdown("<span class='field'>Investment Strategy </span>", unsafe_allow_html=True)
             st.markdown(investment_strategy, unsafe_allow_html=True)
         else:
             st.markdown("**No investment strategy information available.**")
@@ -249,6 +254,11 @@ def main_fund_inspect_page(selections: list):
         )
 
         st.plotly_chart(fig, use_container_width=True)
+    # ! style box distribution
+    # Draw a 3x3 style box matrix for Value/Blend/Growth vs Large/Mid/Small
+    # type 0,1,2 Large (Value, Blend, Growth)
+    # type 3,4,5 Mid (Value, Blend, Growth)
+    # type 6,7,8 Small (Value, Blend, Growth)
 
     # if local machine, show button to show config
     if "weiya" in os.path.expanduser("~"):
@@ -277,9 +287,4 @@ if __name__ == "__main__":
     portfolios = config["portfolio"]
     popular_funds = {portfolio: [fund for fund in portfolios[portfolio]] for portfolio in portfolios}
 
-    # random_category_index = random.choice(range(len(portfolios)))
-    # random_category = list(portfolios.keys())[random_category_index]
-    # random_fund_index = random.choice(range(len(popular_funds[random_category])))
-    # st.session_state.random_category_index = random_category_index
-    # st.session_state.random_fund_index = random_fund_index
     main_fund_inspect_page(selections)
