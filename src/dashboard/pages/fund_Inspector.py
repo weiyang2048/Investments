@@ -30,7 +30,10 @@ def create_fund_symbol_selector() -> str:
         Selected symbol string
     """
     # Predefined popular funds/ETFs
-    portfolios = config["portfolio"]
+    portfolios = dict()
+    for lense in config["lenses"]:
+        for category in config["lenses"][lense]:
+            portfolios[category] = config["lenses"][lense][category]
     popular_funds = {portfolio: [fund for fund in portfolios[portfolio]] for portfolio in portfolios}
     # % Option 1: Select from popular categories
     fund_list = list(popular_funds.keys())
@@ -273,12 +276,12 @@ if __name__ == "__main__":
         config = hydra.compose(
             config_name="main",
             # overrides=["+style_conf=FundInspect"],
-            overrides=["portfolio=[regions, porfolios_zoo]"],
+            overrides=["lenses=[regional, sectoral, zoo]"],
         )
     from src.dashboard.create_page import setup_page_and_sidebar
 
     selections = setup_page_and_sidebar(config["style_conf"], create_fund_symbol_selector)
-    portfolios = config["portfolio"]
+    portfolios = config["lenses"]
     popular_funds = {portfolio: [fund for fund in portfolios[portfolio]] for portfolio in portfolios}
 
     main_fund_inspect_page(selections)
