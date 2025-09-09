@@ -1,0 +1,50 @@
+sectoral:
+  Sectoral+: ${union:[ARKW,AIQ],${lenses.sectoral.Sectoral},[ EUFN, IAUM, SHLD, PAVE]}
+
+  Sectoral: [IXN, IXP, EXI, RXI, IXJ, KXI, IXG]
+
+  Sectoral2: [IXC, JXI, MXI, REET]
+
+  Industrials:
+    - EXI
+    - SHLD
+    - NATO
+    - ITA
+    - EUAD
+
+  Financial:
+    - IXG
+    - EUFN
+    - KIE
+    - KMPR
+    - PGR
+    - ALL
+    - BRK-B
+    - TRV
+  Utility:
+    - IXC
+    - JXI
+    - AES
+    - VST
+    - NEE
+    - DUK
+    - FLNC
+    # - GEV
+    # - FSLR
+    # - BEP
+  Technology:
+    - IXN
+    - AIQ
+    - IXP
+    - PTF
+    - MSFT
+    - AAPL
+    - GOOGL
+    - NVDA
+    # - ORCL
+    # - CRM
+    # - CSCO
+    # - ADBE
+    # - INTC
+    - AMZN
+  # ALL: ${union:${portfolio.Financial}, ${portfolio.Utility}, ${portfolio.Technology}}

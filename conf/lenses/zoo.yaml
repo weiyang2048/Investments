@@ -19,24 +19,25 @@
 #   - VXUS
 #   - FZROX
 #   - FZILX
-ARK:
-  - ARKK
-  - ARKW
-  - ARKF
-  - ARKG
-  - ARKQ
-InvescoMomentum:
-  - SPMO
-  - XMMO
-  - XSMO
-  - SPVM
-  - XMVM
-  - XSVM
-  - PDP
-  - DWAS
-  - PTF
-  - PRN
-  - IDMO
-  - PIZ
-  - EEMO
-  - PIE
+zoo:
+  ARK:
+    - ARKK
+    - ARKW
+    - ARKF
+    - ARKG
+    - ARKQ
+  InvescoMomentum:
+    - SPMO
+    - XMMO
+    - XSMO
+    - SPVM
+    - XMVM
+    - XSVM
+    - PDP
+    - DWAS
+    - PTF
+    - PRN
+    - IDMO
+    - PIZ
+    - EEMO
+    - PIE

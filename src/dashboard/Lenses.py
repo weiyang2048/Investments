@@ -14,8 +14,6 @@ from src.viz.viz import create_performance_plot
 from src.configurations.style_picker import get_random_style
 from src.dashboard.create_page import setup_page_and_sidebar
 
-register_resolvers()
-
 
 def sidebar():
 
@@ -97,24 +95,24 @@ if __name__ == "__main__":
 
     if hydra.core.global_hydra.GlobalHydra().is_initialized():
         hydra.core.global_hydra.GlobalHydra.instance().clear()
+    register_resolvers()
 
     with hydra.initialize(version_base=None, config_path="../../conf"):
         config = hydra.compose(
             config_name="main",
             # overrides=[
             #     # "+style_conf=main",
-            #     # "portfolio=regions",
-            #     # "~tickers.insurance_stocks",
+            # "portfolio=regions",
+            # "~tickers.insurance_stocks",
             # ],
         )
-    # OmegaConf.resolve(config)
     transformation, lense_option = setup_page_and_sidebar(config["style_conf"], add_to_sidebar=sidebar)
     st.title(lense_option)
+    
+    # OmegaConf.resolve(config)
 
     show_market_performance(config["tickers"], config["lenses"][lense_option], config["style_conf"], transformation)
 
-    # If running on local machine (e.g., user "weiya"), show config in Streamlit
-    logger.info(os.path.expanduser("~"))
     if "weiya" in os.path.expanduser("~"):
         config_dict = OmegaConf.to_container(config, resolve=True)
         config_json = json.dumps(config_dict, indent=2)

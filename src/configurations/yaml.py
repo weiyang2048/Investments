@@ -12,10 +12,6 @@ def union(args):
     return unique_list
 
 
-def drop(args):
-    return [x for x in args[0] if x not in args[1]]
-
-
 def include(args):
 
     results, collection_type = None, None
@@ -37,7 +33,5 @@ def include(args):
 def register_resolvers():
     if not OmegaConf.has_resolver("union"):
         OmegaConf.register_new_resolver("union", lambda *args: union(args))
-    if not OmegaConf.has_resolver("drop"):
-        OmegaConf.register_new_resolver("drop", lambda *args: drop(args))
     if not OmegaConf.has_resolver("include"):
         OmegaConf.register_new_resolver("include", lambda *args: include(args))

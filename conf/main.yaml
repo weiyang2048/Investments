@@ -12,8 +12,8 @@ defaults:
       - Renewable_utilities_stocks
       - insurance_stocks
       - it_stocks
-  - portfolio: [regions, sectors, porfolios_zoo]
-lenses:
-  regional: ${include:portfolio.regions}
-  sectoral: ${include:portfolio.sectors}
-  zoo: ${include:portfolio.porfolios_zoo}
+  - lenses: [regional, sectoral, zoo]
+# lenses:
+#   regional: ${include:portfolio.regions}
+#   sectoral: ${include:portfolio.sectors}
+#   zoo: ${include:portfolio.porfolios_zoo}
