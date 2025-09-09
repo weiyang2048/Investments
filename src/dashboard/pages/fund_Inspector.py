@@ -254,13 +254,7 @@ def main_fund_inspect_page(selections: list):
         )
 
         st.plotly_chart(fig, use_container_width=True)
-    # ! style box distribution
-    # Draw a 3x3 style box matrix for Value/Blend/Growth vs Large/Mid/Small
-    # type 0,1,2 Large (Value, Blend, Growth)
-    # type 3,4,5 Mid (Value, Blend, Growth)
-    # type 6,7,8 Small (Value, Blend, Growth)
 
-    # if local machine, show button to show config
     if "weiya" in os.path.expanduser("~"):
         # if st.button("Show All Snapshot Data", key="show_all_snapshot_data"):
         st.write({key: snap[key] for key in random.sample(list(snap.keys()), 30) if key not in mstar_config["not_useful_keys"][0]["snapshot"]})
