@@ -84,7 +84,7 @@ def create_performance_plot(
             x=min(df_normalized["Date"]),
             y=max(df_normalized.iloc[-1, 1:]),
             text=annotations,
-            font=dict(color="lightgreen" if stats.avg_return > 0 else "coral", size=20),
+            font=dict(color="lightgreen" if stats.avg_return > 0 else "coral", size=15),
             opacity=1,
             bgcolor="black",
             xanchor="left",
