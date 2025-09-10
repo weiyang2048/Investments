@@ -138,6 +138,24 @@ folium map
     color: lightblue;
 }
 
+.st-key-lense_option {
+    width: fit-content !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+}
+
+.st-key-lookback_days_input {
+    width: fit-content !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+}
+
+.st-key-lookback_factor_input {
+    width: fit-content !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+}
+
 .field {
     font-weight: bold;
     color: lightgray;

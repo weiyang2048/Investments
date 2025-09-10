@@ -39,14 +39,15 @@ def sidebar():
 
     transformation = get_transformation(transformation_option)
 
-    col1, col2, col3 = st.columns(3)
+    lense_option = st.selectbox(
+        "Lense",
+        ["main", "sectoral", "zoo"],
+        help="Choose the lense to display\n",
+        key="lense_option",
+    )
+    col1, col2 = st.columns(2)
+
     with col1:
-        lense_option = st.selectbox(
-            "Lense",
-            ["main", "sectoral", "zoo"],
-            help="Choose the lense to display\n",
-        )
-    with col2:
         initial_lookback_days = st.number_input(
             "Initial Lookback Days",
             min_value=1,
@@ -54,8 +55,9 @@ def sidebar():
             value=5,
             step=1,
             help="Ingrese el número inicial de días para el período de análisis. (Español: 'días de retroceso') / Entrez le nombre initial de jours pour la période d'analyse. (Français: 'jours de retour en arrière')",
+            key="lookback_days_input",
         )
-    with col3:
+    with col2:
         lookback_factor = st.number_input(
             "Lookback Factor",
             min_value=1,
@@ -63,6 +65,7 @@ def sidebar():
             value=3,
             step=1,
             help="Ingrese el factor para multiplicar los días de retroceso. (Español: 'factor') / Entrez le facteur pour multiplier les jours de retour en arrière. (Français: 'facteur')",
+            key="lookback_factor_input",
         )
 
     return transformation, lense_option, initial_lookback_days, lookback_factor
