@@ -25,10 +25,10 @@ main:
     - ILF # iShares Latin America 40 ETF
     - FEP # First Trust Europe AlphaDEX Fund
     - ASEA # Global X FTSE Southeast Asia ETF
-    - CEE # Central and Eastern Europe Fund https://www.morningstar.com/cefs/xnys/cee/quote
-    - TRAMX # Middle East & Africa ETF https://www.morningstar.com/funds/xnas/tramx/portfolio
+    # - CEE # Central and Eastern Europe Fund https://www.morningstar.com/cefs/xnys/cee/quote
+    # - TRAMX # Middle East & Africa ETF https://www.morningstar.com/funds/xnas/tramx/portfolio
 
-  Sectoral: [ARKW, AIQ, IXN, IXP, EUFN, IXG, EXI, SHLD, IXC, JXI, RXI, IXJ]
+  Sectoral: [ARKW, AIQ, IXN, IXP, IXG, RXI, EXI, SHLD, IXC, JXI, IXJ, KXI]
 
   # All: ${union:${portfolio.US_xUS},${portfolio.Regional}}
   # ALL: ${union:${portfolio.Tripartite},${portfolio.Regional}}

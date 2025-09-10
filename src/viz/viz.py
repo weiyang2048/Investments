@@ -47,13 +47,16 @@ def create_performance_plot(
         for symbol in symbols:
             keys = ["name", "region", "industry", "n_holdings"]
             keys = [key for key in keys if key in equity_config.get(symbol, {})]
+            # market size 4 if df less than 30 rows else 1
+            size = 6 if df_normalized.shape[0] < 30 else 1
             fig.add_trace(
                 go.Scatter(
                     x=df_normalized["Date"],
                     y=df_normalized[symbol],
                     name=symbol,
-                    mode="lines",
+                    mode="lines+markers",
                     line=dict(color=colors_dict[symbol], dash=line_styles_dict[symbol]),
+                    marker=dict(color=colors_dict[symbol], size=size),
                     legendgroup=symbol,
                     showlegend=(i == 0),
                     hovertemplate=f"<b style='color: {colors_dict[symbol]}'>Symbol:</b> {symbol}<br>"
@@ -73,7 +76,7 @@ def create_performance_plot(
         current_ratios = list(stats.ratios(transformation))
         # top 3 symbols by return
         symbols = list(df_normalized.columns[1:])
-        top_3_symbols = [f'<span style="color: {colors_dict[symbols[i]]}">'+symbols[i]+'</span>' for i in np.argsort(current_ratios)[-1:-4:-1]]
+        top_3_symbols = [f'<span style="color: {colors_dict[symbols[i]]}">' + symbols[i] + "</span>" for i in np.argsort(current_ratios)[-1:-4:-1]]
         annotations = (
             "<span style='color: snow; opacity: 0.3'>|</span>"
             + f"{"<span style='color: snow; opacity: 0.3'>|</span>".join([f"<span style='color: {colors_dict[symbol]}'>{ratio*100:.0f}</span>{'<span style="color: snow; opacity: 0.3">|</span><br>' if (i+1)!=1 and (i+1)%6==0 else ''}" for i,symbol, ratio in zip(range(len(symbols)),symbols, current_ratios)])}"

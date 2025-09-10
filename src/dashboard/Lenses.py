@@ -17,13 +17,6 @@ from src.dashboard.create_page import setup_page_and_sidebar
 
 def sidebar():
 
-    # @ lense selector
-    lense_option = st.sidebar.selectbox(
-        "Lense",
-        ["main", "sectoral", "zoo"],
-        help="Choose the lense to display\n",
-    )
-
     # @ Transformation selector
     transformation_option = st.sidebar.selectbox(
         "Weights Transformation",
@@ -46,14 +39,41 @@ def sidebar():
 
     transformation = get_transformation(transformation_option)
 
-    return transformation, lense_option
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        lense_option = st.selectbox(
+            "Lense",
+            ["main", "sectoral", "zoo"],
+            help="Choose the lense to display\n",
+        )
+    with col2:
+        initial_lookback_days = st.number_input(
+            "Initial Lookback Days",
+            min_value=1,
+            max_value=3650,
+            value=5,
+            step=1,
+            help="Ingrese el número inicial de días para el período de análisis. (Español: 'días de retroceso') / Entrez le nombre initial de jours pour la période d'analyse. (Français: 'jours de retour en arrière')",
+        )
+    with col3:
+        lookback_factor = st.number_input(
+            "Lookback Factor",
+            min_value=1,
+            max_value=10,
+            value=3,
+            step=1,
+            help="Ingrese el factor para multiplicar los días de retroceso. (Español: 'factor') / Entrez le facteur pour multiplier les jours de retour en arrière. (Français: 'facteur')",
+        )
+
+    return transformation, lense_option, initial_lookback_days, lookback_factor
 
 
 def show_market_performance(
     equity_config: dict,
     portfolio_config: dict,
-    dashboard_config: dict,
     transformation: Callable[[float], float] = lambda x: np.exp(x),
+    initial_lookback_days: int = 5,
+    lookback_factor: int = 3,
 ) -> None:
     """Function to show the market performance dashboard."""
     # transformation = sidebar()
@@ -63,16 +83,19 @@ def show_market_performance(
     tabs = st.tabs(symbol_types)
 
     # Create content for each tab
+    # Prompt user for initial lookback days and a factor to multiply
+
+    # Generate look_back_days list based on user input
+    look_back_days = [int(initial_lookback_days * (lookback_factor**i)) for i in range(6)]
     for i, symbol_type in enumerate(symbol_types):
         with tabs[i]:
             symbols = portfolio_config[symbol_type]
-            period = "7y"
+            period = f"{look_back_days[-1]}d"
 
             # Load and process data
             df_pivot = pivot_data(list(symbols), period, streamlit=True)
 
             # Create and display plot
-            look_back_days = dashboard_config["look_back_days"]
             colors_dict = {symbol: equity_config.get(symbol, {}).get("color", get_random_style("color")) for symbol in symbols}
             line_styles_dict = {symbol: equity_config.get(symbol, {}).get("line_style", get_random_style("line_style")) for symbol in symbols}
             fig, df_normalized = create_performance_plot(
@@ -106,14 +129,10 @@ if __name__ == "__main__":
             # "~tickers.insurance_stocks",
             # ],
         )
-    transformation, lense_option = setup_page_and_sidebar(config["style_conf"], add_to_sidebar=sidebar)
+    transformation, lense_option, initial_lookback_days, lookback_factor = setup_page_and_sidebar(config["style_conf"], add_to_sidebar=sidebar)
     st.title(lense_option)
-    
-    # OmegaConf.resolve(config)
 
-    # OmegaConf.resolve(config)
-
-    show_market_performance(config["tickers"], config["lenses"][lense_option], config["style_conf"], transformation)
+    show_market_performance(config["tickers"], config["lenses"][lense_option], transformation, initial_lookback_days, lookback_factor)
 
     if "weiya" in os.path.expanduser("~"):
         config_dict = OmegaConf.to_container(config, resolve=True)

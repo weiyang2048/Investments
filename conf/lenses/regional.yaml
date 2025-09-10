@@ -27,7 +27,7 @@ regional:
     - AIA # iShares Asia 50 ETF
     - ASEA # Global X FTSE Southeast Asia ETF
     - AFK
-    - TRAMX # Middle East & Africa ETF https://www.morningstar.com/funds/xnas/tramx/portfolio
+    # - TRAMX # Middle East & Africa ETF https://www.morningstar.com/funds/xnas/tramx/portfolio
 
 
   # All: ${union:${portfolio.US_xUS},${portfolio.Regional}}
