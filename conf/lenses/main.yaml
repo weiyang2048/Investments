@@ -1,0 +1,34 @@
+main:
+  # Tripartite++: ${union:${portfolio.Tripartite+},[IAUM, IXC, SHLD]}
+
+  # Tripartite+: ${union:${portfolio.Tripartite},[XMMO, AVUV, AVDV]}
+
+  # Tripartite:
+  #   - SPMO
+  #   - IDMO
+  #   - IEMG
+  # Regional+: ${drop:${union:${portfolio.Tripartite},${portfolio.Regional}},[VTI]}
+  US_xUS:
+    - AVDV
+    - AVUV
+    - PIE
+    - IDMO
+    - SPMO
+    - IAUM
+    # - VXUS
+    # - VTI
+
+  Regional:
+    - AFK
+    - AIA
+    - IPAC # iShares Core MSCI Pacific ETF
+    - ILF # iShares Latin America 40 ETF
+    - FEP # First Trust Europe AlphaDEX Fund
+    - ASEA # Global X FTSE Southeast Asia ETF
+    - CEE # Central and Eastern Europe Fund https://www.morningstar.com/cefs/xnys/cee/quote
+    - TRAMX # Middle East & Africa ETF https://www.morningstar.com/funds/xnas/tramx/portfolio
+
+  Sectoral: [ARKW, AIQ, IXN, IXP, EUFN, IXG, EXI, SHLD, IXC, JXI, RXI, IXJ]
+
+  # All: ${union:${portfolio.US_xUS},${portfolio.Regional}}
+  # ALL: ${union:${portfolio.Tripartite},${portfolio.Regional}}

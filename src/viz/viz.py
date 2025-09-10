@@ -32,26 +32,14 @@ def create_performance_plot(
     """
     # Adjust the subplot grid to 2 rows and 3 columns
     fig = make_subplots(
-        rows=2,
-        cols=3,
+        rows=3,
+        cols=2,
         subplot_titles=[f"{days} trading days" for days in look_back_days],
         # shared_yaxes=True,
         vertical_spacing=0.1,
         horizontal_spacing=0.03,
     )
     stats = Stats(normalize_prices(df, symbols))
-    df_long_term = normalize_prices(df[-look_back_days[-1] :], symbols)
-    df_long_term = df_long_term[["Date"] + symbols]
-    long_term_stats = Stats(df_long_term)
-    long_term_weights = long_term_stats.ratios(transformation)
-    df_mid_term = normalize_prices(df[-look_back_days[-3] :], symbols)
-    df_mid_term = df_mid_term[["Date"] + symbols]
-    mid_term_stats = Stats(df_mid_term)
-    mid_term_weights = mid_term_stats.ratios(transformation)
-    df_short_term = normalize_prices(df[-look_back_days[-5] :], symbols)
-    df_short_term = df_short_term[["Date"] + symbols]
-    short_term_stats = Stats(df_short_term)
-    short_term_weights = short_term_stats.ratios(transformation)
     for i, days in enumerate(look_back_days):
         df_normalized = normalize_prices(df.iloc[-days:], symbols)
         # reorder the columns to match the order of the symbols
@@ -75,53 +63,40 @@ def create_performance_plot(
                     + f"<b style='color: {colors_dict[symbol]}'>Normalized Price:</b>"
                     + "%{y:.2f}<extra></extra>",
                 ),
-                row=(i // 3) + 1,  # Calculate row index
-                col=(i % 3) + 1,  # Calculate column index
+                row=(i // 2) + 1,  # Calculate row index
+                col=(i % 2) + 1,  # Calculate column index
             )
-            fig.update_xaxes(showgrid=False, row=i // 3 + 1, col=i % 3 + 1)
-            fig.update_yaxes(showgrid=False, row=i // 3 + 1, col=i % 3 + 1)
+            fig.update_xaxes(showgrid=False, row=i // 2 + 1, col=i % 2 + 1)
+            fig.update_yaxes(showgrid=False, row=i // 2 + 1, col=i % 2 + 1)
             # add a text box with the average performance
         stats = Stats(df_normalized)
-        current_ratios = stats.ratios(transformation)
+        current_ratios = list(stats.ratios(transformation))
+        # top 3 symbols by return
+        symbols = list(df_normalized.columns[1:])
+        top_3_symbols = [f'<span style="color: {colors_dict[symbols[i]]}">'+symbols[i]+'</span>' for i in np.argsort(current_ratios)[-1:-4:-1]]
         annotations = (
-            f"AVG: {"+" if stats.avg_return > 0 else "-"} {abs(stats.avg_return):.2%}, <span style='color: violet; '> {stats.weighted_mean_std()[1]*100:.2f}</span><br>"
-            + "<span style='color: snow; opacity: 0.3'>|</span>"
-            + f"{"<span style='color: snow; opacity: 0.3'>|</span>".join([f"<span style='color: {colors_dict[symbol]}'>{ratio*100:.0f}</span>{'<span style="color: snow; opacity: 0.3">|</span><br>' if (i+1)!=1 and (i+1)%10==0 else ''}" for i,symbol, ratio in zip(range(len(symbols)),symbols, current_ratios)])}"
-            + f"{'<span style="color: snow; opacity: 0.3">|</span><br>' if len(symbols) % 10 != 0 else ''}"
-            + f"ALT: {"+" if stats.alternative_return(current_ratios) > 0 else "-"} {abs(stats.alternative_return(current_ratios)):.2%}, <span style='color: violet; '> {stats.weighted_mean_std(current_ratios)[1]*100:.2f}</span><br>"
-            + (
-                f"ALT S: {"+" if stats.alternative_return(short_term_weights) > 0 else "-"} {abs(stats.alternative_return(short_term_weights)):.2%}, <span style='color: violet; '> {stats.weighted_mean_std(short_term_weights)[1]*100:.2f}</span><br>"
-                if i < len(look_back_days) - 5
-                else ""
-            )
-            + (
-                f"ALT M: {"+" if stats.alternative_return(mid_term_weights) > 0 else "-"} {abs(stats.alternative_return(mid_term_weights)):.2%}, <span style='color: violet; '> {stats.weighted_mean_std(mid_term_weights)[1]*100:.2f}</span><br>"
-                if i < len(look_back_days) - 3
-                else ""
-            )
-            + (
-                f"ALT L: {"+" if stats.alternative_return(long_term_weights) > 0 else "-"} {abs(stats.alternative_return(long_term_weights)):.2%}, <span style='color: violet; '> {stats.weighted_mean_std(long_term_weights)[1]*100:.2f}</span>"
-                if i < len(look_back_days) - 1
-                else ""
-            )
+            "<span style='color: snow; opacity: 0.3'>|</span>"
+            + f"{"<span style='color: snow; opacity: 0.3'>|</span>".join([f"<span style='color: {colors_dict[symbol]}'>{ratio*100:.0f}</span>{'<span style="color: snow; opacity: 0.3">|</span><br>' if (i+1)!=1 and (i+1)%6==0 else ''}" for i,symbol, ratio in zip(range(len(symbols)),symbols, current_ratios)])}"
+            + f"{'<span style="color: snow; opacity: 0.3">|</span><br>' if len(symbols) % 6 != 0 else ''}"
+            + f"{' | '.join(top_3_symbols)}<br>"
         )
         fig.add_annotation(
             x=min(df_normalized["Date"]),
             y=max(df_normalized.iloc[-1, 1:]),
             text=annotations,
-            font=dict(color="lightgreen" if stats.avg_return > 0 else "coral"),
+            font=dict(color="lightgreen" if stats.avg_return > 0 else "coral", size=20),
             opacity=1,
             bgcolor="black",
             xanchor="left",
             yanchor="top",
             showarrow=False,
-            row=i // 3 + 1,
-            col=i % 3 + 1,
+            row=i // 2 + 1,
+            col=i % 2 + 1,
         )
     fig.update_layout(
         height=800,
         showlegend=True,
-        # title_text="Normalized Performance Comparison",
+        # title_text="Normalized Performadnce Comparison",
         plot_bgcolor="black",
         paper_bgcolor="black",
         font=dict(color="white"),

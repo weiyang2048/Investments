@@ -80,20 +80,19 @@
     button {
         z-index: 1000000 !important;
     }
-
-    h1 {
-        display: block;
-        color: white !important;
-        text-align: center;
-        z-index: 1000000 !important;
-    }
-
 }
 
 
 /*
-Headers
+ @ Headers
 */
+
+h1 {
+    display: block;
+    color: lightcyan !important;
+    text-align: center;
+    z-index: 1000000 !important;
+}
 
 
 .stMarkdown h2 {

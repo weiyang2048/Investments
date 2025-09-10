@@ -2,29 +2,22 @@ VTI:
   symbol: VTI
   name: Vanguard Total Stock Market ETF
   region: US
-  n_holdings: 3561
   type: Blend
-  size: Large
   management: Passive # Vanguard
-  color: blue
+  color: royalblue
   url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=VTI
 VOO:
   symbol: VOO
   name: Vanguard S&P 500 ETF
   region: US
-  n_holdings: 509
   type: Blend
-  size: Large
-  management: Passive # Vanguard
-  color: blue
+  color: royalblue
   url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=VOO
 WTV:
   symbol: WTV
   name: WisdomTree US Value Fund of Benef Interest
   region: US
-  n_holdings: 155
   type: Value
-  size: Mid
   management: Active # WisdomTree
   color: pink
   url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=WTV
@@ -32,18 +25,15 @@ AVUV:
   symbol: AVUV
   name: Avantis U.S. Small Cap Value ETF
   region: US
-  n_holdings: 796
   type: Value
-  size: Small
+  color: lightblue
   management: Active # Avantis
   url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=AVUV
 KIE:
   symbol: KIE
   name: iShares U.S. Insurance ETF
   region: US
-  n_holdings: 54
   type: Value
-  size: Mid
   management: Passive
   industry: Insurance
   color: rgba(0, 148, 215, 0.5)
@@ -54,7 +44,6 @@ IFRA:
   name: iShares U.S. Infrastructure ETF
   region: US
   type: Blend
-  size: Small
   management: Passive # iShares
   industry: Infrastructure
   color: rgba(128,128,128,0.5) # grey
@@ -65,7 +54,6 @@ RXI:
   name: iShares U.S. Consumer Discretionary ETF
   region: US
   type: Blend
-  size: Large
   management: Passive # iShares
   industry: Consumer Discretionary
   color: darkorange
@@ -75,9 +63,7 @@ ITA:
   symbol: ITA
   name: iShares U.S. Aerospace & Defense ETF
   region: US
-  n_holdings: 33
   type: Blend
-  size: Large
   management: Passive # iShares
   industry: Aerospace & Defense
   color: rgba(255, 0, 200, 0.7) # red

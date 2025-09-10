@@ -1,9 +1,5 @@
 sectoral:
-  Sectoral+: ${union:[ARKW,AIQ],${lenses.sectoral.Sectoral},[ EUFN, IAUM, SHLD, PAVE]}
-
-  Sectoral: [IXN, IXP, EXI, RXI, IXJ, KXI, IXG]
-
-  Sectoral2: [IXC, JXI, MXI, REET]
+  Sectoral2: [ MXI, REET, KXI]
 
   Industrials:
     - EXI

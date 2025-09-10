@@ -13,12 +13,8 @@ EUAD:
   symbol: EUAD
   name: Select STOXX Europe Aerospace & Defense ETF
   region: Europe
-  n_holdings: 15 # 08-09-25 12:31
-  type: Growth
-  size: Large
-  management: Passive # Select
   industry: Defense
-  color: rgba(150,0,0,0.25)
+  color: rgba(150,0,150,1)
   line_style: dashdot
   url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=EUAD
 SPEU:

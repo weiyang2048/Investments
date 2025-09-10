@@ -20,7 +20,7 @@ def sidebar():
     # @ lense selector
     lense_option = st.sidebar.selectbox(
         "Lense",
-        ["regional", "sectoral", "zoo"],
+        ["main", "sectoral", "zoo"],
         help="Choose the lense to display\n",
     )
 
@@ -88,7 +88,7 @@ def show_market_performance(
 
             # Display normalized data option
             # if st.checkbox("Show Normalized Data", key=f"raw_data_{symbol_type}"):
-            # st.dataframe(df_normalized)
+            st.dataframe(df_pivot)
 
 
 if __name__ == "__main__":
@@ -109,6 +109,8 @@ if __name__ == "__main__":
     transformation, lense_option = setup_page_and_sidebar(config["style_conf"], add_to_sidebar=sidebar)
     st.title(lense_option)
     
+    # OmegaConf.resolve(config)
+
     # OmegaConf.resolve(config)
 
     show_market_performance(config["tickers"], config["lenses"][lense_option], config["style_conf"], transformation)
