@@ -20,7 +20,7 @@ def sidebar():
     # @ lense selector
     lense_option = st.sidebar.selectbox(
         "Lense",
-        ["regional", "sectoral", "zoo"],
+        ["main", "sectoral", "zoo"],
         help="Choose the lense to display\n",
     )
 

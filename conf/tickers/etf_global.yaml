@@ -86,7 +86,7 @@ SHLD:
   size: Large
   management: Passive # Global X
   industry: Defense
-  color: rgba(150,0,0,0.5)
+  color: rgba(150,0,0,1)
   line_style: dot
   url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=SHLD
 NATO:

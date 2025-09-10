@@ -12,7 +12,7 @@ defaults:
       - Renewable_utilities_stocks
       - insurance_stocks
       - it_stocks
-  - lenses: [regional, sectoral, zoo]
+  - lenses: [main, sectoral, zoo]
 # lenses:
 #   regional: ${include:portfolio.regions}
 #   sectoral: ${include:portfolio.sectors}
