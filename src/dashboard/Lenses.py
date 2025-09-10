@@ -108,6 +108,8 @@ if __name__ == "__main__":
         )
     transformation, lense_option = setup_page_and_sidebar(config["style_conf"], add_to_sidebar=sidebar)
     st.title(lense_option)
+    
+    # OmegaConf.resolve(config)
 
     # OmegaConf.resolve(config)
 
