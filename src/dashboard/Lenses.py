@@ -39,12 +39,12 @@ def sidebar():
 
     transformation = get_transformation(transformation_option)
 
-    lense_option = st.selectbox(
-        "Lense",
-        ["main", "sectoral", "zoo"],
-        help="Choose the lense to display\n",
-        key="lense_option",
-    )
+    # lense_option = st.selectbox(
+    #     "Lense",
+    #     ["main", "sectoral", "zoo"],
+    #     help="Choose the lense to display\n",
+    #     key="lense_option",
+    # )
     col1, col2 = st.columns(2)
 
     with col1:
@@ -68,7 +68,7 @@ def sidebar():
             key="lookback_factor_input",
         )
 
-    return transformation, lense_option, initial_lookback_days, lookback_factor
+    return transformation, initial_lookback_days, lookback_factor
 
 
 def show_market_performance(
@@ -132,7 +132,8 @@ if __name__ == "__main__":
             # "~tickers.insurance_stocks",
             # ],
         )
-    transformation, lense_option, initial_lookback_days, lookback_factor = setup_page_and_sidebar(config["style_conf"], add_to_sidebar=sidebar)
+    transformation, initial_lookback_days, lookback_factor = setup_page_and_sidebar(config["style_conf"], add_to_sidebar=sidebar)
+    lense_option = "main"
     st.title(lense_option)
 
     show_market_performance(config["tickers"], config["lenses"][lense_option], transformation, initial_lookback_days, lookback_factor)

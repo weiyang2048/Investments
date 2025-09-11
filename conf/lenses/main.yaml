@@ -8,17 +8,16 @@ main:
   #   - IDMO
   #   - IEMG
   # Regional+: ${drop:${union:${portfolio.Tripartite},${portfolio.Regional}},[VTI]}
-  US_xUS:
+  Regional:
     - AVDV
     - AVUV
-    - PIE
     - IDMO
     - SPMO
     - IAUM
+    - DBC
     # - VXUS
     # - VTI
 
-  Regional:
     - AFK
     - AIA
     - IPAC # iShares Core MSCI Pacific ETF
