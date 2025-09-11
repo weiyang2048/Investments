@@ -46,28 +46,25 @@ def sidebar():
     #     help="Choose the lense to display\n",
     #     key="lense_option",
     # )
-    col1, col2 = st.columns(2)
 
-    with col1:
-        initial_lookback_days = st.number_input(
-            "Initial Lookback Days",
-            min_value=1,
-            max_value=3650,
-            value=6,
-            step=1,
-            help="Ingrese el número inicial de días para el período de análisis. (Español: 'días de retroceso') / Entrez le nombre initial de jours pour la période d'analyse. (Français: 'jours de retour en arrière')",
-            key="lookback_days_input",
-        )
-    with col2:
-        lookback_factor = st.number_input(
-            "Lookback Factor",
-            min_value=1,
-            max_value=10,
-            value=3,
-            step=1,
-            help="Ingrese el factor para multiplicar los días de retroceso. (Español: 'factor') / Entrez le facteur pour multiplier les jours de retour en arrière. (Français: 'facteur')",
-            key="lookback_factor_input",
-        )
+    initial_lookback_days = st.sidebar.number_input(
+        "Initial Lookback Days",
+        min_value=1,
+        max_value=3650,
+        value=7,
+        step=1,
+        help="Ingrese el número inicial de días para el período de análisis. (Español: 'días de retroceso') / Entrez le nombre initial de jours pour la période d'analyse. (Français: 'jours de retour en arrière')",
+        key="lookback_days_input",
+    )
+    lookback_factor = st.sidebar.number_input(
+        "Lookback Factor",
+        min_value=1,
+        max_value=10,
+        value=3,
+        step=1,
+        help="Ingrese el factor para multiplicar los días de retroceso. (Español: 'factor') / Entrez le facteur pour multiplier les jours de retour en arrière. (Français: 'facteur')",
+        key="lookback_factor_input",
+    )
 
     return transformation, initial_lookback_days, lookback_factor
 
@@ -84,6 +81,7 @@ def show_market_performance(
 
     # Symbol selection using tabs instead of sidebar radio
     symbol_types = [key for key in portfolio_config.keys()]
+    symbol_types = symbol_types + ["Summary"]
     tabs = st.tabs(symbol_types)
 
     # Create content for each tab
@@ -91,43 +89,68 @@ def show_market_performance(
 
     # Generate look_back_days list based on user input
     look_back_days = [int(initial_lookback_days * (lookback_factor**i)) for i in range(6)]
+    summaries = dict()
     for i, symbol_type in enumerate(symbol_types):
         with tabs[i]:
-            symbols = portfolio_config[symbol_type]
-            period = f"{look_back_days[-1]}d"
+            if symbol_type == "Summary":
+                for idx, symbol_type in enumerate(summaries.keys()):
+                    count_df = summaries[symbol_type]
+                    center_cols = st.columns([1, 6, 1])
+                    with center_cols[1]:
+                        st.subheader(symbol_type)
+                        st.dataframe(
+                            count_df.style.set_properties(
+                                **{"color": "white", "font-weight": "bold", "background-color": "black"}, subset=pd.IndexSlice[:, :]
+                            ).background_gradient(cmap="viridis", axis=1),
+                            # width=1000,
+                            hide_index=True,
+                        )
+            else:
+                symbols = portfolio_config[symbol_type]
+                period = f"{look_back_days[-1]}d"
 
-            # Load and process data
-            df_pivot = pivot_data(list(symbols), period, streamlit=True)
+                # Load and process data
+                df_pivot = pivot_data(list(symbols), period, streamlit=True)
 
-            # Create and display plot
-            colors_dict = {symbol: equity_config.get(symbol, {}).get("color", get_random_style("color")) for symbol in symbols}
-            line_styles_dict = {symbol: equity_config.get(symbol, {}).get("line_style", get_random_style("line_style")) for symbol in symbols}
-            fig, df_normalized, count_dict = create_performance_plot(
-                df_pivot,
-                symbols,
-                look_back_days,
-                colors_dict,
-                line_styles_dict,
-                equity_config,
-                transformation,
-            )
+                # Create and display plot
+                colors_dict = {symbol: equity_config.get(symbol, {}).get("color", get_random_style("color")) for symbol in symbols}
+                line_styles_dict = {symbol: equity_config.get(symbol, {}).get("line_style", get_random_style("line_style")) for symbol in symbols}
+                fig, df_normalized, count_dict = create_performance_plot(
+                    df_pivot,
+                    symbols,
+                    look_back_days,
+                    colors_dict,
+                    line_styles_dict,
+                    equity_config,
+                    transformation,
+                )
+                count_df = pd.DataFrame(list(count_dict.items()), columns=["Symbol", "Count"])
+                count_df["weight"] = count_df["Count"] * 5
+                count_df = count_df[["Symbol", "weight"]]
+                count_df = count_df.sort_values(by="weight", ascending=False)
+                # Transpose so symbols are columns
+                count_df_t = count_df.set_index("Symbol").T
+                summaries[symbol_type] = count_df_t
+                center_cols = st.columns([1, 6, 1])
+                with center_cols[1]:
+                    st.dataframe(
+                        count_df_t.style.set_table_styles(
+                            [{"selector": "th", "props": [("background-color", "black !important"), ("color", "white !importantr")]}]
+                        ).background_gradient(cmap="viridis", axis=1),
+                        use_container_width=True,
+                        hide_index=True,
+                    )
+                st.plotly_chart(fig, use_container_width=True, config={"displayModeBar": False})
 
-            st.plotly_chart(fig, use_container_width=True, config={"displayModeBar": False})
-            # counts dict into a dataframe
-            count_df = pd.DataFrame(list(count_dict.items()), columns=["Symbol", "Count"])
-            count_df["weight"] = count_df["Count"] * 5
-            st.dataframe(
-                count_df.sort_values(by="weight", ascending=False).style.background_gradient(cmap="viridis"),
-                use_container_width=False,
-                hide_index=True,
-            )
-            # for symbol, count in count_dict.items():
-            #     if count > 0:
-            #         st.write(f"{symbol}: {count}")r
-            # Display normalized data option
-            # if st.checkbox("Show Normalized Data", key=f"raw_data_{symbol_type}"):
-            if "weiya" in os.path.expanduser("~"):
-                st.dataframe(df_pivot)
+                # Center the dataframe by using st.columns to create a centered layout
+
+                # for symbol, count in count_dict.items():
+                #     if count > 0:
+                #         st.write(f"{symbol}: {count}")r
+                # Display normalized data option
+                # if st.checkbox("Show Normalized Data", key=f"raw_data_{symbol_type}"):
+                if "weiya" in os.path.expanduser("~"):
+                    st.dataframe(df_pivot)
 
 
 if __name__ == "__main__":
