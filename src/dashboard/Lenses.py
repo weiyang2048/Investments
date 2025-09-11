@@ -84,9 +84,6 @@ def show_market_performance(
     symbol_types = symbol_types + ["Summary"]
     tabs = st.tabs(symbol_types)
 
-    # Create content for each tab
-    # Prompt user for initial lookback days and a factor to multiply
-
     # Generate look_back_days list based on user input
     look_back_days = [int(initial_lookback_days * (lookback_factor**i)) for i in range(6)]
     summaries = dict()
@@ -99,9 +96,7 @@ def show_market_performance(
                     with center_cols[1]:
                         st.subheader(symbol_type)
                         st.dataframe(
-                            count_df.style.set_properties(
-                                **{"color": "white", "font-weight": "bold", "background-color": "black"}, subset=pd.IndexSlice[:, :]
-                            ).background_gradient(cmap="viridis", axis=1),
+                            count_df.style.set_properties(**{"font-weight": "bold"}).background_gradient(cmap="viridis", axis=1),
                             # width=1000,
                             hide_index=True,
                         )
@@ -134,9 +129,7 @@ def show_market_performance(
                 center_cols = st.columns([1, 6, 1])
                 with center_cols[1]:
                     st.dataframe(
-                        count_df_t.style.set_table_styles(
-                            [{"selector": "th", "props": [("background-color", "black !important"), ("color", "white !importantr")]}]
-                        ).background_gradient(cmap="viridis", axis=1),
+                        count_df_t.style.set_properties(**{"font-weight": "bold"}).background_gradient(cmap="viridis", axis=1),
                         use_container_width=True,
                         hide_index=True,
                     )

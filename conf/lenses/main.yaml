@@ -29,5 +29,5 @@ main:
 
   Sectoral: [ARKW, AIQ, IXN, IXP, IXG, RXI, EXI, SHLD, IXC, JXI, IXJ, KXI]
 
-  # All: ${union:${portfolio.US_xUS},${portfolio.Regional}}
+  All: ${union:${lenses.main.Regional},${lenses.main.Sectoral}}
   # ALL: ${union:${portfolio.Tripartite},${portfolio.Regional}}
