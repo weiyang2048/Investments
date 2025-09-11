@@ -13,6 +13,7 @@ from src.data import pivot_data
 from src.viz.viz import create_performance_plot
 from src.configurations.style_picker import get_random_style
 from src.dashboard.create_page import setup_page_and_sidebar
+import pandas as pd
 
 
 def sidebar():
@@ -52,7 +53,7 @@ def sidebar():
             "Initial Lookback Days",
             min_value=1,
             max_value=3650,
-            value=5,
+            value=6,
             step=1,
             help="Ingrese el número inicial de días para el período de análisis. (Español: 'días de retroceso') / Entrez le nombre initial de jours pour la période d'analyse. (Français: 'jours de retour en arrière')",
             key="lookback_days_input",
@@ -101,7 +102,7 @@ def show_market_performance(
             # Create and display plot
             colors_dict = {symbol: equity_config.get(symbol, {}).get("color", get_random_style("color")) for symbol in symbols}
             line_styles_dict = {symbol: equity_config.get(symbol, {}).get("line_style", get_random_style("line_style")) for symbol in symbols}
-            fig, df_normalized = create_performance_plot(
+            fig, df_normalized, count_dict = create_performance_plot(
                 df_pivot,
                 symbols,
                 look_back_days,
@@ -110,11 +111,23 @@ def show_market_performance(
                 equity_config,
                 transformation,
             )
-            st.plotly_chart(fig, use_container_width=True, config={"displayModeBar": False})
 
+            st.plotly_chart(fig, use_container_width=True, config={"displayModeBar": False})
+            # counts dict into a dataframe
+            count_df = pd.DataFrame(list(count_dict.items()), columns=["Symbol", "Count"])
+            count_df["weight"] = count_df["Count"] * 5
+            st.dataframe(
+                count_df.sort_values(by="weight", ascending=False).style.background_gradient(cmap="viridis"),
+                use_container_width=False,
+                hide_index=True,
+            )
+            # for symbol, count in count_dict.items():
+            #     if count > 0:
+            #         st.write(f"{symbol}: {count}")r
             # Display normalized data option
             # if st.checkbox("Show Normalized Data", key=f"raw_data_{symbol_type}"):
-            st.dataframe(df_pivot)
+            if "weiya" in os.path.expanduser("~"):
+                st.dataframe(df_pivot)
 
 
 if __name__ == "__main__":

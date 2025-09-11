@@ -40,6 +40,7 @@ def create_performance_plot(
         horizontal_spacing=0.03,
     )
     stats = Stats(normalize_prices(df, symbols))
+    count_dict = {symbol: 0 for symbol in symbols}
     for i, days in enumerate(look_back_days):
         df_normalized = normalize_prices(df.iloc[-days:], symbols)
         # reorder the columns to match the order of the symbols
@@ -76,12 +77,15 @@ def create_performance_plot(
         current_ratios = list(stats.ratios(transformation))
         # top 3 symbols by return
         symbols = list(df_normalized.columns[1:])
-        top_3_symbols = [f'<span style="color: {colors_dict[symbols[i]]}">' + symbols[i] + "</span>" for i in np.argsort(current_ratios)[-1:-4:-1]]
+        top_3_symbols = [symbols[i] for i in np.argsort(current_ratios)[-1:-4:-1]]
+        for symbol in top_3_symbols:
+            count_dict[symbol] += 1
+        top_3_symbols_styled = [f'<span style="color: {colors_dict[symbol]}">' + symbol + "</span>" for symbol in top_3_symbols]
         annotations = (
             "<span style='color: snow; opacity: 0.3'>|</span>"
             + f"{"<span style='color: snow; opacity: 0.3'>|</span>".join([f"<span style='color: {colors_dict[symbol]}'>{ratio*100:.0f}</span>{'<span style="color: snow; opacity: 0.3">|</span><br>' if (i+1)!=1 and (i+1)%6==0 else ''}" for i,symbol, ratio in zip(range(len(symbols)),symbols, current_ratios)])}"
             + f"{'<span style="color: snow; opacity: 0.3">|</span><br>' if len(symbols) % 6 != 0 else ''}"
-            + f"{' | '.join(top_3_symbols)}<br>"
+            + f"{' | '.join(top_3_symbols_styled)}<br>"
         )
         fig.add_annotation(
             x=min(df_normalized["Date"]),
@@ -117,4 +121,4 @@ def create_performance_plot(
         ),
     )
 
-    return fig, df_normalized
+    return fig, df_normalized, count_dict
