@@ -9,6 +9,13 @@ color_dict:
 # TODO: these should not be in the style_conf
 Tools:
   Equity:
+    Fund Manager:
+      - title: iShares
+        url: https://www.ishares.com/us
+      - title: Vanguard
+        url: https://www.vanguard.com/
+      - title: Fidelity
+        url: https://www.fidelity.com/
     ETFs:
       - title: yFinance Top ETFs
         url: https://finance.yahoo.com/markets/etfs/top/?start=0&count=20

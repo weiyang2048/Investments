@@ -29,6 +29,5 @@ regional:
     - AFK
     # - TRAMX # Middle East & Africa ETF https://www.morningstar.com/funds/xnas/tramx/portfolio
 
-
   # All: ${union:${portfolio.US_xUS},${portfolio.Regional}}
   # ALL: ${union:${portfolio.Tripartite},${portfolio.Regional}}

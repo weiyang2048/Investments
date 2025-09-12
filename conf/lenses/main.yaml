@@ -18,12 +18,12 @@ main:
     # - VXUS
     # - VTI
 
-    - AFK
-    - AIA
-    - IPAC # iShares Core MSCI Pacific ETF
     - ILF # iShares Latin America 40 ETF
-    - FEP # First Trust Europe AlphaDEX Fund
+    - AFK 
+    - AIA
     - ASEA # Global X FTSE Southeast Asia ETF
+    - IPAC # iShares Core MSCI Pacific ETF
+    - FEP # First Trust Europe AlphaDEX Fund
     # - CEE # Central and Eastern Europe Fund https://www.morningstar.com/cefs/xnys/cee/quote
     # - TRAMX # Middle East & Africa ETF https://www.morningstar.com/funds/xnas/tramx/portfolio
 
