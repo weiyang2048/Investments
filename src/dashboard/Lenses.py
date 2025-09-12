@@ -96,7 +96,7 @@ def show_market_performance(
                     with center_cols[1]:
                         st.subheader(symbol_type)
                         st.dataframe(
-                            count_df.style.set_properties(**{"font-weight": "bold"}).background_gradient(cmap="viridis", axis=1),
+                            count_df.style.set_properties(**{"font-weight": "bold"}).background_gradient(cmap="RdYlGn", vmin=-10, vmax=20, axis=1),
                             # width=1000,
                             hide_index=True,
                         )
@@ -120,6 +120,7 @@ def show_market_performance(
                     transformation,
                 )
                 count_df = pd.DataFrame(list(count_dict.items()), columns=["Symbol", "Count"])
+                count_df.query("Count != 0", inplace=True)
                 count_df["weight"] = count_df["Count"] * 5
                 count_df = count_df[["Symbol", "weight"]]
                 count_df = count_df.sort_values(by="weight", ascending=False)
@@ -129,7 +130,7 @@ def show_market_performance(
                 center_cols = st.columns([1, 6, 1])
                 with center_cols[1]:
                     st.dataframe(
-                        count_df_t.style.set_properties(**{"font-weight": "bold"}).background_gradient(cmap="viridis", axis=1),
+                        count_df_t.style.set_properties(**{"font-weight": "bold"}).background_gradient(cmap="RdYlGn", vmin=-10, vmax=20, axis=1),
                         use_container_width=True,
                         hide_index=True,
                     )

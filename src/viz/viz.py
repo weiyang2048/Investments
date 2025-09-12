@@ -78,14 +78,19 @@ def create_performance_plot(
         # top 3 symbols by return
         symbols = list(df_normalized.columns[1:])
         top_3_symbols = [symbols[i] for i in np.argsort(current_ratios)[-1:-4:-1]]
+        bottom_3_symbols = [symbols[i] for i in np.argsort(current_ratios)[:3] if current_ratios[i] < 0]
         for symbol in top_3_symbols:
             count_dict[symbol] += 1
+        if days < 90:
+            for symbol in bottom_3_symbols:
+                count_dict[symbol] -= 1
         top_3_symbols_styled = [f'<span style="color: {colors_dict[symbol]}">' + symbol + "</span>" for symbol in top_3_symbols]
+        bottom_3_symbols_styled = [f'<span style="color: {colors_dict[symbol]}">' + symbol + "</span>" for symbol in bottom_3_symbols]
         annotations = (
             "<span style='color: snow; opacity: 0.3'>|</span>"
             + f"{"<span style='color: snow; opacity: 0.3'>|</span>".join([f"<span style='color: {colors_dict[symbol]}'>{ratio*100:.0f}</span>{'<span style="color: snow; opacity: 0.3">|</span><br>' if (i+1)!=1 and (i+1)%6==0 else ''}" for i,symbol, ratio in zip(range(len(symbols)),symbols, current_ratios)])}"
             + f"{'<span style="color: snow; opacity: 0.3">|</span><br>' if len(symbols) % 6 != 0 else ''}"
-            + f"{' | '.join(top_3_symbols_styled)}<br>"
+            + f"{' | '.join(top_3_symbols_styled)}<br>{' | '.join(bottom_3_symbols_styled)}<br>"
         )
         fig.add_annotation(
             x=min(df_normalized["Date"]),
