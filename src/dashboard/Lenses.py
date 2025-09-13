@@ -26,7 +26,7 @@ def sidebar(config):
     st.sidebar.markdown("Correlation Denoising")
     marchenko_pastur = st.sidebar.checkbox(
         "Marchenko Pastur",
-        value=False,
+        value=True,
         key="marchenko_pastur_input",
     )
     st.sidebar.markdown("<hr>", unsafe_allow_html=True)

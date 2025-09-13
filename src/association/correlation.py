@@ -38,10 +38,11 @@ def pivoted_to_corr(df: pd.DataFrame, plot: bool = False, streamlit: bool = Fals
     df_pivot = df.copy()
     df_pivot.drop(columns=["Date"], inplace=True)
     df_pivot.dropna(axis=0, inplace=True)
+    q = df_pivot.shape[0] / df_pivot.shape[1]
     df_pivot = df_pivot.pct_change()
     corr_matrix = df_pivot.corr()
     if marchenko_pastur:
-        corr_matrix = denoise_corr_marchenko_pastur(corr_matrix)
+        corr_matrix = denoise_corr_marchenko_pastur(corr_matrix, q)
     corr_matrix = corr_matrix * 10
     if plot:
         mask = np.eye(corr_matrix.shape[0], dtype=bool)
