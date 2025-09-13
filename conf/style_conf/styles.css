@@ -1,19 +1,13 @@
 /* @ sidebar */
 [data-testid="stSidebar"][aria-expanded="true"] {
-    max-width: 3vw;
+    max-width: 5vw;
     display: block !important;
     z-index: 1000001 !important;
 
     /* * last div, this is where we added our links */
     div:last-child {
-        /* Style for the last div inside the expanded sidebar */
-        /* /* display: block !important; */
-        position: relative !important;
-        width: 100% !important;
-        /* margin: 0 !important; */
-        padding-left: 0 !important;
-        padding-right: 0 !important;
         display: block !important;
+
 
         [data-baseweb="select"] {
             width: 100% !important;
@@ -155,6 +149,12 @@ folium map
     margin-left: auto !important;
     margin-right: auto !important;
 }
+
+.st-key-marchenko_pastur_input {
+    margin-left: auto !important;
+    margin-right: auto !important;
+}
+
 
 .field {
     font-weight: bold;
