@@ -1,26 +1,22 @@
 KMPR:
-  symbol: KMPR
   name: Kemper Corporation
   region: US
   industry: Insurance
   color: "#db2416"
   url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=KMPR
 PGR:
-  symbol: PGR
   name: Progressive Corporation
   region: US
   industry: Insurance
   color: "rgb(0, 83, 186)"
   url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=PGR
 ALL:
-  symbol: ALL
   name: Allstate Corporation
   region: US
   industry: Insurance
   color: "rgb(0, 51, 160)"
   url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=ALL
 BRK-B:
-  symbol: BRK-B
   name: Berkshire Hathaway
   region: US
   industry: Insurance
@@ -28,7 +24,6 @@ BRK-B:
   line_style: dot
   url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=BRK-B
 TRV:
-  symbol: TRV
   name: Travelers Companies
   region: US
   industry: Insurance

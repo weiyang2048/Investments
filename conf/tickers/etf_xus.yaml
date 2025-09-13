@@ -1,5 +1,4 @@
 VXUS:
-  symbol: VXUS
   name: Vanguard Total International Stock ETF
   region: XUS
   n_holdings: 8614
@@ -9,7 +8,6 @@ VXUS:
   color: seagreen
   url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=VXUS
 VEU:
-  symbol: VEU
   name: Vanguard FTSE All-World ex-US Index Fund ETF Shares
   region: XUS
   n_holdings: 3853
@@ -19,7 +17,6 @@ VEU:
   color: brown
   url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=VEU
 VEA:
-  symbol: VEA
   name: Vanguard FTSE Developed Markets ETF
   region: XUS
   n_holdings: 3886
@@ -29,7 +26,6 @@ VEA:
   color: gray
   url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=VEA
 FENI:
-  symbol: FENI
   name: Fidelity Enhanced International ETF
   region: XUS
   n_holdings: 329
@@ -39,7 +35,6 @@ FENI:
   color: rgba(155,155,55,1)
   url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=FENI
 VTMGX:
-  symbol: VTMGX
   name: Vanguard Total International Stock ETF
   region: XUS
   n_holdings: 8614
@@ -50,7 +45,6 @@ VTMGX:
   url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=VTMGX
 # ! Value
 AVDV:
-  symbol: AVDV
   name: Avantis International Small Cap Value ETF
   region: XUS
   n_holdings: 1445
@@ -61,7 +55,6 @@ AVDV:
   line_style: dash
   url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=AVDV
 DOL:
-  symbol: DOL
   name: WisdomTree International LargeCap Dividend Fund
   region: XUS
   n_holdings: 277
@@ -73,7 +66,6 @@ DOL:
 
 # ! Quality
 IDHQ:
-  symbol: IDHQ
   name: iShares U.S. Quality ETF
   region: XUS
   n_holdings: 209 # 08-09-25 12:31

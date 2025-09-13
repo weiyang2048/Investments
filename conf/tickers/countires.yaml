@@ -1,0 +1,38 @@
+FXI:
+  name: iShares China Large-Cap ETF
+
+EWT:
+  name: iShares MSCI Taiwan ETF
+
+EWY:
+  name: iShares MSCI South Korea ETF
+
+EWU:
+  name: iShares MSCI United Kingdom ETF
+
+EWL:
+  name: iShares MSCI Switzerland ETF
+
+EWG:
+  name: iShares MSCI Germany ETF
+
+EWW:
+  name: iShares MSCI Mexico ETF
+
+ARGT:
+  name: Global X MSCI Argentina ETF
+
+EWS:
+  name: iShares MSCI Singapore ETF
+
+EIS:
+  name: iShares MSCI Israel ETF
+
+EWJ:
+  name: iShares MSCI Japan ETF
+
+EWA:
+  name: iShares MSCI Australia ETF
+
+EWC:
+  name: iShares MSCI Canada ETF
