@@ -1,33 +1,28 @@
 AES:
-  symbol: AES
   name: AES Corporation
   region: US
   industry: Utility
   color: "violet"
   url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=AES
 VST:
-  symbol: VST
   name: Vistra Corp
   region: US
   industry: Utility
   color: "rgb(0, 84, 166)"  # Deep blue from Vistra's brand/logo
   url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=VST
 NEE:
-  symbol: NEE
   name: NextEra Energy
   region: US
   industry: Utility
   color: "rgb(0, 181, 226)"  # Blue from NextEra logo
   url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=NEE
 DUK:
-  symbol: DUK
   name: Duke Energy
   region: US
   industry: Utility
   color: "rgb(84, 185, 72)"  # Blue from Duke Energy logo
   url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=DUK
 FLNC:
-  symbol: FLNC
   name: Fluence Energy
   region: US
   industry: Renewable
@@ -35,7 +30,6 @@ FLNC:
   line_style: dot
   url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=FLNC
 GEV:
-  symbol: GEV
   name: GE Vernova
   region: US
   industry: Wind Turbine Manufacturing
@@ -43,7 +37,6 @@ GEV:
   line_style: dot
   url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=GEV
 FSLR:
-  symbol: FSLR
   name: First Solar
   region: US
   industry: Renewable
@@ -51,7 +44,6 @@ FSLR:
   line_style: dot
   url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=FSLR
 BEP:
-  symbol: BEP
   name: Brookfield Renewable Partners
   region: US
   industry: Renewable

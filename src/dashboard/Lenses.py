@@ -1,13 +1,8 @@
 from src.configurations.yaml import register_resolvers
 import streamlit as st
 from typing import Callable
-from loguru import logger
-from omegaconf import OmegaConf
 
-# from src.dashboard.create_page import setup_page, show_market_performance
 import hydra
-import os
-import json
 import numpy as np
 from src.data import pivot_data
 from src.viz.viz import create_performance_plot
@@ -40,12 +35,12 @@ def sidebar():
 
     transformation = get_transformation(transformation_option)
 
-    # lense_option = st.selectbox(
-    #     "Lense",
-    #     ["main", "sectoral", "zoo"],
-    #     help="Choose the lense to display\n",
-    #     key="lense_option",
-    # )
+    lense_option = st.sidebar.selectbox(
+        "Lense",
+        ["main", "sectoral", "zoo"],
+        help="Choose the lense to display\n",
+        key="lense_option",
+    )
 
     initial_lookback_days = st.sidebar.number_input(
         "Initial Lookback Days",
@@ -66,7 +61,7 @@ def sidebar():
         key="lookback_factor_input",
     )
 
-    return transformation, initial_lookback_days, lookback_factor
+    return transformation, initial_lookback_days, lookback_factor, lense_option
 
 
 def show_market_performance(
@@ -95,11 +90,19 @@ def show_market_performance(
                     center_cols = st.columns([1, 6, 1])
                     with center_cols[1]:
                         st.subheader(symbol_type)
-                        st.dataframe(
-                            count_df.style.set_properties(**{"font-weight": "bold"}).background_gradient(cmap="RdYlGn", vmin=-10, vmax=20, axis=1),
-                            # width=1000,
-                            hide_index=True,
+                        # Convert DataFrame to HTML with styling
+                        styled_df = (
+                            count_df.style.set_properties(**{"font-weight": "bold"})
+                            .set_table_styles(
+                                [
+                                    {"selector": "thead th", "props": [("background-color", "black"), ("color", "white")]},
+                                    {"selector": "tbody th", "props": [("background-color", "black"), ("color", "white")]},
+                                ]
+                            )
+                            .background_gradient(cmap="RdYlGn", vmin=-10, vmax=20, axis=1)
                         )
+                        html_table = styled_df.to_html()
+                        st.markdown(html_table, unsafe_allow_html=True)
             else:
                 symbols = portfolio_config[symbol_type]
                 period = f"{look_back_days[-1]}d"
@@ -136,16 +139,6 @@ def show_market_performance(
                     )
                 st.plotly_chart(fig, use_container_width=True, config={"displayModeBar": False})
 
-                # Center the dataframe by using st.columns to create a centered layout
-
-                # for symbol, count in count_dict.items():
-                #     if count > 0:
-                #         st.write(f"{symbol}: {count}")r
-                # Display normalized data option
-                # if st.checkbox("Show Normalized Data", key=f"raw_data_{symbol_type}"):
-                if "weiya" in os.path.expanduser("~"):
-                    st.dataframe(df_pivot)
-
 
 if __name__ == "__main__":
 
@@ -154,22 +147,8 @@ if __name__ == "__main__":
     register_resolvers()
 
     with hydra.initialize(version_base=None, config_path="../../conf"):
-        config = hydra.compose(
-            config_name="main",
-            # overrides=[
-            #     # "+style_conf=main",
-            # "portfolio=regions",
-            # "~tickers.insurance_stocks",
-            # ],
-        )
-    transformation, initial_lookback_days, lookback_factor = setup_page_and_sidebar(config["style_conf"], add_to_sidebar=sidebar)
-    lense_option = "main"
+        config = hydra.compose(config_name="main")
+    transformation, initial_lookback_days, lookback_factor, lense_option = setup_page_and_sidebar(config["style_conf"], add_to_sidebar=sidebar)
     st.title(lense_option)
 
     show_market_performance(config["tickers"], config["lenses"][lense_option], transformation, initial_lookback_days, lookback_factor)
-
-    if "weiya" in os.path.expanduser("~"):
-        config_dict = OmegaConf.to_container(config, resolve=True)
-        config_json = json.dumps(config_dict, indent=2)
-        st.subheader("Current Configuration (JSON)")
-        st.json(config_json)

@@ -1,5 +1,4 @@
 USHY:
-  symbol: USHY
   name: iShares U.S. High Yield Corporate Bond ETF
   region: US
   type: Value
@@ -10,7 +9,6 @@ USHY:
   line_style: solid
   url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=USHY
 GHY:
-  symbol: GHY
   name: iShares Global High Yield Corporate Bond ETF
   region: Global
   type: Value
@@ -21,7 +19,6 @@ GHY:
   line_style: dash
   url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=GHY
 GHYG:
-  symbol: GHYG
   name: iShares Global High Yield Corporate Bond ETF
   region: Global
   type: Value

@@ -1,8 +1,6 @@
 ARKK:
-  symbol: ARKK
   name: ARK Innovation ETF
   region: US
-  n_holdings: 35
   type: Growth
   size: Large
   management: Active # ARK Invest
@@ -10,10 +8,8 @@ ARKK:
   url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=ARKK
 
 ARKW:
-  symbol: ARKW
   name: ARK Next Generation Internet ETF
   region: US
-  n_holdings: 40
   type: Growth
   size: Large
   management: Active # ARK Invest
@@ -21,10 +17,8 @@ ARKW:
   url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=ARKW
 
 ARKF:
-  symbol: ARKF
   name: ARK Fintech Innovation ETF
   region: US
-  n_holdings: 45
   type: Growth
   size: Large
   management: Active # ARK Invest
@@ -32,10 +26,8 @@ ARKF:
   url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=ARKF
 
 ARKG:
-  symbol: ARKG
   name: ARK Genomic Revolution ETF
   region: US
-  n_holdings: 50
   type: Growth
   size: Large
   management: Active # ARK Invest
@@ -43,10 +35,8 @@ ARKG:
   url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=ARKG
 
 ARKQ:
-  symbol: ARKQ
   name: ARK Autonomous Technology & Robotics ETF
   region: US
-  n_holdings: 30
   type: Growth
   size: Large
   management: Active # ARK Invest
@@ -54,10 +44,8 @@ ARKQ:
   url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=ARKQ
 
 ARKX:
-  symbol: ARKX
   name: Ark SpAce Exploration & Innovation ETF
   region: US
-  n_holdings: 30
   type: Growth
   size: Mid
   management: Active # ARK Invest

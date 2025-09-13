@@ -1,5 +1,4 @@
 EUFN:
-  symbol: EUFN
   name: iShares MSCI Europe Financials ETF
   region: Europe
   type: Value
@@ -10,7 +9,6 @@ EUFN:
   line_style: dashdot
   url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=EUFN
 EUAD:
-  symbol: EUAD
   name: Select STOXX Europe Aerospace & Defense ETF
   region: Europe
   industry: Defense
@@ -18,7 +16,6 @@ EUAD:
   line_style: dashdot
   url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=EUAD
 SPEU:
-  symbol: SPEU
   name: SPDR Portfolio Europe ETF
   region: Europe
   type: Blend
@@ -27,7 +24,6 @@ SPEU:
   color: royalblue
   url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=SPEU
 CEE:
-  symbol: CEE
   name: Central and Eastern Europe Fund
   region: EasternEurope
   type: Blend
@@ -36,7 +32,6 @@ CEE:
   color: rgba(250,200,150,1)
   url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=CEE
 IPAC:
-  symbol: IPAC
   name: iShares Core MSCI Pacific ETF
   region: Pacific
   type: Blend
@@ -45,7 +40,6 @@ IPAC:
   color: rgba(0,255,255,1)
   url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=IPAC
 AIA:
-  symbol: AIA
   name: iShares Asia 50 ETF
   region: Asia
   n_holdings: 92
@@ -56,7 +50,6 @@ AIA:
   line_style: solid
   url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=AIA
 ILF:
-  symbol: ILF
   name: iShares Latin America 40 ETF
   region: Latin America
   type: Value
@@ -65,7 +58,6 @@ ILF:
   color: rgba(75,120,50,1)
   url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=ILF
 ASEA:
-  symbol: ASEA
   name: Global X FTSE Southeast Asia ETF
   region: Southeast Asia
   n_holdings: 44

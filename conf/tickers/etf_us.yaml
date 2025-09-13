@@ -1,5 +1,4 @@
 VTI:
-  symbol: VTI
   name: Vanguard Total Stock Market ETF
   region: US
   type: Blend
@@ -7,14 +6,12 @@ VTI:
   color: royalblue
   url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=VTI
 VOO:
-  symbol: VOO
   name: Vanguard S&P 500 ETF
   region: US
   type: Blend
   color: royalblue
   url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=VOO
 WTV:
-  symbol: WTV
   name: WisdomTree US Value Fund of Benef Interest
   region: US
   type: Value
@@ -22,7 +19,6 @@ WTV:
   color: pink
   url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=WTV
 AVUV:
-  symbol: AVUV
   name: Avantis U.S. Small Cap Value ETF
   region: US
   type: Value
@@ -30,7 +26,6 @@ AVUV:
   management: Active # Avantis
   url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=AVUV
 KIE:
-  symbol: KIE
   name: iShares U.S. Insurance ETF
   region: US
   type: Value
@@ -40,7 +35,6 @@ KIE:
   line_style: longdash
   url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=KIE
 IFRA:
-  symbol: IFRA
   name: iShares U.S. Infrastructure ETF
   region: US
   type: Blend
@@ -50,7 +44,6 @@ IFRA:
   line_style: dot
   url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=IFRA
 RXI:
-  symbol: RXI
   name: iShares U.S. Consumer Discretionary ETF
   region: US
   type: Blend
@@ -60,7 +53,6 @@ RXI:
   line_style: dashdot
   url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=RXI
 ITA:
-  symbol: ITA
   name: iShares U.S. Aerospace & Defense ETF
   region: US
   type: Blend

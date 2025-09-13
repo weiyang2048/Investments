@@ -1,5 +1,4 @@
 FLPKX:
-  symbol: FLPKX
   name: Fidelity Low-Priced Stock Fund
   region: Global
   type: Value
@@ -9,7 +8,6 @@ FLPKX:
   line_style: longdash
   url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=FLPKX
 VFIAX:
-  symbol: VFIAX
   name: Vanguard 500 Index Fund Admiral Shares
   region: US
   type: Blend
@@ -19,7 +17,6 @@ VFIAX:
   line_style: solid
   url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=VFIAX
 TRAMX:
-  symbol: TRAMX
   name: T. Rowe Price Africa & Middle East Fund
   region: Middle East & Africa
   type: Blend
