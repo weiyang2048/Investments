@@ -16,7 +16,7 @@ def create_performance_plot(
     colors_dict: Dict[str, str],
     line_styles_dict: Dict[str, str],
     equity_config: Dict[str, Dict],
-    transformation: Callable[[float], float] = lambda x: np.exp(x),
+    transformation: Callable[[float], float] = lambda x: x,
 ) -> go.Figure:
     """
     Create a multi-subplot figure showing normalized performance.
@@ -45,10 +45,21 @@ def create_performance_plot(
         df_normalized = normalize_prices(df.iloc[-days:], symbols)
         # reorder the columns to match the order of the symbols
         df_normalized = df_normalized[["Date"] + symbols]
+        stats = Stats(df_normalized)
+        current_ratios = list(stats.ratios(transformation))
+        # top 3 symbols by return
+        symbols_in_this_plot = list(df_normalized.columns[1:])
+        top_3_symbols = [symbols_in_this_plot[j] for j in np.argsort(current_ratios)[-1:-4:-1]]
+        bottom_3_symbols = [symbols_in_this_plot[j] for j in np.argsort(current_ratios)[:3] if current_ratios[j] < 0]
+        visible_symbols = set(top_3_symbols + bottom_3_symbols)
+        for symbol in top_3_symbols:
+            count_dict[symbol] += 1
+        if days < 90:
+            for symbol in bottom_3_symbols:
+                count_dict[symbol] -= 1
         for symbol in symbols:
             keys = ["name", "region", "industry", "n_holdings"]
             keys = [key for key in keys if key in equity_config.get(symbol, {})]
-            # market size 4 if df less than 30 rows else 1
             size = 6 if df_normalized.shape[0] < 30 else 1
             fig.add_trace(
                 go.Scatter(
@@ -60,6 +71,7 @@ def create_performance_plot(
                     marker=dict(color=colors_dict[symbol], size=size),
                     legendgroup=symbol,
                     showlegend=(i == 0),
+                    visible=True if symbol in visible_symbols else "legendonly",
                     hovertemplate=f"<b style='color: {colors_dict[symbol]}'>Symbol:</b> {symbol}<br>"
                     + "".join([f"<b style='color: {colors_dict[symbol]}'>{key}:</b> {equity_config[symbol].get(key, '-')}<br>" for key in keys])
                     + f"<b style='color: {colors_dict[symbol]}'>Date:</b>"
@@ -72,35 +84,23 @@ def create_performance_plot(
             )
             fig.update_xaxes(showgrid=False, row=i // 2 + 1, col=i % 2 + 1)
             fig.update_yaxes(showgrid=False, row=i // 2 + 1, col=i % 2 + 1)
-            # add a text box with the average performance
-        stats = Stats(df_normalized)
-        current_ratios = list(stats.ratios(transformation))
-        # top 3 symbols by return
-        symbols = list(df_normalized.columns[1:])
-        top_3_symbols = [symbols[i] for i in np.argsort(current_ratios)[-1:-4:-1]]
-        bottom_3_symbols = [symbols[i] for i in np.argsort(current_ratios)[:3] if current_ratios[i] < 0]
-        for symbol in top_3_symbols:
-            count_dict[symbol] += 1
-        if days < 90:
-            for symbol in bottom_3_symbols:
-                count_dict[symbol] -= 1
         top_3_symbols_styled = [f'<span style="color: {colors_dict[symbol]}">' + symbol + "</span>" for symbol in top_3_symbols]
         bottom_3_symbols_styled = [f'<span style="color: {colors_dict[symbol]}">' + symbol + "</span>" for symbol in bottom_3_symbols]
         annotations = (
             "<span style='color: snow; opacity: 0.3'>|</span>"
-            + f"{"<span style='color: snow; opacity: 0.3'>|</span>".join([f"<span style='color: {colors_dict[symbol]}'>{ratio*100:.0f}</span>{'<span style="color: snow; opacity: 0.3">|</span><br>' if (i+1)!=1 and (i+1)%6==0 else ''}" for i,symbol, ratio in zip(range(len(symbols)),symbols, current_ratios)])}"
-            + f"{'<span style="color: snow; opacity: 0.3">|</span><br>' if len(symbols) % 6 != 0 else ''}"
-            + f"{' | '.join(top_3_symbols_styled)}<br>{' | '.join(bottom_3_symbols_styled)}<br>"
+            + f"{"<span style='color: snow; opacity: 0.3'>|</span>".join([f"<span style='color: {colors_dict[symbol]}'>{ratio*100:.0f}</span>{'<span style=\"color: snow; opacity: 0.3\">|</span><br>' if (k+1)!=1 and (k+1)%6==0 else ''}" for k,symbol, ratio in zip(range(len(symbols_in_this_plot)),symbols_in_this_plot, current_ratios)])}"
+            + f"{'<span style=\"color: snow; opacity: 0.3\">|</span><br>' if len(symbols_in_this_plot) % 6 != 0 else ''}"
+            + f"{' + '.join(top_3_symbols_styled)}<br>{' - ' if len(bottom_3_symbols_styled) > 0 else ''}{' - '.join(bottom_3_symbols_styled)}<br>"
         )
         fig.add_annotation(
             x=min(df_normalized["Date"]),
-            y=max(df_normalized.iloc[-1, 1:]),
+            y=min(df_normalized.iloc[-1, 1:]),
             text=annotations,
-            font=dict(color="lightgreen" if stats.avg_return > 0 else "coral", size=15),
+            font=dict(color="lightgreen" if stats.avg_return > 0 else "coral", size=10),
             opacity=1,
             bgcolor="black",
             xanchor="left",
-            yanchor="top",
+            yanchor="bottom",
             showarrow=False,
             row=i // 2 + 1,
             col=i % 2 + 1,
