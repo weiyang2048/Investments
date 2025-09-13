@@ -16,7 +16,7 @@ def get_daily_prices(symbol: str, period: str = "1mo") -> pd.DataFrame:
     return df
 
 
-@st.cache_data(ttl="5min")
+@st.cache_data(ttl="10min")
 def get_daily_prices_streamlit(symbol: str, period: str = "1mo") -> pd.DataFrame:
     """
     Get daily price data for a single symbol using yfinance
@@ -26,9 +26,7 @@ def get_daily_prices_streamlit(symbol: str, period: str = "1mo") -> pd.DataFrame
     return df
 
 
-def get_daily_prices_list(
-    symbols: List[str], period: str = "1mo", streamlit: bool = False
-) -> pd.DataFrame:
+def get_daily_prices_list(symbols: List[str], period: str = "1mo", streamlit: bool = False) -> pd.DataFrame:
     """
     Get daily price data for multiple symbols using yfinance
 

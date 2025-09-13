@@ -30,8 +30,18 @@ def include(args):
     return results
 
 
+def get_keys(args):
+    for file in args:
+        filename = here("conf/", file.replace(".", "/") + ".yaml")
+        with open(filename, "r") as f:
+            temp = yaml.load(f, yaml.FullLoader)
+            return list(temp.keys())
+
+
 def register_resolvers():
     if not OmegaConf.has_resolver("union"):
         OmegaConf.register_new_resolver("union", lambda *args: union(args))
     if not OmegaConf.has_resolver("include"):
         OmegaConf.register_new_resolver("include", lambda *args: include(args))
+    if not OmegaConf.has_resolver("get_keys"):
+        OmegaConf.register_new_resolver("get_keys", lambda *args: get_keys(args))
