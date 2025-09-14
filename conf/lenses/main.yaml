@@ -1,6 +1,6 @@
 main:
   Commodity+Regional+Momentum: ${union:${union:${lenses.regional.regions},${lenses.sectoral.Commodity}},${lenses.zoo.InvescoMomentum}}
-  Sectoral+Ark: ${union:${lenses.zoo.ARK},[ ARKW, AIQ, IXN, IXP, IXG, EXI, IXC, JXI, IXJ, KXI, REET, SHLD]}
+  Sectoral+Ark: ${union:${lenses.zoo.ARK},[ ARKW, AIQ, IXN, IXP, IXG, EXI, IXC, JXI, IXJ, KXI, MXI, REET, SHLD]}
   Stable: ${union:${lenses.sectoral.Commodity},[AVDV, AVUV, IDMO, SPMO, AVES, EUFN, IXG, EXI, IXN, IXP]}
 
 regional:
