@@ -31,13 +31,9 @@ RNRG:
   name: Global X Renewable Energy Producers ETF
 BKCH:
   name: Global X Blockchain ETF
-AUSF:
-  name: Global X Adaptive U.S. Factor ETF
-  fidelity_url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/composition?symbol=AUSF
-GXDW:
-  name: Global X Dorsey Wright Thematic ETF
-  fidelity_url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/composition?symbol=GXDW
-# # Sector or Industry
+
+
+# @ Sector or Industry
 AIQ:
   name: Global X Artificial Intelligence & Technology ETF
   region: Global
@@ -64,8 +60,7 @@ HERO:
   name: Global X Video Games & Esports ETF
 SOCL:
   name: Global X Social Media ETF
-GURU:
-  name: Global X Guru Index ETF
+
 GNOM:
   name: Global X Genomics & Biotechnology ETF
 HEAL:
@@ -78,6 +73,8 @@ KROP:
   name: Global X AgTech & Food Innovation ETF
 EBIZ:
   name: Global X E-commerce ETF
+PAVE:
+  name: Global X U.S. Infrastructure Development ETF
 # [
 #      "AIQ", "SHLD", "BOTZ", "LIT", "BUG", "DTCR", "DRIV", "FINX",
 #     "CLOU", "BKCH", "SNSR", "HERO",  "SOCL", "MILN", "AGNG", "EBIZ",
@@ -104,5 +101,3 @@ EBIZ:
 #   name: Global X U.S. Electrification ETF
 # IPAV:
 #   name: Global X Infrastructure Development ex-U.S. ETF
-PAVE:
-  name: Global X U.S. Infrastructure Development ETF

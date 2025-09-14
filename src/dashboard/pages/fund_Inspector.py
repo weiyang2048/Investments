@@ -271,12 +271,17 @@ def main_fund_inspect_page(selections: list):
 if __name__ == "__main__":
     # Test with a sample symbol
     import hydra
+    from src.configurations.yaml import register_resolvers
+
+    if hydra.core.global_hydra.GlobalHydra().is_initialized():
+        hydra.core.global_hydra.GlobalHydra.instance().clear()
+    register_resolvers()
 
     with hydra.initialize(version_base=None, config_path="../../../conf"):
         config = hydra.compose(
             config_name="main",
             # overrides=["+style_conf=FundInspect"],
-            overrides=["lenses=[regional, sectoral, zoo]"],
+            # overrides=["lenses=[regional, sectoral, zoo]"],
         )
     from src.dashboard.create_page import setup_page_and_sidebar
 
