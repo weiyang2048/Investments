@@ -1,0 +1,152 @@
+# ! Income
+DIV:
+  name: Global X SuperDividend U.S. ETF
+SDIV:
+  name: Global X Superdividend ETF
+QDIV:
+  name: Global X S&P 500 Quality Dividend ETF
+EFAS:
+  name: Global X MSCI SuperDividend EAFE ETF
+SDEM:
+  name: Global X MSCI SuperDividend Emerging Markets ETF
+SRET:
+  name: Global X SuperDividend REIT ETF
+SPFF:
+  name: Global X SuperIncome Preferred ETF
+ALTY:
+  name: Global X Alternative Income ETF
+
+# ! Commodities
+GOEX:
+  name: Global X Gold Explorers ETF
+# SIL:
+#   name: Global X Silver Miners ETF
+# COPX:
+#   name: Global X Copper Miners ETF
+# LIT:
+#   name: Global X Lithium & Battery Tech ETF
+
+URA:
+  name: Global X Uranium ETF
+HYDR:
+  name: Global X Hydrogen ETF
+DMAT:
+  name: Global X Disruptive Materials ETF
+RNRG:
+  name: Global X Renewable Energy Producers ETF
+BITS:
+  name: Global X Blockchain & Bitcoin Strategy ETF
+
+# ! Country or Region
+ARGT:
+  name: Global X MSCI Argentina ETF
+GREK:
+  name: Global X MSCI Greece ETF
+DAX:
+  name: Global X DAX Germany ETF
+CHIQ:
+  name: Global X MSCI China Consumer Discretionary ETF
+COLO:
+  name: Global X MSCI Colombia ETF
+
+NORW:
+  name: Global X MSCI Norway ETF
+NDIA:
+  name: Global X India Active ETF
+VNAM:
+  name: Global X MSCI Vietnam ETF
+BRAZ:
+  name: Global X Brazil Active ETF
+ASEA:
+  name: Global X FTSE Southeast Asia ETF
+  region: Southeast Asia
+  color: rgba(255,90,90,0.25)
+EMM:
+  name: Global X Emerging Markets ex-China ETF
+EMC:
+  name: Global X Emerging Markets Great Consumer ETF
+
+# # Sector or Industry
+AIQ:
+  name: Global X Artificial Intelligence & Technology ETF
+  region: Global
+  color: rgba(150,255,0,1)
+SHLD:
+  name: Global X Defense Tech ETF
+  region: Global
+  color: rgba(150,0,0,1)
+BOTZ:
+  name: Global X Robotics & Artificial Intelligence ETF
+BUG:
+  name: Global X Cybersecurity ETF
+AUSF:
+  name: Global X Adaptive U.S. Factor ETF
+
+DTCR:
+  name: Global X Data Center And Digital Infrastructure ETF
+DRIV:
+  name: Global X Autonomous & Electric Vehicles ETF
+PFFV:
+  name: Global X Variable Rate Preferred ETF
+CLOU:
+  name: Global X Cloud Computing ETF
+FINX:
+  name: Global X FinTech ETF
+SNSR:
+  name: Global X Internet of Things ETF
+
+HERO:
+  name: Global X Video Games & Esports ETF
+SOCL:
+  name: Global X Social Media ETF
+
+ONOF:
+  name: Global X Adaptive U.S. Risk Management ETF
+MILN:
+  name: Global X Millennial Consumer ETF
+GURU:
+  name: Global X Guru Index ETF
+GNOM:
+  name: Global X Genomics & Biotechnology ETF
+HEAL:
+  name: Global X HealthTech ETF
+
+CTEC:
+  name: Global X CleanTech ETF
+
+AQWA:
+  name: Global X Clean Water ETF
+KROP:
+  name: Global X AgTech & Food Innovation ETF
+EBIZ:
+  name: Global X E-commerce ETF
+GXDW:
+  name: Global X Dorsey Wright Thematic ETF
+# [
+#      "AIQ", "SHLD", "BOTZ", "LIT", "BUG", "DTCR", "DRIV", "FINX",
+#     "CLOU", "BKCH", "SNSR", "HERO",  "SOCL", "MILN", "AGNG", "EBIZ",
+#     "HEAL", "GNOM", "HYDR", "BITS", "RNRG", "CTEC", "AQWA", "GXDW", "KROP",
+#     "BTRN"
+# ]
+
+# @ 2025 Q2 Releases
+## %% Income
+# GXIG:
+#   name: Global X Investment Grade Corporate Bond ETF
+# ## %% Thematics
+# GXPC:
+#   name: Global X PureCap MSCI Communication Services ETF
+# GXPD:
+#   name: Global X PureCap MSCI Consumer Discretionary ETF
+# GXPE:
+#   name: Global X PureCap MSCI Energy ETF
+# GXPS:
+#   name: Global X PureCap MSCI Consumer Staples ETF
+# GXPT:
+#   name: Global X PureCap MSCI Information Technology ETF
+# ZAP:
+#   name: Global X U.S. Electrification ETF
+# IPAV:
+#   name: Global X Infrastructure Development ex-U.S. ETF
+PAVE:
+  name: Global X U.S. Infrastructure Development ETF

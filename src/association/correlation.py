@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 import seaborn as sns
 import streamlit as st
+from src.configurations import is_local
 
 
 def marchenko_pastur(n: int, p: int) -> float:
@@ -38,6 +39,9 @@ def denoise_corr_marchenko_pastur(corr: pd.DataFrame, q: float = None) -> pd.Dat
 def pivoted_to_corr(df: pd.DataFrame, plot: bool = False, streamlit: bool = False, marchenko_pastur: bool = True) -> pd.DataFrame:
     df_pivot = df.copy()
     df_pivot.drop(columns=["Date"], inplace=True)
+    # # show number of observations for each symbol and sort by number of observations
+    df_pivot_count = df_pivot.apply(lambda x: x.count(), axis=0)
+    df_pivot_count = df_pivot_count.sort_values(ascending=False)
     df_pivot.dropna(axis=0, inplace=True)
     q = df_pivot.shape[0] / df_pivot.shape[1]
     df_pivot = df_pivot.pct_change()
@@ -68,11 +72,22 @@ def pivoted_to_corr(df: pd.DataFrame, plot: bool = False, streamlit: bool = Fals
 
         fig.ax_heatmap.set_xticks(np.arange(corr_matrix.shape[1]) + 0.5, minor=False)
         fig.ax_heatmap.set_yticks(np.arange(corr_matrix.shape[0]) + 0.5, minor=False)
-        fig.ax_heatmap.set_xticklabels(x_tick_labels, rotation=90, fontsize=7)
-        fig.ax_heatmap.set_yticklabels(y_tick_labels, rotation=0, fontsize=7)
-        
+        fig.ax_heatmap.set_xticklabels(x_tick_labels, rotation=90, fontsize=4)
+        fig.ax_heatmap.set_yticklabels(y_tick_labels, rotation=0, fontsize=4)
+        # in the title, give number of symbols and number of observations
+        fig.ax_heatmap.set_title(
+            f"Correlation Matrix of {corr_matrix.shape[0]} symbols and {df_pivot.shape[0]} observations\n Denoised: {marchenko_pastur}",
+            fontdict={"color": "white", "backgroundcolor": "black"},
+        )
+        # title black
         if streamlit:
             rows = st.columns([1, 10, 1])
             with rows[1]:
                 st.pyplot(fig, use_container_width=False)
+            # show table of corr_matrix
+            # st.dataframe(corr_matrix)
+            # if local, show df_pivot_count
+            if is_local():
+                st.write("Local Debugging")
+                st.dataframe(df_pivot_count, use_container_width=True)
     return corr_matrix

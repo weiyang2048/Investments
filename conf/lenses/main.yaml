@@ -1,17 +1,16 @@
 main:
-  Commodity: ${union:${lenses.sectoral.Commodity},[SPMO, IDMO]}
-  Regional+Momentum: ${union:${union:${lenses.regional.regions},[IAUM, IBIT]},${lenses.zoo.InvescoMomentum}}
-  Sectoral+Ark: ${union:${lenses.zoo.ARK},[ ARKW, AIQ, IXN, IXP, IXG, EXI, IXC, JXI, IXJ, KXI, MXI, REET, SHLD]}
+  Regions: ${union:${union:${lenses.regional.regions},[IAUM]}}
+  Sectors: ${union:[ARKW,IBIT,AIQ,SHLD], ${get_keys:tickers.sectors}}
   Stable: ${union:${lenses.sectoral.Commodity},[AVDV, AVUV, IDMO, SPMO, AVES, EUFN, IXG, EXI, IXN, IXP]}
 
-regional:
-  regions: [CEE, ILF, AFK, AIA, ASEA, IPAC, FEP]
-  National: ${get_keys:tickers.countires}
-
 zoo:
+  GlobalX: ${get_keys:tickers.globalX}
   ARK: ${get_keys:tickers.ark}
   InvescoMomentum: ${get_keys:tickers.momentum}
-  GlobalX: ${get_keys:tickers.globalX}
+
+regional:
+  regions: [CEE, ILF, AFK, AIA, ASEA, IPAC, FEP, SPMO, IDMO, PIE, EMM]
+  countries: ${get_keys:tickers.regions}
 
 sectoral:
   Commodity: ${get_keys:tickers.commodities}

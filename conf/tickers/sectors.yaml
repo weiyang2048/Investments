@@ -1,0 +1,54 @@
+IXN:
+  name: iShares Global Tech ETF
+  region: Global
+  color: rgba(0,200,0,1) # matching the Technology color from README
+  line_style: dot
+IXP:
+  name: iShares Global Communications Services ETF
+  region: Global
+  color: rgba(150,255,150,1)
+  line_style: dot
+EXI:
+  name: iShares Global Industrials ETF
+  region: Global
+  color: rgba(255,150,0,1)
+  line_style: dot
+IXG:
+  name: iShares Global Financials ETF
+  region: Global
+  color: gold
+  line_style: dot
+IXC:
+  name: iShares Global Energy ETF
+  region: Global
+  color: rgba(150,0,255,1) # orange447
+  line_style: dot
+JXI:
+  name: iShares Global Utilities ETF
+  region: Global
+  color: rgba(255,255,0,1) # yellow
+  line_style: dot
+RXI:
+  name: iShares Global Consumer Discretionary ETF
+  region: Global
+  color: rgba(100, 150,255, 1) # lightblue
+  line_style: dot
+IXJ:
+  name: iShares Global Healthcare ETF
+  region: Global
+  color: pink
+  line_style: dot
+REET:
+  name: iShares Global REIT ETF
+  region: Global
+  line_style: dot
+KXI:
+  name: iShares Global Consumer Staples ETF
+  region: Global
+  color: rgba(100, 200,255, 1)
+  line_style: dot
+MXI:
+  name: iShares Global Materials ETF
+  region: Global
+  color: darkgray
+  line_style: dot
