@@ -38,10 +38,6 @@ IXJ:
   region: Global
   color: pink
   line_style: dot
-REET:
-  name: iShares Global REIT ETF
-  region: Global
-  line_style: dot
 KXI:
   name: iShares Global Consumer Staples ETF
   region: Global

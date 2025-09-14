@@ -62,7 +62,7 @@ def pivoted_to_corr(df: pd.DataFrame, plot: bool = False, streamlit: bool = Fals
             annot=annot_matrix,
             annot_kws={"fontsize": 4},
             fmt="s",
-            cbar_kws={"label": "Correlation"},
+            cbar_kws={"label": "Correlation", "shrink": 0.5},
             xticklabels=True,
             yticklabels=True,
         )

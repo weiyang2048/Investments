@@ -1,20 +1,19 @@
 main:
-  Regions: ${union:${union:${lenses.regional.regions},[IAUM]}}
-  Sectors: ${union:[ARKW,IBIT, DMAT,AIQ,SHLD], ${get_keys:tickers.sectors}}
-  Stable: ${union:${lenses.sectoral.Commodity},[AVDV, AVUV, IDMO, SPMO, AVES, EUFN], ${get_keys:tickers.sectors}}
+  Regions: ${lenses.regional.regions}
+  Sectors: ${union:[ARKW, BKCH, DMAT, HYDR, URA, AIQ,SHLD], ${get_keys:tickers.sectors}}
+  Stable: ${union:${lenses.regional.USxUS},[EFAS, SDEM, SRET, ALTY, AUSF,GXDW], ${get_keys:tickers.sectors}}
 
 zoo:
-  GlobalX: ${get_keys:tickers.globalX}
+  globalX: ${get_keys:tickers.globalX}
   ARK: ${get_keys:tickers.ark}
-  InvescoMomentum: ${get_keys:tickers.momentum}
+  invescoMomentum: ${get_keys:tickers.momentum}
 
 regional:
-  regions: [CEE, ILF, AFK, AIA, ASEA, IPAC, FEP, SPMO, IDMO, PIE, EMM]
+  USxUS: [SPMO, IDMO, EEMO, AVUV, AVDV, AVES, IAUM, IBIT]
+  regions: ${union:[CEE, ILF, AFK, AIA, ASEA, IPAC, FEP, PIE, EMM], ${lenses.regional.USxUS}}
   countries: ${get_keys:tickers.regions}
-
-sectoral:
-  Commodity: ${get_keys:tickers.commodities}
-  Industrials: [EXI, SHLD, NATO, ITA, EUAD]
-  Financial: [IXG, EUFN, KIE, KMPR, PGR, ALL, BRK-B, TRV]
-  Utility: [IXC, JXI, AES, VST, NEE, DUK, FLNC]
-  Technology: [IXN, AIQ, IXP, PTF, MSFT, AAPL, GOOGL, NVDA, AMZN]
+# sectoral:
+#   Industrials: [EXI, SHLD, NATO, ITA, EUAD]
+#   Financial: [IXG, EUFN, KIE, KMPR, PGR, ALL, BRK-B, TRV]
+#   Utility: [IXC, JXI, AES, VST, NEE, DUK, FLNC]
+#   Technology: [IXN, AIQ, IXP, PTF, MSFT, AAPL, GOOGL, NVDA, AMZN]

@@ -1,31 +1,26 @@
 # ! Income
-DIV:
-  name: Global X SuperDividend U.S. ETF
-SDIV:
-  name: Global X Superdividend ETF
-QDIV:
-  name: Global X S&P 500 Quality Dividend ETF
 EFAS:
   name: Global X MSCI SuperDividend EAFE ETF
+  fidelity_url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/composition?symbol=EFAS
 SDEM:
   name: Global X MSCI SuperDividend Emerging Markets ETF
-SRET:
-  name: Global X SuperDividend REIT ETF
-SPFF:
-  name: Global X SuperIncome Preferred ETF
+  fidelity_url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/composition?symbol=SDEM
 ALTY:
   name: Global X Alternative Income ETF
+  fidelity_url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/composition?symbol=ALTY
+SRET:
+  name: Global X SuperDividend REIT ETF
+  fidelity_url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/composition?symbol=SRET
 
 # ! Commodities
 GOEX:
   name: Global X Gold Explorers ETF
-# SIL:
-#   name: Global X Silver Miners ETF
-# COPX:
-#   name: Global X Copper Miners ETF
-# LIT:
-#   name: Global X Lithium & Battery Tech ETF
-
+SIL:
+  name: Global X Silver Miners ETF
+COPX:
+  name: Global X Copper Miners ETF
+LIT:
+  name: Global X Lithium & Battery Tech ETF
 URA:
   name: Global X Uranium ETF
 HYDR:
@@ -34,8 +29,8 @@ DMAT:
   name: Global X Disruptive Materials ETF
 RNRG:
   name: Global X Renewable Energy Producers ETF
-BITS:
-  name: Global X Blockchain & Bitcoin Strategy ETF
+BKCH:
+  name: Global X Blockchain ETF
 
 # ! Country or Region
 ARGT:
@@ -65,6 +60,13 @@ EMM:
   name: Global X Emerging Markets ex-China ETF
 EMC:
   name: Global X Emerging Markets Great Consumer ETF
+#@！Adaptive U.S. Factor
+AUSF:
+  name: Global X Adaptive U.S. Factor ETF
+  fidelity_url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/composition?symbol=AUSF
+GXDW:
+  name: Global X Dorsey Wright Thematic ETF
+  fidelity_url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/composition?symbol=GXDW
 
 # # Sector or Industry
 AIQ:
@@ -79,9 +81,6 @@ BOTZ:
   name: Global X Robotics & Artificial Intelligence ETF
 BUG:
   name: Global X Cybersecurity ETF
-AUSF:
-  name: Global X Adaptive U.S. Factor ETF
-
 DTCR:
   name: Global X Data Center And Digital Infrastructure ETF
 DRIV:
@@ -99,9 +98,6 @@ HERO:
   name: Global X Video Games & Esports ETF
 SOCL:
   name: Global X Social Media ETF
-
-ONOF:
-  name: Global X Adaptive U.S. Risk Management ETF
 MILN:
   name: Global X Millennial Consumer ETF
 GURU:
@@ -110,18 +106,14 @@ GNOM:
   name: Global X Genomics & Biotechnology ETF
 HEAL:
   name: Global X HealthTech ETF
-
 CTEC:
   name: Global X CleanTech ETF
-
 AQWA:
   name: Global X Clean Water ETF
 KROP:
   name: Global X AgTech & Food Innovation ETF
 EBIZ:
   name: Global X E-commerce ETF
-GXDW:
-  name: Global X Dorsey Wright Thematic ETF
 # [
 #      "AIQ", "SHLD", "BOTZ", "LIT", "BUG", "DTCR", "DRIV", "FINX",
 #     "CLOU", "BKCH", "SNSR", "HERO",  "SOCL", "MILN", "AGNG", "EBIZ",
