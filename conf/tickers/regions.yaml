@@ -1,3 +1,31 @@
+# @@ Regions
+CEE:
+  name: Central and Eastern Europe Fund
+  region: EasternEurope
+  color: rgba(250,200,150,1)
+IPAC:
+  name: iShares Core MSCI Pacific ETF
+  region: Pacific
+  color: rgba(0,255,255,1)
+AIA:
+  name: iShares Asia 50 ETF
+  region: Asia
+  color: rgba(255,90,90,1) # red
+  line_style: solid
+ILF:
+  name: iShares Latin America 40 ETF
+  region: Latin America
+  color: rgba(75,120,50,1)
+FEP:
+  name: First Trust Europe AlphaDEX
+AFK:
+  name: iShares MSCI Africa ETF
+  region: Africa
+  color: rgba(128,0,128,1) # purple
+ASEA:
+  name: Global X FTSE Southeast Asia ETF
+  region: Southeast Asia
+# @@ Countries
 # Asia
 FXI:
   name: iShares China Large-Cap ETF
