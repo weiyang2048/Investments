@@ -50,12 +50,12 @@ def create_performance_plot(
         # top 3 symbols by return
         symbols_in_this_plot = list(df_normalized.columns[1:])
         top_3_symbols = [symbols_in_this_plot[j] for j in np.argsort(current_ratios)[-1:-4:-1]]
-        bottom_3_symbols = [symbols_in_this_plot[j] for j in np.argsort(current_ratios)[:3] if current_ratios[j] < 0]
-        visible_symbols = set(top_3_symbols + bottom_3_symbols)
+        negative_symbols = [symbols_in_this_plot[j] for j in np.argsort(current_ratios) if current_ratios[j] < 0]
+        visible_symbols = set(top_3_symbols + negative_symbols)
         for symbol in top_3_symbols:
             count_dict[symbol] += 1
         if days < 90:
-            for symbol in bottom_3_symbols:
+            for symbol in negative_symbols:
                 count_dict[symbol] -= 1
         for symbol in symbols:
             keys = ["name", "region", "industry", "n_holdings"]
@@ -85,12 +85,12 @@ def create_performance_plot(
             fig.update_xaxes(showgrid=False, row=i // 2 + 1, col=i % 2 + 1)
             fig.update_yaxes(showgrid=False, row=i // 2 + 1, col=i % 2 + 1)
         top_3_symbols_styled = [f'<span style="color: {colors_dict[symbol]}">' + symbol + "</span>" for symbol in top_3_symbols]
-        bottom_3_symbols_styled = [f'<span style="color: {colors_dict[symbol]}">' + symbol + "</span>" for symbol in bottom_3_symbols]
+        negative_symbols_styled = [f'<span style="color: {colors_dict[symbol]}">' + symbol + "</span>" for symbol in negative_symbols]
         annotations = (
             "<span style='color: snow; opacity: 0.3'>|</span>"
             + f"{"<span style='color: snow; opacity: 0.3'>|</span>".join([f"<span style='color: {colors_dict[symbol]}'>{ratio*100:.0f}</span>{'<span style=\"color: snow; opacity: 0.3\">|</span><br>' if (k+1)!=1 and (k+1)%6==0 else ''}" for k,symbol, ratio in zip(range(len(symbols_in_this_plot)),symbols_in_this_plot, current_ratios)])}"
             + f"{'<span style=\"color: snow; opacity: 0.3\">|</span><br>' if len(symbols_in_this_plot) % 6 != 0 else ''}"
-            + f"{' + '.join(top_3_symbols_styled)}<br>{' - ' if len(bottom_3_symbols_styled) > 0 else ''}{' - '.join(bottom_3_symbols_styled)}<br>"
+            + f"{' + '.join(top_3_symbols_styled)}<br>{' - ' if len(negative_symbols_styled) > 0 else ''}{' - '.join(negative_symbols_styled)}<br>"
         )
         fig.add_annotation(
             x=min(df_normalized["Date"]),

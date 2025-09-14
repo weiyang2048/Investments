@@ -23,21 +23,57 @@ KIE:
 IFRA:
   name: iShares U.S. Infrastructure ETF
   region: US
- # iShares
+  # iShares
   industry: Infrastructure
   color: rgba(128,128,128,0.5) # grey
   line_style: dot
 RXI:
   name: iShares U.S. Consumer Discretionary ETF
   region: US
- # iShares
+  # iShares
   industry: Consumer Discretionary
   color: darkorange
   line_style: dashdot
 ITA:
   name: iShares U.S. Aerospace & Defense ETF
   region: US
- # iShares
+  # iShares
   industry: Aerospace & Defense
   color: rgba(255, 0, 200, 0.7) # red
   line_style: dashdot
+VXUS:
+  name: Vanguard Total International Stock ETF
+  region: XUS
+  color: seagreen
+# ! Value
+AVDV:
+  name: Avantis International Small Cap Value ETF
+  region: XUS
+  color: rgba(50,255,100,0.5)
+  line_style: dash
+DOL:
+  name: WisdomTree International LargeCap Dividend Fund
+  region: XUS
+  # WisdomTree
+  color: black
+
+# ! Quality
+IDHQ:
+  name: iShares U.S. Quality ETF
+  region: XUS
+  color: rgba(0,255,0,1)
+  line_style: dash
+# @ Physical Commodities
+IAUM:
+  name: iShares Gold Trust Micro ETF of Benef Interest
+  region: Global
+  industry: Commodity
+  color: gold
+  line_style: dash
+# @ Digital Commodities
+IBIT:
+  name: iShares Bitcoin Trust ETF
+  region: Global
+  industry: Commodity
+  color: rgba(255, 0, 0, 0.5)
+  line_style: dash

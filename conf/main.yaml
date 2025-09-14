@@ -1,12 +1,10 @@
 defaults:
   - style_conf: [shared_configs, color_line_styles]
   - tickers:
-      - etf_us
-      - etf_xus
+      - etfs
       - sectors
+      - regions
       - globalX
       - momentum
       - ark
-      - regions
-      - commodities
   - lenses: [main]

@@ -1,6 +1,6 @@
 main:
   Regions: ${union:${union:${lenses.regional.regions},[IAUM]}}
-  Sectors: ${union:[ARKW,IBIT,AIQ,SHLD], ${get_keys:tickers.sectors}}
+  Sectors: ${union:[ARKW,IBIT, DMAT,AIQ,SHLD], ${get_keys:tickers.sectors}}
   Stable: ${union:${lenses.sectoral.Commodity},[AVDV, AVUV, IDMO, SPMO, AVES, EUFN], ${get_keys:tickers.sectors}}
 
 zoo:
