@@ -25,6 +25,8 @@ AFK:
 ASEA:
   name: Global X FTSE Southeast Asia ETF
   region: Southeast Asia
+  color: rgba(255,90,90,0.25)
+
 # @@ Countries
 # Asia
 FXI:
@@ -32,15 +34,20 @@ FXI:
   region: China
   color: rgba(255,0,0,1) # red
 
-EWT:
-  name: iShares MSCI Taiwan ETF
-  region: Taiwan
-  color: rgba(128,0,128,1) # purple
+EIDO:
+  name: iShares MSCI Indonesia ETF
+  region: Indonesia
+  color: rgba(255,99,71,1) # tomato
 
-EWY:
-  name: iShares MSCI South Korea ETF
-  region: South Korea
-  color: rgba(0,128,0,1) # green
+INDA:
+  name: iShares MSCI India ETF
+  region: India
+  color: rgba(255,165,0,1) # orange
+
+EWM:
+  name: iShares MSCI Malaysia ETF
+  region: Malaysia
+  color: rgba(64,224,208,1) # turquoise
 
 EWJ:
   name: iShares MSCI Japan ETF
@@ -52,37 +59,34 @@ EWS:
   region: Singapore
   color: rgba(30,144,255,1) # dodgerblue
 
-EWH:
-  name: iShares MSCI Hong Kong ETF
-  region: Hong Kong
-  color: rgba(255,0,0,1) # red
+EPHE:
+  name: iShares MSCI Philippines ETF
+  region: Philippines
+  color: rgba(255,20,147,1) # deeppink
 
-INDA:
-  name: iShares MSCI India ETF
-  region: India
-  color: rgba(255,165,0,1) # orange
+EWY:
+  name: iShares MSCI South Korea ETF
+  region: South Korea
+  color: rgba(0,128,0,1) # green
 
 THD:
   name: iShares MSCI Thailand ETF
   region: Thailand
   color: rgba(30,144,255,1) # dodgerblue
 
-EIDO:
-  name: iShares MSCI Indonesia ETF
-  region: Indonesia
-  color: rgba(255,99,71,1) # tomato
+EWT:
+  name: iShares MSCI Taiwan ETF
+  region: Taiwan
+  color: rgba(128,0,128,1) # purple
 
-EWM:
-  name: iShares MSCI Malaysia ETF
-  region: Malaysia
-  color: rgba(64,224,208,1) # turquoise
+VNAM:
+  name: Global X MSCI Vietnam ETF
 
-EPHE:
-  name: iShares MSCI Philippines ETF
-  region: Philippines
-  color: rgba(255,20,147,1) # deeppink
+EWH:
+  name: iShares MSCI Hong Kong ETF
+  region: Hong Kong
+  color: rgba(255,0,0,1) # red
 
-# Africa
 EZA:
   name: iShares MSCI South Africa ETF
   region: South Africa
@@ -105,6 +109,9 @@ EWZ:
   region: Brazil
   color: rgba(0,155,0,1) # green
 
+COLO:
+  name: Global X MSCI Colombia ETF
+
 EWW:
   name: iShares MSCI Mexico ETF
   region: Mexico
@@ -115,46 +122,14 @@ EPU:
   region: Peru
   color: rgba(255,69,0,1) # orangered
 
+ARGT:
+  name: Global X MSCI Argentina ETF
+
 # Europe
-EWU:
-  name: iShares MSCI United Kingdom ETF
-  region: United Kingdom
-  color: rgba(128,0,128,1) # purple
-
-EWL:
-  name: iShares MSCI Switzerland ETF
-  region: Switzerland
-  color: rgba(255,0,0,1) # red
-
-EWG:
-  name: iShares MSCI Germany ETF
-  region: Germany
-  color: rgba(0,0,0,1) # black
-
-EWQ:
-  name: iShares MSCI France ETF
-  region: France
-  color: rgba(0,0,255,1) # blue
-
-EWI:
-  name: iShares MSCI Italy ETF
-  region: Italy
-  color: rgba(0,128,0,1) # green
-
-EWP:
-  name: iShares MSCI Spain ETF
-  region: Spain
-  color: rgba(255,215,0,1) # gold
-
-EWN:
-  name: iShares MSCI Netherlands ETF
-  region: Netherlands
-  color: rgba(255,140,0,1) # darkorange
-
-EWD:
-  name: iShares MSCI Sweden ETF
-  region: Sweden
-  color: rgba(255,255,0,1) # yellow
+EWK:
+  name: iShares MSCI Belgium ETF
+  region: Belgium
+  color: rgba(184,134,11,1) # darkgoldenrod
 
 EWO:
   name: iShares MSCI Austria ETF
@@ -171,25 +146,63 @@ EFNL:
   region: Finland
   color: rgba(70,130,180,1) # steelblue
 
-ENOR:
-  name: iShares MSCI Norway ETF
-  region: Norway
-  color: rgba(106,90,205,1) # slateblue
+EWQ:
+  name: iShares MSCI France ETF
+  region: France
+  color: rgba(0,0,255,1) # blue
 
-EWK:
-  name: iShares MSCI Belgium ETF
-  region: Belgium
-  color: rgba(184,134,11,1) # darkgoldenrod
+GREK:
+  name: Global X MSCI Greece ETF
+
+EWG:
+  name: iShares MSCI Germany ETF
+  region: Germany
+  color: rgba(0,0,0,1) # black
+
+EWI:
+  name: iShares MSCI Italy ETF
+  region: Italy
+  color: rgba(0,128,0,1) # green
 
 EIRL:
   name: iShares MSCI Ireland ETF
   region: Ireland
   color: rgba(34,139,34,1) # forestgreen
 
+EWL:
+  name: iShares MSCI Switzerland ETF
+  region: Switzerland
+  color: rgba(255,0,0,1) # red
+
+EWN:
+  name: iShares MSCI Netherlands ETF
+  region: Netherlands
+  color: rgba(255,140,0,1) # darkorange
+
+ENOR:
+  name: iShares MSCI Norway ETF
+  region: Norway
+  color: rgba(106,90,205,1) # slateblue
+
 EPOL:
   name: iShares MSCI Poland ETF
   region: Poland
   color: rgba(139,69,19,1) # saddlebrown
+
+EWP:
+  name: iShares MSCI Spain ETF
+  region: Spain
+  color: rgba(255,215,0,1) # gold
+
+EWD:
+  name: iShares MSCI Sweden ETF
+  region: Sweden
+  color: rgba(255,255,0,1) # yellow
+
+EWU:
+  name: iShares MSCI United Kingdom ETF
+  region: United Kingdom
+  color: rgba(128,0,128,1) # purple
 
 # North America
 EWC:

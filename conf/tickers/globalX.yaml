@@ -31,43 +31,12 @@ RNRG:
   name: Global X Renewable Energy Producers ETF
 BKCH:
   name: Global X Blockchain ETF
-
-# ! Country or Region
-ARGT:
-  name: Global X MSCI Argentina ETF
-GREK:
-  name: Global X MSCI Greece ETF
-DAX:
-  name: Global X DAX Germany ETF
-CHIQ:
-  name: Global X MSCI China Consumer Discretionary ETF
-COLO:
-  name: Global X MSCI Colombia ETF
-
-NORW:
-  name: Global X MSCI Norway ETF
-NDIA:
-  name: Global X India Active ETF
-VNAM:
-  name: Global X MSCI Vietnam ETF
-BRAZ:
-  name: Global X Brazil Active ETF
-ASEA:
-  name: Global X FTSE Southeast Asia ETF
-  region: Southeast Asia
-  color: rgba(255,90,90,0.25)
-EMM:
-  name: Global X Emerging Markets ex-China ETF
-EMC:
-  name: Global X Emerging Markets Great Consumer ETF
-#@！Adaptive U.S. Factor
 AUSF:
   name: Global X Adaptive U.S. Factor ETF
   fidelity_url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/composition?symbol=AUSF
 GXDW:
   name: Global X Dorsey Wright Thematic ETF
   fidelity_url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/composition?symbol=GXDW
-
 # # Sector or Industry
 AIQ:
   name: Global X Artificial Intelligence & Technology ETF
