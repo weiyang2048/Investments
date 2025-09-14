@@ -1,54 +1,54 @@
-ARKK:
-  name: ARK Innovation ETF
+ARKA:
+  name: ARK 21Shares Active Bitcoin Futures Strategy ETF
   region: US
-  color: rgba(255,99,71,1) # tomato
-
-ARKW:
-  name: ARK Next Generation Internet ETF
+  color: rgba(255,165,0,1) # orange
+  line_style: dot
+ARKB:
+  name: ARK 21Shares Bitcoin ETF
   region: US
-  color: rgba(30,144,255,1) # dodgerblue
-
+  color: rgba(255,140,0,1) # darkorange
+  line_style: dot
+ARKD:
+  name: ARK 21Shares Blockchain and Digital Economy Innovation ETF
+  region: US
+  color: rgba(50,205,50,1) # limegreen
+  line_style: dot
 ARKF:
   name: ARK Fintech Innovation ETF
   region: US
   color: rgba(34,139,34,1) # forestgreen
-
 ARKG:
   name: ARK Genomic Revolution ETF
   region: US
   color: rgba(255,215,0,1) # gold
-
+ARKK:
+  name: ARK Innovation ETF
+  region: US
+  color: rgba(255,99,71,1) # tomato
 ARKQ:
   name: ARK Autonomous Technology & Robotics ETF
   region: US
   color: rgba(75,0,130,1) # indigo
-
+ARKW:
+  name: ARK Next Generation Internet ETF
+  region: US
+  color: rgba(30,144,255,1) # dodgerblue
 ARKX:
   name: Ark SpAce Exploration & Innovation ETF
   region: US
   color: rgba(186, 85, 211, 1) # lightpurple
-PRNT:
-  name: The 3D Printing ETF
-  region: US
-  color: rgba(128,0,128,1) # purple
-  line_style: solid
 IZRL:
   name: ARK Israel Innovative Technology ETF
   region: Israel
   color: rgba(0,100,200,1) # blue
   line_style: solid
-ARKB:
-  name: ARK 21Shares Bitcoin ETF
+PRNT:
+  name: The 3D Printing ETF
   region: US
-  color: rgba(255,140,0,1) # darkorange
+  color: rgba(128,0,128,1) # purple
   line_style: solid
-ARKD:
-  name: ARK 21Shares Blockchain and Digital Economy Innovation ETF
+ARKZ:
+  name: ARK 21Shares Active Ethereum Futures Strategy ETF
   region: US
-  color: rgba(50,205,50,1) # limegreen
-  line_style: solid
-ARKA:
-  name: ARK 21Shares Active Bitcoin Futures Strategy ETF
-  region: US
-  color: rgba(255,165,0,1) # orange
-  line_style: solid
+  color: rgba(138,43,226,1) # blueviolet
+  line_style: dot

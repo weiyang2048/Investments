@@ -3,6 +3,31 @@ SPMO:
   region: US
   color: rgba(100,100,200,1)
   line_style: solid
+IDMO:
+  name: Invesco S&P International Developed Momentum ETF
+  region: XUS
+  color: rgba(155,155,55,1)
+  line_style: solid
+EEMO:
+  name: Invesco S&P Emerging Markets Momentum ETF
+  region: Emerging Markets
+  color: rgba(255,0,100,1)
+PDP:
+  name: Invesco DWA Momentum ETF
+  region: US
+  color: lightblue
+  line_style: dash
+PIZ:
+  name: Invesco DWA Developed Markets Momentum ETF
+  region: XUS
+  color: seagreen
+  line_style: dashdot
+PIE:
+  name: Invesco DWA Emerging Markets Momentum ETF
+  region: Emerging Markets
+  color: coral
+  line_style: dashdot
+
 XMMO:
   name: Invesco S&P MidCap Momentum ETF
   region: US
@@ -27,11 +52,7 @@ XSVM:
   region: US
   color: royalblue
   line_style: dot
-PDP:
-  name: Invesco DWA Momentum ETF
-  region: US
-  color: lightblue
-  line_style: dash
+
 DWAS:
   name: Invesco DWA SmallCap Momentum ETF
   region: US
@@ -72,22 +93,13 @@ PUI:
   region: US
   color: darkblue
   line_style: dashdot
-IDMO:
-  name: Invesco S&P International Developed Momentum ETF
-  region: XUS
-  color: rgba(155,155,55,1)
-  line_style: solid
-PIZ:
-  name: Invesco DWA Developed Markets Momentum ETF
-  region: XUS
-  color: seagreen
+PFI:
+  name: Invesco Dorsey Wright Financial Momentum ETF
+  region: US
+  color: goldenrod
   line_style: dashdot
-EEMO:
-  name: Invesco S&P Emerging Markets Momentum ETF
-  region: Emerging Markets
-  color: rgba(255,0,100,1)
-PIE:
-  name: Invesco DWA Emerging Markets Momentum ETF
-  region: Emerging Markets
-  color: coral
+PXI:
+  name: Invesco Dorsey Wright Energy Momentum ETF
+  region: US
+  color: darkred
   line_style: dashdot
