@@ -85,21 +85,16 @@ DTCR:
   name: Global X Data Center And Digital Infrastructure ETF
 DRIV:
   name: Global X Autonomous & Electric Vehicles ETF
-PFFV:
-  name: Global X Variable Rate Preferred ETF
 CLOU:
   name: Global X Cloud Computing ETF
 FINX:
   name: Global X FinTech ETF
 SNSR:
   name: Global X Internet of Things ETF
-
 HERO:
   name: Global X Video Games & Esports ETF
 SOCL:
   name: Global X Social Media ETF
-MILN:
-  name: Global X Millennial Consumer ETF
 GURU:
   name: Global X Guru Index ETF
 GNOM:
