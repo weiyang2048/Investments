@@ -2,7 +2,6 @@ import pandas as pd
 import numpy as np
 import seaborn as sns
 import streamlit as st
-from src.configurations import is_local
 
 
 def marchenko_pastur(n: int, p: int) -> float:
@@ -87,7 +86,5 @@ def pivoted_to_corr(df: pd.DataFrame, plot: bool = False, streamlit: bool = Fals
             # show table of corr_matrix
             # st.dataframe(corr_matrix)
             # if local, show df_pivot_count
-            if is_local():
-                st.write("Local Debugging")
-                st.dataframe(df_pivot_count, use_container_width=True)
+
     return corr_matrix

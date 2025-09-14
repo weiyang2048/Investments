@@ -10,7 +10,7 @@ zoo:
 
 regional:
   USxUS: [SPMO, IDMO, EEMO, AVUV, AVDV, AVES, IAUM, IBIT]
-  regions: ${union:[CEE, ILF, AFK, AIA, ASEA, IPAC, FEP, PIE], ${lenses.regional.USxUS}}
+  regions: ${union:${lenses.regional.USxUS},[CEE, ILF, AFK, AIA, ASEA, IPAC, FEP]}
   countries: ${get_keys:tickers.regions}
 # sectoral:
 #   Industrials: [EXI, SHLD, NATO, ITA, EUAD]
