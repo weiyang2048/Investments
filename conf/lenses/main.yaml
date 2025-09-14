@@ -1,5 +1,6 @@
 main:
-  Commodity+Regional+Momentum: ${union:${union:${lenses.regional.regions},${lenses.sectoral.Commodity}},${lenses.zoo.InvescoMomentum}}
+  Commodity: ${union:${lenses.sectoral.Commodity},[SPMO, IDMO]}
+  Regional+Momentum: ${union:${union:${lenses.regional.regions},[IAUM, IBIT]},${lenses.zoo.InvescoMomentum}}
   Sectoral+Ark: ${union:${lenses.zoo.ARK},[ ARKW, AIQ, IXN, IXP, IXG, EXI, IXC, JXI, IXJ, KXI, MXI, REET, SHLD]}
   Stable: ${union:${lenses.sectoral.Commodity},[AVDV, AVUV, IDMO, SPMO, AVES, EUFN, IXG, EXI, IXN, IXP]}
 
@@ -7,9 +8,14 @@ regional:
   regions: [CEE, ILF, AFK, AIA, ASEA, IPAC, FEP]
   National: ${get_keys:tickers.countires}
 
-sectoral:
-  Commodity: [IAUM, IBIT, DBC]
-
 zoo:
   ARK: ${get_keys:tickers.ark}
   InvescoMomentum: ${get_keys:tickers.momentum}
+  GlobalX: ${get_keys:tickers.globalX}
+
+sectoral:
+  Commodity: ${get_keys:tickers.commodities}
+  Industrials: [EXI, SHLD, NATO, ITA, EUAD]
+  Financial: [IXG, EUFN, KIE, KMPR, PGR, ALL, BRK-B, TRV]
+  Utility: [IXC, JXI, AES, VST, NEE, DUK, FLNC]
+  Technology: [IXN, AIQ, IXP, PTF, MSFT, AAPL, GOOGL, NVDA, AMZN]
