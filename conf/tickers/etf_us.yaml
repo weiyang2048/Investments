@@ -1,63 +1,43 @@
 VTI:
   name: Vanguard Total Stock Market ETF
   region: US
-  type: Blend
-  management: Passive # Vanguard
   color: royalblue
-  url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=VTI
 VOO:
   name: Vanguard S&P 500 ETF
   region: US
-  type: Blend
   color: royalblue
-  url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=VOO
 WTV:
   name: WisdomTree US Value Fund of Benef Interest
   region: US
-  type: Value
-  management: Active # WisdomTree
   color: pink
-  url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=WTV
 AVUV:
   name: Avantis U.S. Small Cap Value ETF
   region: US
-  type: Value
   color: lightblue
-  management: Active # Avantis
-  url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=AVUV
 KIE:
   name: iShares U.S. Insurance ETF
   region: US
-  type: Value
-  management: Passive
   industry: Insurance
   color: rgba(0, 148, 215, 0.5)
   line_style: longdash
-  url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=KIE
 IFRA:
   name: iShares U.S. Infrastructure ETF
   region: US
-  type: Blend
-  management: Passive # iShares
+ # iShares
   industry: Infrastructure
   color: rgba(128,128,128,0.5) # grey
   line_style: dot
-  url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=IFRA
 RXI:
   name: iShares U.S. Consumer Discretionary ETF
   region: US
-  type: Blend
-  management: Passive # iShares
+ # iShares
   industry: Consumer Discretionary
   color: darkorange
   line_style: dashdot
-  url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=RXI
 ITA:
   name: iShares U.S. Aerospace & Defense ETF
   region: US
-  type: Blend
-  management: Passive # iShares
+ # iShares
   industry: Aerospace & Defense
   color: rgba(255, 0, 200, 0.7) # red
   line_style: dashdot
-  url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=ITA

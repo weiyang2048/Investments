@@ -2,185 +2,91 @@
 VT:
   name: Vanguard Total World Stock Market ETF
   region: Global
-  n_holdings: 9844
-  type: Blend
-  size: Large
-  management: Passive # Vanguard
   color: darkgray
   line_style: longdash
-  url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=VT
 IAUM:
   name: iShares Gold Trust Micro ETF of Benef Interest
-  management: Passive # iShares
   region: Global
   industry: Commodity
   color: gold
   line_style: dash
-  url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=IAUM
 IEMG:
   name: iShares Core MSCI Emerging Markets ETF
   region: Global
-  n_holdings: 4431
-  type: Blend
-  size: Large
-  management: Passive # iShares
   color: rgba(255,0,100,1) # green
   line_style: solid
-  url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=IEMG
 IXN:
   name: iShares Global Tech ETF
-  n_holdings: 147
   region: Global
-  type: Growth
-  size: Large
-  management: Passive # iShares
-  industry: Technology
   color: rgba(0,200,0,1) # matching the Technology color from README
   line_style: dot
-  url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=IXN
 AIQ:
   name: Global X Artificial Intelligence & Technology ETF
   region: Global
-  n_holdings: 91
-  type: Growth
-  size: Large
-  management: Passive # Global X
-  industry: Technology
   color: rgba(150,255,0,1)
   line_style: dot
-  url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=AIQ
 IXP:
   name: iShares Global Communications Services ETF
   region: Global
-  n_holdings: 68
-  type: Value
-  size: Large
-  management: Passive # iShares
-  industry: Communications
   color: rgba(150,255,150,1)
   line_style: dot
-  url: https://digital.fidelity.com/prgwi/digital/research/quote/dashboard/view-all?symbol=IXP
 EXI:
   name: iShares Global Industrials ETF
   region: Global
-  n_holdings: 234 # 08-09-25 16:33
-  type: Blend
-  size: Large
-  management: Passive # iShares
-  industry: Industrials
   color: rgba(255,150,0,1)
   line_style: dot
-  url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=EXI
 SHLD:
   name: Global X Defense Tech ETF
   region: Global
-  type: Growth
-  size: Large
-  management: Passive # Global X
-  industry: Defense
   color: rgba(150,0,0,1)
   line_style: dot
-  url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=SHLD
 NATO:
   name: iShares Global Defense ETF
   region: Global
-  n_holdings: 80 # 08-09-25 12:31
-  type: Growth #
-  size: Large #
-  management: Passive #
-  industry: Defense #
   color: rgba(150,0,0,1)
   line_style: dot
-  url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=NATO
 IXG:
   name: iShares Global Financials ETF
   region: Global
-  type: Value
-  size: Large
-  management: Passive # iShares
-  industry: Financials
   color: gold
   line_style: dot
-  url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=IXG
 IXC:
   name: iShares Global Energy ETF
   region: Global
-  type: Value
-  size: Large
-  management: Passive # iShares
-  industry: Energy
   color: rgba(150,0,255,1) # orange447
   line_style: dot
-  url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=IXC
 JXI:
   name: iShares Global Utilities ETF
   region: Global
-  type: Value
-  size: Large
-  management: Passive # iShares
-  industry: Utilities
   color: rgba(255,255,0,1) # yellow
   line_style: dot
-  url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=JXI
 IGF:
   name: iShares Global Infrastructure ETF
   region: Global
-  type: Value
-  size: Large
-  management: Passive # iShares
   industry: Infrastructure
   color: rgba(128,128,128,0.9) # grey
   line_style: dot
-  url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=IGF
 RXI:
   name: iShares Global Consumer Discretionary ETF
   region: Global
-  type: Growth
-  size: Large
-  management: Passive # iShares
-  industry: Consumer Discretionary
   color: rgba(100, 150,255, 1) # lightblue
   line_style: dot
-  url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=RXI
 IXJ:
   name: iShares Global Healthcare ETF
-  n_holdings: 147
   region: Global
-  type: Growth
-  size: Large
-  management: Passive # iShares
-  industry: Healthcare
   color: pink
   line_style: dot
-  url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=IXJ
 REET:
   name: iShares Global REIT ETF
   region: Global
-  type: Value
-  size: Large
-  management: Passive # iShares
-  industry: Real Estate
-  color: lightgray
   line_style: dot
-  url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=REET
 KXI:
   name: iShares Global Consumer Staples ETF
   region: Global
-  type: Value
-  size: Large
-  management: Passive # iShares
-  industry: Consumer Staples
   color: rgba(100, 200,255, 1)
   line_style: dot
-  url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=KXI
 MXI:
   name: iShares Global Materials ETF
   region: Global
-  n_holdings: 120
-  type: Blend
-  size: Large
-  management: Passive # iShares
-  industry: Materials
   color: darkgray
   line_style: dot
-  url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=MXI

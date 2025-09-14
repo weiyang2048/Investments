@@ -43,4 +43,3 @@ sectoral:
     # - ADBE
     # - INTC
     - AMZN
-  # ALL: ${union:${portfolio.Financial}, ${portfolio.Utility}, ${portfolio.Technology}}

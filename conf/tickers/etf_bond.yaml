@@ -1,9 +1,6 @@
 USHY:
   name: iShares U.S. High Yield Corporate Bond ETF
   region: US
-  type: Value
-  size: Large
-  management: Passive # iShares
   industry: Bonds
   color: rgba(255,255,255,1)
   line_style: solid
@@ -11,9 +8,6 @@ USHY:
 GHY:
   name: iShares Global High Yield Corporate Bond ETF
   region: Global
-  type: Value
-  size: Large
-  management: Passive # iShares
   industry: Bonds
   color: rgba(255, 255, 255, 0.5)
   line_style: dash
@@ -21,9 +15,6 @@ GHY:
 GHYG:
   name: iShares Global High Yield Corporate Bond ETF
   region: Global
-  type: Value
-  size: Large
-  management: Passive # iShares
   industry: Bonds
   color: rgba(200, 200, 200, 0.7)
   line_style: longdash

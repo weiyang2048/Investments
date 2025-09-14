@@ -8,6 +8,7 @@ def marchenko_pastur(n: int, p: int) -> float:
     return np.sqrt((1 + (2 * (1 / n)) - np.sqrt((1 + (4 * (1 / n)) ** 2 - 16 * (1 / n) * (p / n)))) / (2 * (1 / n)))
 
 
+# [ ] :  parts can be moved to viz
 def denoise_corr_marchenko_pastur(corr: pd.DataFrame, q: float = None) -> pd.DataFrame:
     """
     Denoise a correlation matrix using the Marchenko-Pastur method.
@@ -55,9 +56,21 @@ def pivoted_to_corr(df: pd.DataFrame, plot: bool = False, streamlit: bool = Fals
             linewidths=0.5,
             figsize=(7, 7),
             annot=annot_matrix,
+            annot_kws={"fontsize": 4},
             fmt="s",
             cbar_kws={"label": "Correlation"},
+            xticklabels=True,
+            yticklabels=True,
         )
+        # Get tick labels for x and y axes
+        x_tick_labels = fig.ax_heatmap.get_xticklabels()
+        y_tick_labels = fig.ax_heatmap.get_yticklabels()
+
+        fig.ax_heatmap.set_xticks(np.arange(corr_matrix.shape[1]) + 0.5, minor=False)
+        fig.ax_heatmap.set_yticks(np.arange(corr_matrix.shape[0]) + 0.5, minor=False)
+        fig.ax_heatmap.set_xticklabels(x_tick_labels, rotation=90, fontsize=7)
+        fig.ax_heatmap.set_yticklabels(y_tick_labels, rotation=0, fontsize=7)
+        
         if streamlit:
             rows = st.columns([1, 10, 1])
             with rows[1]:

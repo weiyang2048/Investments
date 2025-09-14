@@ -1,41 +1,17 @@
 main:
-  Regional:
-    [EEMO, IDMO, SPMO, IAUM, DBC, CEE, ILF, AFK, AIA, ASEA, IPAC, FEP]
+  Commodity+Regional+Momentum: ${union:${union:${lenses.regional.regions},${lenses.sectoral.Commodity}},${lenses.zoo.InvescoMomentum}}
 
-    # - VXUS
-    # - VTI
+  Sectoral+Ark: ${union:${lenses.zoo.ARK},[IBIT, ARKW, AIQ, IXN, IXP, IXG, EXI, IXC, JXI, IXJ, KXI, REET, SHLD, PTF]}
 
-    # - CEE # Central and Eastern Europe Fund https://www.morningstar.com/cefs/xnys/cee/quote
-    # - TRAMX # Middle East & Africa ETF https://www.morningstar.com/funds/xnas/tramx/portfolio
+  Stable: [AVDV, AVUV, IDMO, SPMO, AVES, IAUM, IBIT, EUFN, IXG, EXI, IXN, IXP]
 
-  Sectoral: [ARKW, AIQ, IXN, IXP, IXG, EXI, IXC, JXI, IXJ, KXI, REET, SHLD, PTF]
+regional:
+  regions: [CEE, ILF, AFK, AIA, ASEA, IPAC, FEP]
+  National: ${get_keys:tickers.countires}
 
-  # Regional+Sectoral: ${union:${lenses.main.Regional},${lenses.main.Sectoral}}
-  National:
-    [
-      SPMO,
-      GBTC,
-      FXI,
-      EWT,
-      EWY,
-      EWU,
-      EWL,
-      EWG,
-      EWW,
-      ARGT,
-      EWS,
-      EIS,
-      EWJ,
-      EWA,
-      EWC,
-    ]
+sectoral:
+  Commodity: [IAUM, IBIT, DBC]
 
-  Stable: [AVDV, AVUV, IDMO, SPMO, AVES, IAUM, EUFN, IXG, EXI, IXN, IXP]
-
-  # All: ${union:${lenses.main.Regional},${lenses.main.Sectoral}}
-  # ALL: ${union:${portfolio.Tripartite},${portfolio.Regional}}
-  # ALL: ${union:${portfolio.Financial}, ${portfolio.Utility}, ${portfolio.Technology}}
 zoo:
   ARK: ${get_keys:tickers.ark}
-
   InvescoMomentum: ${get_keys:tickers.momentum}

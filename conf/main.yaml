@@ -1,16 +1,14 @@
 defaults:
   - style_conf: [shared_configs, color_line_styles]
   - tickers:
-      - funds
       - etf
       - etf_us
       - etf_xus
       - etf_bond
       - etf_global
-      - etf_momentum
-      - etf_ark
-      - Renewable_utilities_stocks
+      - momentum
+      - ark
       - insurance_stocks
       - it_stocks
       - countires
-  - lenses: [main, sectoral, zoo]
+  - lenses: [main, sectoral]

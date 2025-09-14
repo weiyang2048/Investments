@@ -1,69 +1,38 @@
 EUFN:
   name: iShares MSCI Europe Financials ETF
   region: Europe
-  type: Value
-  size: Large
-  management: Passive # iShares
-  industry: Financials
   color: gold # goldenrod
   line_style: dashdot
-  url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=EUFN
 EUAD:
   name: Select STOXX Europe Aerospace & Defense ETF
   region: Europe
   industry: Defense
   color: rgba(150,0,150,1)
   line_style: dashdot
-  url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=EUAD
 SPEU:
   name: SPDR Portfolio Europe ETF
   region: Europe
-  type: Blend
-  size: Large
-  management: Passive
   color: royalblue
-  url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=SPEU
 CEE:
   name: Central and Eastern Europe Fund
   region: EasternEurope
-  type: Blend
-  size: Large
-  management: Active # T. Rowe Price
   color: rgba(250,200,150,1)
-  url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=CEE
 IPAC:
   name: iShares Core MSCI Pacific ETF
   region: Pacific
-  type: Blend
-  size: Large
-  management: Passive # iShares
   color: rgba(0,255,255,1)
-  url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=IPAC
 AIA:
   name: iShares Asia 50 ETF
   region: Asia
-  n_holdings: 92
-  type: Blend
-  size: Large
-  management: Passive # iShares
   color: rgba(255,90,90,1) # red
   line_style: solid
-  url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=AIA
 ILF:
   name: iShares Latin America 40 ETF
   region: Latin America
-  type: Value
-  size: Large
-  management: Passive # iShares
   color: rgba(75,120,50,1)
-  url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=ILF
 ASEA:
   name: Global X FTSE Southeast Asia ETF
   region: Southeast Asia
-  n_holdings: 44
-  type: Blend
-  size: Large
-  management: Passive # Global X
+ # Global X
   color: rgba(255,90,90,0.25)
   line_style: solid
-  url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=ASEA

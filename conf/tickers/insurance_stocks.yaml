@@ -3,30 +3,25 @@ KMPR:
   region: US
   industry: Insurance
   color: "#db2416"
-  url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=KMPR
 PGR:
   name: Progressive Corporation
   region: US
   industry: Insurance
   color: "rgb(0, 83, 186)"
-  url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=PGR
 ALL:
   name: Allstate Corporation
   region: US
   industry: Insurance
   color: "rgb(0, 51, 160)"
-  url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=ALL
 BRK-B:
   name: Berkshire Hathaway
   region: US
   industry: Insurance
   color: "rgb(46, 49, 146)"
   line_style: dot
-  url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=BRK-B
 TRV:
   name: Travelers Companies
   region: US
   industry: Insurance
   color: " #E31B23"
   line_style: dot
-  url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/view-all?symbol=TRV
