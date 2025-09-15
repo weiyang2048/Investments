@@ -9,7 +9,7 @@ zoo:
   invescoMomentum: ${get_keys:tickers.momentum}
 
 regional:
-  USxUS: [SPMO, IDMO, EEMO, FEM, AVUV, AVDV, AVES, IAUM, IBIT]
+  USxUS: [SPMO, IDMO, FEM, AVUV, AVDV, AVES, IAUM, IBIT]
   regions: ${union:${lenses.regional.USxUS},[CEE,  FLN, AFK, AIA, ASEA, FPA, FEP]}
   countries: ${union:${lenses.regional.USxUS},${get_keys:tickers.regions}}
 # sectoral:

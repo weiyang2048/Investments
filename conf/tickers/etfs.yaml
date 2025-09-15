@@ -14,6 +14,11 @@ AVUV:
   name: Avantis U.S. Small Cap Value ETF
   region: US
   color: lightblue
+FEM:
+  name: First Trust Emerging Markets AlphaDEX Fund
+  region: Emerging Markets
+  color: rgba(255,0,0,1) # red
+  line_style: solid
 KIE:
   name: iShares U.S. Insurance ETF
   region: US
