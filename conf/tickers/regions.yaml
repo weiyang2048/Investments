@@ -3,21 +3,19 @@ CEE:
   name: Central and Eastern Europe Fund
   region: EasternEurope
   color: rgba(250,200,150,1)
-IPAC:
-  name: iShares Core MSCI Pacific ETF
-  region: Pacific
+FPA:
+  name: "First Trust Asia Pacific ex-Japan AlphaDEX Fund"
   color: rgba(0,255,255,1)
 AIA:
   name: iShares Asia 50 ETF
   region: Asia
   color: rgba(255,90,90,1) # red
   line_style: solid
-ILF:
-  name: iShares Latin America 40 ETF
-  region: Latin America
-  color: rgba(75,120,50,1)
+# Latin America
+FLN:
+  name: "First Trust Latin America AlphaDEX Fund"
 FEP:
-  name: First Trust Europe AlphaDEX
+  name: "First Trust Europe AlphaDEX Fund"
 AFK:
   name: iShares MSCI Africa ETF
   region: Africa
@@ -29,9 +27,9 @@ ASEA:
 
 # @@ Countries
 # Asia
-FXI:
-  name: iShares China Large-Cap ETF
-  region: China
+
+FCA:
+  name: "First Trust China AlphaDEX Fund"
   color: rgba(255,0,0,1) # red
 
 EIDO:
@@ -39,9 +37,8 @@ EIDO:
   region: Indonesia
   color: rgba(255,99,71,1) # tomato
 
-INDA:
-  name: iShares MSCI India ETF
-  region: India
+NFTY:
+  name: "First Trust India NIFTY 50 Equal Weight ETF"
   color: rgba(255,165,0,1) # orange
 
 EWM:
@@ -49,11 +46,9 @@ EWM:
   region: Malaysia
   color: rgba(64,224,208,1) # turquoise
 
-EWJ:
-  name: iShares MSCI Japan ETF
-  region: Japan
+FJP:
+  name: "First Trust Japan AlphaDEX Fund"
   color: rgba(255,105,180,1) # hotpink
-
 EWS:
   name: iShares MSCI Singapore ETF
   region: Singapore
@@ -154,10 +149,8 @@ EWQ:
 GREK:
   name: Global X MSCI Greece ETF
 
-EWG:
-  name: iShares MSCI Germany ETF
-  region: Germany
-  color: rgba(0,0,0,1) # black
+FGM:
+  name: "First Trust Germany AlphaDEX Fund"
 
 EWI:
   name: iShares MSCI Italy ETF
@@ -169,9 +162,8 @@ EIRL:
   region: Ireland
   color: rgba(34,139,34,1) # forestgreen
 
-EWL:
-  name: iShares MSCI Switzerland ETF
-  region: Switzerland
+FSZ:
+  name: "First Trust Switzerland AlphaDEX Fund"
   color: rgba(255,0,0,1) # red
 
 EWN:
@@ -199,9 +191,8 @@ EWD:
   region: Sweden
   color: rgba(255,255,0,1) # yellow
 
-EWU:
-  name: iShares MSCI United Kingdom ETF
-  region: United Kingdom
+FKU:
+  name: "First Trust United Kingdom AlphaDEX Fund"
   color: rgba(128,0,128,1) # purple
 
 # North America

@@ -9,9 +9,9 @@ zoo:
   invescoMomentum: ${get_keys:tickers.momentum}
 
 regional:
-  USxUS: [SPMO, IDMO, EEMO, AVUV, AVDV, AVES, IAUM, IBIT]
-  regions: ${union:${lenses.regional.USxUS},[CEE, ILF, AFK, AIA, ASEA, IPAC, FEP]}
-  countries: ${get_keys:tickers.regions}
+  USxUS: [SPMO, IDMO, EEMO, FEM, AVUV, AVDV, AVES, IAUM, IBIT]
+  regions: ${union:${lenses.regional.USxUS},[CEE,  FLN, AFK, AIA, ASEA, FPA, FEP]}
+  countries: ${union:${lenses.regional.USxUS},${get_keys:tickers.regions}}
 # sectoral:
 #   Industrials: [EXI, SHLD, NATO, ITA, EUAD]
 #   Financial: [IXG, EUFN, KIE, KMPR, PGR, ALL, BRK-B, TRV]
