@@ -1,17 +1,17 @@
-import yaml
+from re import T
 from src.configurations.yaml import register_resolvers
 import streamlit as st
 
 import hydra
 import numpy as np
 from src.data import pivot_data
+from src.performence.aggregation import aggregate_performance
 from src.viz.viz import create_performance_plot
 from src.configurations.style_picker import get_random_style
 from src.dashboard.create_page import setup_page_and_sidebar
 import pandas as pd
 from src.association import pivoted_to_corr
-
-# config = yaml.load(open("conf/main.yaml"), yaml.FullLoader)
+from src.viz.cmaps import custom_cmap
 
 
 def sidebar(config):
@@ -78,26 +78,15 @@ def show_market_performance(
                     count_df = summaries[symbol_type]
                     center_cols = st.columns([1, 6, 1])
                     with center_cols[1]:
-                        st.subheader(symbol_type)
-                        # Convert DataFrame to HTML with styling
-                        count_df["TOTAL +"] = np.dot(count_df.iloc[-1, :], count_df.iloc[-1, :] > 0)
                         styled_df = (
                             count_df.style.set_properties(**{"font-weight": "bold"})
-                            .set_table_styles(
-                                [
-                                    {"selector": "thead th", "props": [("background-color", "black"), ("color", "white")]},
-                                    {"selector": "tbody th", "props": [("background-color", "black"), ("color", "white")]},
-                                ]
-                            )
                             .background_gradient(cmap="RdYlGn", vmin=-10, vmax=20, axis=1)
+                            .set_caption(symbol_type)
                         )
-                        html_table = styled_df.to_html()
-                        st.markdown(html_table, unsafe_allow_html=True)
+                        st.dataframe(styled_df, use_container_width=True, hide_index=True)
                 for symbol_type in dfs.keys():
                     df_pivot = dfs[symbol_type].copy()
                     pivoted_to_corr(df_pivot, plot=True, streamlit=True, marchenko_pastur=marchenko_pastur)
-
-                    # st.pyplot(fig, use_container_width=False)
             else:
                 symbols = portfolio_config[symbol_type]
                 period = f"{look_back_days[-1]}d"
@@ -123,6 +112,7 @@ def show_market_performance(
                 count_df = count_df.sort_values(by="weight", ascending=False)
                 # Transpose so symbols are columns
                 count_df_t = count_df.set_index("Symbol").T
+                count_df_t["TOTAL +"] = np.dot(count_df_t.iloc[-1, :], count_df_t.iloc[-1, :] > 0)
                 summaries[symbol_type] = count_df_t
                 center_cols = st.columns([1, 6, 1])
                 with center_cols[1]:
@@ -132,6 +122,22 @@ def show_market_performance(
                         hide_index=True,
                     )
                 st.plotly_chart(fig, use_container_width=True, config={"displayModeBar": False})
+                # @ aggregations
+                melt_df = df_pivot.melt(id_vars=["Date"], var_name="Symbol", value_name="Price")
+                melt_df.sort_values(by=["Symbol", "Date"], inplace=True, ascending=True)
+                center_cols = st.columns([1, 6, 1])
+
+                with center_cols[1]:
+                    stats_df = aggregate_performance(melt_df)
+                    # Custom colormap: red for <0, green for >0, gradient
+
+                    styled = stats_df.style.background_gradient(cmap=custom_cmap, axis=0, vmin=-0.2, vmax=0.2, gmap=None).format("{:.2%}")
+                    st.dataframe(
+                        styled,
+                        use_container_width=True,
+                        hide_index=False,
+                    )
+
                 pivoted_to_corr(df_pivot, plot=True, streamlit=True, marchenko_pastur=marchenko_pastur)
 
 

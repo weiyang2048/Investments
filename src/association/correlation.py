@@ -80,7 +80,7 @@ def pivoted_to_corr(df: pd.DataFrame, plot: bool = False, streamlit: bool = Fals
         )
         # title black
         if streamlit:
-            rows = st.columns([1, 10, 1])
+            rows = st.columns([1, 2, 1])
             with rows[1]:
                 st.pyplot(fig, use_container_width=False)
             # show table of corr_matrix

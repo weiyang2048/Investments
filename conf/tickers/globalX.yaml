@@ -1,17 +1,3 @@
-# ! Income
-EFAS:
-  name: Global X MSCI SuperDividend EAFE ETF
-  fidelity_url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/composition?symbol=EFAS
-SDEM:
-  name: Global X MSCI SuperDividend Emerging Markets ETF
-  fidelity_url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/composition?symbol=SDEM
-ALTY:
-  name: Global X Alternative Income ETF
-  fidelity_url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/composition?symbol=ALTY
-SRET:
-  name: Global X SuperDividend REIT ETF
-  fidelity_url: https://digital.fidelity.com/prgw/digital/research/quote/dashboard/composition?symbol=SRET
-
 # ! Commodities
 GOEX:
   name: Global X Gold Explorers ETF
@@ -31,7 +17,6 @@ RNRG:
   name: Global X Renewable Energy Producers ETF
 BKCH:
   name: Global X Blockchain ETF
-
 
 # @ Sector or Industry
 AIQ:
@@ -60,7 +45,6 @@ HERO:
   name: Global X Video Games & Esports ETF
 SOCL:
   name: Global X Social Media ETF
-
 GNOM:
   name: Global X Genomics & Biotechnology ETF
 HEAL:
