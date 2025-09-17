@@ -3,8 +3,8 @@ CEE:
   name: Central and Eastern Europe Fund
   region: EasternEurope
   color: rgba(250,200,150,1)
-FPA:
-  name: "First Trust Asia Pacific ex-Japan AlphaDEX Fund"
+IPAC:
+  name: "iShares Core MSCI Pacific ETF"
   color: rgba(0,255,255,1)
 AIA:
   name: iShares Asia 50 ETF
