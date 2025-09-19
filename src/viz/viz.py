@@ -136,7 +136,7 @@ def create_momentum_plot(
     colors_dict: Dict[str, str] = None,
     line_styles_dict: Dict[str, str] = None,
     equity_config: Dict[str, Dict] = None,
-    target_return: float = 1.5,
+    target_return: float = 1.3,
 ) -> tuple[go.Figure, pd.DataFrame]:
     """
     Create a momentum plot showing momentum and renormalized prices for different window sizes.
@@ -299,7 +299,8 @@ def create_momentum_plot(
     momentum_summary = momentum_summary[momentum_summary["Momentum_Count"] > 0]  # Only show symbols with counts > 0
     momentum_summary = momentum_summary.sort_values(by="Momentum_Count", ascending=False)
 
-    # Transpose so symbols are columns
+    # Transpose so symbols are columns and add Momentum label
     momentum_summary_t = momentum_summary.set_index("Symbol").T
+    momentum_summary_t.index = ["Momentum"]
 
     return fig, momentum_summary_t

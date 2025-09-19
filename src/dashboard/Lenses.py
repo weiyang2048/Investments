@@ -43,7 +43,7 @@ def sidebar(config):
         "Target Return",
         min_value=1.1,
         max_value=2.5,
-        value=1.5,
+        value=1.3,
         step=0.1,
         help="Target annualized return for momentum threshold calculation. / Rendement annualisé cible pour le calcul du seuil de momentum. (Français: 'rendement cible')",
         key="target_return_input",
@@ -67,7 +67,7 @@ def show_market_performance(
     marchenko_pastur: bool = True,
     initial_lookback_days: int = 5,
     lookback_factor: int = 3,
-    target_return: float = 1.5,
+    target_return: float = 1.3,
 ) -> None:
     """Function to show the market performance dashboard."""
     # transformation = sidebar()
@@ -95,7 +95,7 @@ def show_market_performance(
                             .background_gradient(cmap="RdYlGn", vmin=-10, vmax=20, axis=1)
                             .set_caption(f"{symbol_type} - Performance")
                         )
-                        st.dataframe(styled_df, use_container_width=True, hide_index=True)
+                        st.dataframe(styled_df, use_container_width=True, hide_index=False)
 
                 # Display momentum summaries
                 for idx, symbol_type in enumerate(momentum_summaries.keys()):
@@ -108,7 +108,7 @@ def show_market_performance(
                                 .background_gradient(cmap="RdYlGn", vmin=0, vmax=5, axis=1)
                                 .set_caption(f"{symbol_type} - Momentum")
                             )
-                            st.dataframe(styled_momentum, use_container_width=True, hide_index=True)
+                            st.dataframe(styled_momentum, use_container_width=True, hide_index=False)
 
                 for symbol_type in dfs.keys():
                     df_pivot = dfs[symbol_type].copy()
@@ -136,8 +136,9 @@ def show_market_performance(
                 count_df["weight"] = count_df["Count"]
                 count_df = count_df[["Symbol", "weight"]]
                 count_df = count_df.sort_values(by="weight", ascending=False)
-                # Transpose so symbols are columns
+                # Transpose so symbols are columns and add Price label
                 count_df_t = count_df.set_index("Symbol").T
+                count_df_t.index = ["Price"]
                 summaries[symbol_type] = count_df_t
                 momentum_fig, momentum_summary = create_momentum_plot(
                     df_pivot,
@@ -155,7 +156,7 @@ def show_market_performance(
                     st.dataframe(
                         count_df_t.style.set_properties(**{"font-weight": "bold"}).background_gradient(cmap="RdYlGn", vmin=-3, vmax=3, axis=1),
                         use_container_width=True,
-                        hide_index=True,
+                        hide_index=False,
                     )
                 if not momentum_summary.empty:
                     center_cols = st.columns([1, 6, 1])
@@ -163,7 +164,7 @@ def show_market_performance(
                         styled_momentum = momentum_summary.style.set_properties(**{"font-weight": "bold"}).background_gradient(
                             cmap="RdYlGn", vmin=0, vmax=5, axis=1
                         )
-                        st.dataframe(styled_momentum, use_container_width=True, hide_index=True)
+                        st.dataframe(styled_momentum, use_container_width=True, hide_index=False)
                 st.plotly_chart(fig, use_container_width=True, config={"displayModeBar": False})
 
                 st.markdown("### 📈 Momentum Analysis")
