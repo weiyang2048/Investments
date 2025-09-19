@@ -1,6 +1,6 @@
 main:
   Regions: ${lenses.regional.regions}
-  Sectors: ${union:[ARKW, BKCH, DMAT, HYDR, URA, LIT, AIQ,SHLD], ${get_keys:tickers.sectors}}
+  Sectors: ${union:[ARKW, ARKQ, BKCH, DMAT, HYDR, URA, LIT, AIQ,SHLD], ${get_keys:tickers.sectors}}
   Stable: ${union:${lenses.regional.USxUS},[CORO], ${get_keys:tickers.sectors}}
 
 zoo:
