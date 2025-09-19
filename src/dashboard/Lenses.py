@@ -39,14 +39,14 @@ def sidebar(config):
         help="Enter the initial number of days for the analysis period. / Entrez le nombre initial de jours pour la période d'analyse. (Français: 'jours de retour en arrière')",
         key="lookback_days_input",
     )
-    momentum_base_factor = st.sidebar.slider(
-        "Momentum Base Factor",
+    target_return = st.sidebar.slider(
+        "Target Return",
         min_value=1.1,
         max_value=2.5,
         value=1.5,
         step=0.1,
-        help="Base factor for momentum threshold calculation. / Facteur de base pour le calcul du seuil de momentum. (Français: 'facteur de base')",
-        key="momentum_base_factor_input",
+        help="Target annualized return for momentum threshold calculation. / Rendement annualisé cible pour le calcul du seuil de momentum. (Français: 'rendement cible')",
+        key="target_return_input",
     )
     lookback_factor = st.sidebar.number_input(
         "Lookback Factor",
@@ -58,7 +58,7 @@ def sidebar(config):
         key="lookback_factor_input",
     )
 
-    return marchenko_pastur, initial_lookback_days, lookback_factor, lense_option, momentum_base_factor
+    return marchenko_pastur, initial_lookback_days, lookback_factor, lense_option, target_return
 
 
 def show_market_performance(
@@ -67,7 +67,7 @@ def show_market_performance(
     marchenko_pastur: bool = True,
     initial_lookback_days: int = 5,
     lookback_factor: int = 3,
-    momentum_base_factor: float = 1.3,
+    target_return: float = 1.5,
 ) -> None:
     """Function to show the market performance dashboard."""
     # transformation = sidebar()
@@ -146,7 +146,7 @@ def show_market_performance(
                     colors_dict=colors_dict,
                     line_styles_dict=line_styles_dict,
                     equity_config=equity_config,
-                    momentum_base_factor=momentum_base_factor,
+                    target_return=target_return,
                 )
                 # Store momentum summary for Summary tab
                 momentum_summaries[symbol_type] = momentum_summary
@@ -197,11 +197,11 @@ if __name__ == "__main__":
 
     with hydra.initialize(version_base=None, config_path="../../conf"):
         config = hydra.compose(config_name="main")
-    marchenko_pastur, initial_lookback_days, lookback_factor, lense_option, momentum_base_factor = setup_page_and_sidebar(
+    marchenko_pastur, initial_lookback_days, lookback_factor, lense_option, target_return = setup_page_and_sidebar(
         config["style_conf"], add_to_sidebar=lambda: sidebar(config)
     )
     st.title(lense_option)
 
     show_market_performance(
-        config["tickers"], config["lenses"][lense_option], marchenko_pastur, initial_lookback_days, lookback_factor, momentum_base_factor
+        config["tickers"], config["lenses"][lense_option], marchenko_pastur, initial_lookback_days, lookback_factor, target_return
     )

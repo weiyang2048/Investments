@@ -136,7 +136,7 @@ def create_momentum_plot(
     colors_dict: Dict[str, str] = None,
     line_styles_dict: Dict[str, str] = None,
     equity_config: Dict[str, Dict] = None,
-    momentum_base_factor: float = 1.3,
+    target_return: float = 1.5,
 ) -> tuple[go.Figure, pd.DataFrame]:
     """
     Create a momentum plot showing momentum and renormalized prices for different window sizes.
@@ -208,7 +208,7 @@ def create_momentum_plot(
                     go.Scatter(
                         x=momentum_display["Date"],
                         y=momentum_display[symbol],
-                        name=f"{symbol} Momentum",
+                        name=f"{symbol}",
                         mode="lines+markers",
                         line=dict(color=colors_dict.get(symbol, "blue"), dash="solid"),
                         marker=dict(size=3),
@@ -222,8 +222,8 @@ def create_momentum_plot(
                     secondary_y=False,
                 )
 
-        # Add horizontal line based on window size: (1+y1)^(252/window) = momentum_base_factor
-        y1_threshold = momentum_base_factor ** (window / 252) - 1
+        # Add horizontal line based on window size: (1+y1)^(252/window) = target_return
+        y1_threshold = target_return ** (window / 252) - 1
         fig.add_hline(y=y1_threshold, line_dash="dash", line_color="lightgreen", opacity=0.7, row=idx + 1, col=1)
 
         # Count symbols with momentum above threshold (all symbols)
@@ -259,7 +259,7 @@ def create_momentum_plot(
                         line=dict(color=colors_dict.get(symbol, "blue"), dash="longdash"),
                         opacity=0.7,
                         legendgroup=symbol,  # Changed from f"{symbol}_price"
-                        showlegend=(idx == 0),
+                        showlegend=False,
                         visible=True if is_visible else "legendonly",
                         hovertemplate=f"<b>{symbol} Renorm Price</b><br>" f"Date: %{{x}}<br>" f"Price: %{{y:.2f}}<extra></extra>",
                     ),
