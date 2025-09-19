@@ -66,8 +66,8 @@
 
 /* @ main body */
 .stMainBlockContainer {
-    padding-left: 1%;
-    padding-right: 1%;
+    margin-left: 1%;
+    margin-right: 1%;
     padding-top: 2%;
     background-color: black;
 

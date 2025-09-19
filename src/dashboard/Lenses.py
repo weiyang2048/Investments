@@ -36,7 +36,7 @@ def sidebar(config):
         max_value=3650,
         value=7,
         step=1,
-        help="Ingrese el número inicial de días para el período de análisis. (Español: 'días de retroceso') / Entrez le nombre initial de jours pour la période d'analyse. (Français: 'jours de retour en arrière')",
+        help="Enter the initial number of days for the analysis period. / Entrez le nombre initial de jours pour la période d'analyse. (Français: 'jours de retour en arrière')",
         key="lookback_days_input",
     )
     momentum_base_factor = st.sidebar.slider(
@@ -45,7 +45,7 @@ def sidebar(config):
         max_value=2.5,
         value=1.5,
         step=0.1,
-        help="Factor base para el cálculo del umbral de momentum. (Español: 'factor base') / Facteur de base pour le calcul du seuil de momentum. (Français: 'facteur de base')",
+        help="Base factor for momentum threshold calculation. / Facteur de base pour le calcul du seuil de momentum. (Français: 'facteur de base')",
         key="momentum_base_factor_input",
     )
     lookback_factor = st.sidebar.number_input(
@@ -54,7 +54,7 @@ def sidebar(config):
         max_value=10,
         value=3,
         step=1,
-        help="Ingrese el factor para multiplicar los días de retroceso. (Español: 'factor') / Entrez le facteur pour multiplier les jours de retour en arrière. (Français: 'facteur')",
+        help="Enter the factor to multiply the lookback days. / Entrez le facteur pour multiplier les jours de retour en arrière. (Français: 'facteur')",
         key="lookback_factor_input",
     )
 
@@ -177,18 +177,16 @@ def show_market_performance(
                 melt_df.sort_values(by=["Symbol", "Date"], inplace=True, ascending=True)
                 center_cols = st.columns([1, 6, 1])
 
+                pivoted_to_corr(df_pivot, plot=True, streamlit=True, marchenko_pastur=marchenko_pastur)
+
                 with center_cols[1]:
                     stats_df = aggregate_performance(melt_df)
-                    # Custom colormap: red for <0, green for >0, gradient
-
                     styled = stats_df.style.background_gradient(cmap=custom_cmap, axis=0, vmin=-0.2, vmax=0.2, gmap=None).format("{:.2%}")
                     st.dataframe(
                         styled,
                         use_container_width=True,
                         hide_index=False,
                     )
-
-                pivoted_to_corr(df_pivot, plot=True, streamlit=True, marchenko_pastur=marchenko_pastur)
 
 
 if __name__ == "__main__":
