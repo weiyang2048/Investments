@@ -1,10 +1,11 @@
 from datetime import datetime
-from typing import List
+from typing import List, Dict
 import pandas as pd
 import yfinance as yf
 from loguru import logger
 from functools import lru_cache, cache
 import streamlit as st
+import numpy as np
 
 
 def get_daily_prices(symbol: str, period: str = "1mo") -> pd.DataFrame:
@@ -81,9 +82,42 @@ def pivot_data(symbols: List[str], period: str = "1mo", streamlit: bool = False)
     return df.pivot(index="Date", columns="Symbol", values="Close").reset_index()
 
 
-def normalize_prices(df: pd.DataFrame, symbols: List[str]) -> pd.DataFrame:
+def normalize_prices(df: pd.DataFrame, time_column: str = "Date") -> pd.DataFrame:
     """Normalize price data to start at 1.0."""
-    return df.assign(**{symbol: df[symbol] / df[symbol].iloc[0] for symbol in symbols})
+    df = df.copy()
+    # sort by time column, ascending
+    df.sort_values(time_column, inplace=True, ascending=True)
+    # fill backward
+    df = df.fillna(method="bfill")
+    symbols = df.select_dtypes(include=[np.number]).columns
+
+    df[symbols] = df[symbols].div(df[symbols].iloc[0], axis=1)
+    return df
+
+
+def compute_momentum(df: pd.DataFrame, window_sizes: List[int] = [7, 30, 90, 180, 360], time_column: str = "Date") -> Dict[int, pd.DataFrame]:
+    """
+    Compute momentum for different window sizes.
+
+    Args:
+        df: DataFrame with price data (normalized or raw)
+        window_sizes: List of window sizes in days for momentum calculation
+        time_column: Name of the time column
+
+    Returns:
+        Dictionary mapping window size to momentum DataFrame
+    """
+    momentum_data = {}
+    symbols = df.select_dtypes(include=[np.number]).columns
+
+    for window in window_sizes:
+        # Compute momentum: (current_price / price_window_days_ago) - 1
+        momentum = df[symbols].rolling(window=window).apply(lambda x: x.iloc[-1] / x.iloc[0] - 1)
+        momentum[time_column] = df[time_column]
+        momentum = momentum.dropna()
+        momentum_data[window] = momentum
+
+    return momentum_data
 
 
 if __name__ == "__main__":

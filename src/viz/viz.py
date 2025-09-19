@@ -4,7 +4,7 @@ from plotly.subplots import make_subplots
 from typing import List, Dict
 import numpy as np
 from src.stats import Stats
-from src.data import normalize_prices
+from src.data import normalize_prices, compute_momentum
 from typing import Callable
 from src.configurations import get_random_style
 
@@ -39,10 +39,10 @@ def create_performance_plot(
         vertical_spacing=0.1,
         horizontal_spacing=0.03,
     )
-    stats = Stats(normalize_prices(df, symbols))
+    stats = Stats(normalize_prices(df))
     count_dict = {symbol: 0 for symbol in symbols}
     for i, days in enumerate(look_back_days):
-        df_normalized = normalize_prices(df.iloc[-days:], symbols)
+        df_normalized = normalize_prices(df.iloc[-days:])
         # reorder the columns to match the order of the symbols
         df_normalized = df_normalized[["Date"] + symbols]
         stats = Stats(df_normalized)
@@ -127,3 +127,179 @@ def create_performance_plot(
     )
 
     return fig, df_normalized, count_dict
+
+
+def create_momentum_plot(
+    df: pd.DataFrame,
+    symbols: List[str],
+    window_sizes: List[int] = [7, 30, 90, 180, 360],
+    colors_dict: Dict[str, str] = None,
+    line_styles_dict: Dict[str, str] = None,
+    equity_config: Dict[str, Dict] = None,
+    momentum_base_factor: float = 1.3,
+) -> tuple[go.Figure, pd.DataFrame]:
+    """
+    Create a momentum plot showing momentum and renormalized prices for different window sizes.
+
+    Args:
+        df: DataFrame with price data
+        symbols: List of symbols to plot
+        window_sizes: List of window sizes in days for momentum calculation
+        colors_dict: Dictionary mapping symbols to their colors
+        line_styles_dict: Dictionary mapping symbols to their line styles
+        equity_config: Configuration for equity symbols
+
+    Returns:
+        Plotly figure object
+    """
+    # Normalize the data first
+    df_norm = normalize_prices(df)
+
+    # Compute momentum for all window sizes
+    momentum_data = compute_momentum(df_norm, window_sizes)
+
+    n_windows = len(window_sizes)
+    fig = make_subplots(
+        rows=n_windows,
+        cols=1,
+        subplot_titles=[f"Momentum and Price (window={window} days)" for window in window_sizes],
+        vertical_spacing=0.05,
+        specs=[[{"secondary_y": True}] for _ in range(n_windows)],
+    )
+
+    # Default colors if not provided
+    if colors_dict is None:
+        colors_dict = {symbol: f"hsl({i*360/len(symbols)}, 70%, 50%)" for i, symbol in enumerate(symbols)}
+
+    if line_styles_dict is None:
+        line_styles_dict = {symbol: "solid" for symbol in symbols}
+
+    # Track momentum threshold counts for each symbol
+    momentum_counts = {symbol: 0 for symbol in symbols}
+
+    for idx, window in enumerate(window_sizes):
+        momentum_df = momentum_data[window]
+
+        # Get the last window*3 rows for better visualization
+        display_rows = min(window * 3, len(momentum_df))
+        momentum_display = momentum_df.tail(display_rows)
+
+        # Get top 3 symbols by momentum for this window
+        momentum_values = []
+        valid_symbols = []
+        for symbol in symbols:
+            if symbol in momentum_display.columns:
+                last_momentum = momentum_display[symbol].iloc[-1]
+                momentum_values.append(last_momentum)
+                valid_symbols.append(symbol)
+
+        # Get top 3 symbols by momentum
+        if len(valid_symbols) >= 3:
+            top_3_indices = np.argsort(momentum_values)[-3:]
+            top_3_symbols = [valid_symbols[i] for i in top_3_indices]
+        else:
+            top_3_symbols = valid_symbols
+
+        # Plot momentum on the left y-axis (all symbols, but only top 3 visible)
+        for symbol in symbols:
+            if symbol in momentum_display.columns:
+                is_visible = symbol in top_3_symbols
+                fig.add_trace(
+                    go.Scatter(
+                        x=momentum_display["Date"],
+                        y=momentum_display[symbol],
+                        name=f"{symbol} Momentum",
+                        mode="lines+markers",
+                        line=dict(color=colors_dict.get(symbol, "blue"), dash="solid"),
+                        marker=dict(size=3),
+                        legendgroup=symbol,  # Changed from f"{symbol}_momentum"
+                        showlegend=(idx == 0),
+                        visible=True if is_visible else "legendonly",
+                        hovertemplate=f"<b>{symbol} Momentum</b><br>" f"Date: %{{x}}<br>" f"Momentum: %{{y:.2%}}<extra></extra>",
+                    ),
+                    row=idx + 1,
+                    col=1,
+                    secondary_y=False,
+                )
+
+        # Add horizontal line based on window size: (1+y1)^(252/window) = momentum_base_factor
+        y1_threshold = momentum_base_factor ** (window / 252) - 1
+        fig.add_hline(y=y1_threshold, line_dash="dash", line_color="lightgreen", opacity=0.7, row=idx + 1, col=1)
+
+        # Count symbols with momentum above threshold (all symbols)
+        for symbol in symbols:
+            if symbol in momentum_display.columns:
+                last_momentum = momentum_display[symbol].iloc[-1]
+                if last_momentum > y1_threshold:
+                    momentum_counts[symbol] += 1
+
+        # Plot renormalized price on the right y-axis (all symbols, but only top 3 visible)
+        for symbol in symbols:
+            if symbol in df.columns:
+                # Select the last window*3 rows for the current window
+                price_window = df[["Date", symbol]].tail(display_rows).copy()
+
+                # Renormalize price in this window: set first value to 1
+                if not price_window[symbol].isnull().all():
+                    first_valid = price_window[symbol].first_valid_index()
+                    if first_valid is not None:
+                        base = price_window.loc[first_valid, symbol]
+                        price_window["renorm"] = price_window[symbol] / base
+                    else:
+                        price_window["renorm"] = price_window[symbol]
+                else:
+                    price_window["renorm"] = price_window[symbol]
+                is_visible = symbol in top_3_symbols
+                fig.add_trace(
+                    go.Scatter(
+                        x=price_window["Date"],
+                        y=price_window["renorm"],
+                        name=f"{symbol} Renorm Price",
+                        mode="lines",
+                        line=dict(color=colors_dict.get(symbol, "blue"), dash="longdash"),
+                        opacity=0.7,
+                        legendgroup=symbol,  # Changed from f"{symbol}_price"
+                        showlegend=(idx == 0),
+                        visible=True if is_visible else "legendonly",
+                        hovertemplate=f"<b>{symbol} Renorm Price</b><br>" f"Date: %{{x}}<br>" f"Price: %{{y:.2f}}<extra></extra>",
+                    ),
+                    row=idx + 1,
+                    col=1,
+                    secondary_y=True,
+                )
+
+        # Update axes for this subplot
+        fig.update_xaxes(title_text="Date", showgrid=False, row=idx + 1, col=1)
+        fig.update_yaxes(title_text="Momentum", showgrid=False, secondary_y=False, row=idx + 1, col=1)
+        fig.update_yaxes(title_text="Price", showgrid=False, secondary_y=True, row=idx + 1, col=1)
+
+    # Update layout
+    fig.update_layout(
+        height=300 * n_windows,
+        showlegend=True,
+        plot_bgcolor="black",
+        paper_bgcolor="black",
+        font=dict(color="white"),
+        hovermode="closest",
+        autosize=True,
+        margin=dict(l=50, r=50, t=60, b=50),
+        legend=dict(
+            orientation="h",
+            yanchor="bottom",
+            y=1.02,
+            xanchor="center",
+            x=0.5,
+            font=dict(color="white"),
+            bgcolor="black",
+        ),
+    )
+
+    # Create momentum summary DataFrame
+    momentum_summary = pd.DataFrame(list(momentum_counts.items()), columns=["Symbol", "Momentum_Count"])
+    momentum_summary = momentum_summary[momentum_summary["Momentum_Count"] > 0]  # Only show symbols with counts > 0
+    momentum_summary = momentum_summary.sort_values(by="Momentum_Count", ascending=False)
+
+    # Transpose so symbols are columns
+    momentum_summary_t = momentum_summary.set_index("Symbol").T
+
+    return fig, momentum_summary_t

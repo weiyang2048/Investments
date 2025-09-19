@@ -6,7 +6,7 @@ import hydra
 import numpy as np
 from src.data import pivot_data
 from src.performence.aggregation import aggregate_performance
-from src.viz.viz import create_performance_plot
+from src.viz.viz import create_performance_plot, create_momentum_plot
 from src.configurations.style_picker import get_random_style
 from src.dashboard.create_page import setup_page_and_sidebar
 import pandas as pd
@@ -39,6 +39,15 @@ def sidebar(config):
         help="Ingrese el número inicial de días para el período de análisis. (Español: 'días de retroceso') / Entrez le nombre initial de jours pour la période d'analyse. (Français: 'jours de retour en arrière')",
         key="lookback_days_input",
     )
+    momentum_base_factor = st.sidebar.slider(
+        "Momentum Base Factor",
+        min_value=1.1,
+        max_value=2.5,
+        value=1.5,
+        step=0.1,
+        help="Factor base para el cálculo del umbral de momentum. (Español: 'factor base') / Facteur de base pour le calcul du seuil de momentum. (Français: 'facteur de base')",
+        key="momentum_base_factor_input",
+    )
     lookback_factor = st.sidebar.number_input(
         "Lookback Factor",
         min_value=1,
@@ -49,7 +58,7 @@ def sidebar(config):
         key="lookback_factor_input",
     )
 
-    return marchenko_pastur, initial_lookback_days, lookback_factor, lense_option
+    return marchenko_pastur, initial_lookback_days, lookback_factor, lense_option, momentum_base_factor
 
 
 def show_market_performance(
@@ -58,6 +67,7 @@ def show_market_performance(
     marchenko_pastur: bool = True,
     initial_lookback_days: int = 5,
     lookback_factor: int = 3,
+    momentum_base_factor: float = 1.3,
 ) -> None:
     """Function to show the market performance dashboard."""
     # transformation = sidebar()
@@ -70,10 +80,12 @@ def show_market_performance(
     # Generate look_back_days list based on user input
     look_back_days = [int(initial_lookback_days * (lookback_factor**i)) for i in range(6)]
     summaries = dict()
+    momentum_summaries = dict()
     dfs = dict()
     for i, symbol_type in enumerate(symbol_types):
         with tabs[i]:
             if symbol_type == "Summary":
+                # Display performance summaries
                 for idx, symbol_type in enumerate(summaries.keys()):
                     count_df = summaries[symbol_type]
                     center_cols = st.columns([1, 6, 1])
@@ -81,9 +93,23 @@ def show_market_performance(
                         styled_df = (
                             count_df.style.set_properties(**{"font-weight": "bold"})
                             .background_gradient(cmap="RdYlGn", vmin=-10, vmax=20, axis=1)
-                            .set_caption(symbol_type)
+                            .set_caption(f"{symbol_type} - Performance")
                         )
                         st.dataframe(styled_df, use_container_width=True, hide_index=True)
+
+                # Display momentum summaries
+                for idx, symbol_type in enumerate(momentum_summaries.keys()):
+                    momentum_df = momentum_summaries[symbol_type]
+                    if not momentum_df.empty:
+                        center_cols = st.columns([1, 6, 1])
+                        with center_cols[1]:
+                            styled_momentum = (
+                                momentum_df.style.set_properties(**{"font-weight": "bold"})
+                                .background_gradient(cmap="RdYlGn", vmin=0, vmax=5, axis=1)
+                                .set_caption(f"{symbol_type} - Momentum")
+                            )
+                            st.dataframe(styled_momentum, use_container_width=True, hide_index=True)
+
                 for symbol_type in dfs.keys():
                     df_pivot = dfs[symbol_type].copy()
                     pivoted_to_corr(df_pivot, plot=True, streamlit=True, marchenko_pastur=marchenko_pastur)
@@ -107,21 +133,45 @@ def show_market_performance(
                 )
                 count_df = pd.DataFrame(list(count_dict.items()), columns=["Symbol", "Count"])
                 count_df.query("Count != 0", inplace=True)
-                count_df["weight"] = count_df["Count"] * 5
+                count_df["weight"] = count_df["Count"]
                 count_df = count_df[["Symbol", "weight"]]
                 count_df = count_df.sort_values(by="weight", ascending=False)
                 # Transpose so symbols are columns
                 count_df_t = count_df.set_index("Symbol").T
-                count_df_t["TOTAL +"] = np.dot(count_df_t.iloc[-1, :], count_df_t.iloc[-1, :] > 0)
                 summaries[symbol_type] = count_df_t
+                momentum_fig, momentum_summary = create_momentum_plot(
+                    df_pivot,
+                    symbols,
+                    window_sizes=[7, 30, 90, 180, 360],
+                    colors_dict=colors_dict,
+                    line_styles_dict=line_styles_dict,
+                    equity_config=equity_config,
+                    momentum_base_factor=momentum_base_factor,
+                )
+                # Store momentum summary for Summary tab
+                momentum_summaries[symbol_type] = momentum_summary
                 center_cols = st.columns([1, 6, 1])
                 with center_cols[1]:
                     st.dataframe(
-                        count_df_t.style.set_properties(**{"font-weight": "bold"}).background_gradient(cmap="RdYlGn", vmin=-10, vmax=20, axis=1),
+                        count_df_t.style.set_properties(**{"font-weight": "bold"}).background_gradient(cmap="RdYlGn", vmin=-3, vmax=3, axis=1),
                         use_container_width=True,
                         hide_index=True,
                     )
+                if not momentum_summary.empty:
+                    center_cols = st.columns([1, 6, 1])
+                    with center_cols[1]:
+                        styled_momentum = momentum_summary.style.set_properties(**{"font-weight": "bold"}).background_gradient(
+                            cmap="RdYlGn", vmin=0, vmax=5, axis=1
+                        )
+                        st.dataframe(styled_momentum, use_container_width=True, hide_index=True)
                 st.plotly_chart(fig, use_container_width=True, config={"displayModeBar": False})
+
+                st.markdown("### 📈 Momentum Analysis")
+
+                # Display momentum summary table
+
+                st.plotly_chart(momentum_fig, use_container_width=True, config={"displayModeBar": False})
+
                 # @ aggregations
                 melt_df = df_pivot.melt(id_vars=["Date"], var_name="Symbol", value_name="Price")
                 melt_df.sort_values(by=["Symbol", "Date"], inplace=True, ascending=True)
@@ -149,9 +199,11 @@ if __name__ == "__main__":
 
     with hydra.initialize(version_base=None, config_path="../../conf"):
         config = hydra.compose(config_name="main")
-    marchenko_pastur, initial_lookback_days, lookback_factor, lense_option = setup_page_and_sidebar(
+    marchenko_pastur, initial_lookback_days, lookback_factor, lense_option, momentum_base_factor = setup_page_and_sidebar(
         config["style_conf"], add_to_sidebar=lambda: sidebar(config)
     )
     st.title(lense_option)
 
-    show_market_performance(config["tickers"], config["lenses"][lense_option], marchenko_pastur, initial_lookback_days, lookback_factor)
+    show_market_performance(
+        config["tickers"], config["lenses"][lense_option], marchenko_pastur, initial_lookback_days, lookback_factor, momentum_base_factor
+    )
