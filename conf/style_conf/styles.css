@@ -25,7 +25,7 @@
         }
 
         #homepage-link {
-            margin-top: 20vh !important;
+            margin-top: 15vh !important;
             margin-bottom: 2vh !important;
         }
 
@@ -66,8 +66,8 @@
 
 /* @ main body */
 .stMainBlockContainer {
-    margin-left: 1%;
-    margin-right: 1%;
+    margin-left: 2%;
+    margin-right: 2%;
     padding-top: 2%;
     background-color: black;
 

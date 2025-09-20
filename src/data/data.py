@@ -88,7 +88,7 @@ def normalize_prices(df: pd.DataFrame, time_column: str = "Date") -> pd.DataFram
     # sort by time column, ascending
     df.sort_values(time_column, inplace=True, ascending=True)
     # fill backward
-    df = df.fillna(method="bfill")
+    df = df.bfill()
     symbols = df.select_dtypes(include=[np.number]).columns
 
     df[symbols] = df[symbols].div(df[symbols].iloc[0], axis=1)

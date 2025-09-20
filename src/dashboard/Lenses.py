@@ -23,12 +23,20 @@ def sidebar(config):
         key="lense_option",
     )
     st.sidebar.markdown("<hr>", unsafe_allow_html=True)
+    st.sidebar.markdown("Graphs")
+    show_performance_plot = st.sidebar.checkbox(
+        "Show Prices",
+        value=False,
+        key="show_performance_plot_input",
+    )
+    st.sidebar.markdown("<hr>", unsafe_allow_html=True)
     st.sidebar.markdown("Correlation Denoising")
     marchenko_pastur = st.sidebar.checkbox(
         "Marchenko Pastur",
         value=True,
         key="marchenko_pastur_input",
     )
+
     st.sidebar.markdown("<hr>", unsafe_allow_html=True)
     initial_lookback_days = st.sidebar.number_input(
         "Initial Lookback Days",
@@ -36,7 +44,7 @@ def sidebar(config):
         max_value=3650,
         value=7,
         step=1,
-        help="Enter the initial number of days for the analysis period. / Entrez le nombre initial de jours pour la période d'analyse. (Français: 'jours de retour en arrière')",
+        help="Enter the initial number of days for the analysis period.",
         key="lookback_days_input",
     )
     target_return = st.sidebar.slider(
@@ -45,7 +53,7 @@ def sidebar(config):
         max_value=2.5,
         value=1.3,
         step=0.1,
-        help="Target annualized return for momentum threshold calculation. / Rendement annualisé cible pour le calcul du seuil de momentum. (Français: 'rendement cible')",
+        help="Target annualized return for momentum threshold calculation.",
         key="target_return_input",
     )
     lookback_factor = st.sidebar.number_input(
@@ -54,11 +62,11 @@ def sidebar(config):
         max_value=10,
         value=3,
         step=1,
-        help="Enter the factor to multiply the lookback days. / Entrez le facteur pour multiplier les jours de retour en arrière. (Français: 'facteur')",
+        help="Enter the factor to multiply the lookback days.",
         key="lookback_factor_input",
     )
 
-    return marchenko_pastur, initial_lookback_days, lookback_factor, lense_option, target_return
+    return marchenko_pastur, initial_lookback_days, lookback_factor, lense_option, target_return, show_performance_plot
 
 
 def show_market_performance(
@@ -68,6 +76,7 @@ def show_market_performance(
     initial_lookback_days: int = 5,
     lookback_factor: int = 3,
     target_return: float = 1.3,
+    show_performance_plot: bool = True,
 ) -> None:
     """Function to show the market performance dashboard."""
     # transformation = sidebar()
@@ -152,12 +161,10 @@ def show_market_performance(
                 # Store momentum summary for Summary tab
                 momentum_summaries[symbol_type] = momentum_summary
                 center_cols = st.columns([1, 6, 1])
-                with center_cols[1]:
-                    st.dataframe(
-                        count_df_t.style.set_properties(**{"font-weight": "bold"}).background_gradient(cmap="RdYlGn", vmin=-3, vmax=3, axis=1),
-                        use_container_width=True,
-                        hide_index=False,
-                    )
+                # INSERT_YOUR_CODE
+                # --- h3 summary section ---
+                st.markdown("<h3 id='summary'>Summary</h3>", unsafe_allow_html=True)
+
                 if not momentum_summary.empty:
                     center_cols = st.columns([1, 6, 1])
                     with center_cols[1]:
@@ -165,9 +172,16 @@ def show_market_performance(
                             cmap="RdYlGn", vmin=0, vmax=5, axis=1
                         )
                         st.dataframe(styled_momentum, use_container_width=True, hide_index=False)
-                st.plotly_chart(fig, use_container_width=True, config={"displayModeBar": False})
+                with center_cols[1]:
+                    st.dataframe(
+                        count_df_t.style.set_properties(**{"font-weight": "bold"}).background_gradient(cmap="RdYlGn", vmin=-3, vmax=3, axis=1),
+                        use_container_width=True,
+                        hide_index=False,
+                    )
+                if show_performance_plot:
+                    st.plotly_chart(fig, use_container_width=True, config={"displayModeBar": False})
 
-                st.markdown("### 📈 Momentum Analysis")
+                st.markdown("<h3 id='momentum-analysis'>Momentum</h3>", unsafe_allow_html=True)
 
                 # Display momentum summary table
 
@@ -177,7 +191,7 @@ def show_market_performance(
                 melt_df = df_pivot.melt(id_vars=["Date"], var_name="Symbol", value_name="Price")
                 melt_df.sort_values(by=["Symbol", "Date"], inplace=True, ascending=True)
                 center_cols = st.columns([1, 6, 1])
-
+                st.markdown("<h3 id='correlation'>Correlation</h3>", unsafe_allow_html=True)
                 pivoted_to_corr(df_pivot, plot=True, streamlit=True, marchenko_pastur=marchenko_pastur)
 
                 with center_cols[1]:
@@ -189,6 +203,17 @@ def show_market_performance(
                         hide_index=False,
                     )
 
+    # Bottom Table of Contents
+    st.markdown("---")
+    st.markdown("<h2>Table of Contents</h2>", unsafe_allow_html=True)
+    toc_cols = st.columns(3)
+    with toc_cols[0]:
+        st.markdown("- [Summary](#summary)")
+    with toc_cols[1]:
+        st.markdown("- [Momentum](#momentum-analysis)")
+    with toc_cols[2]:
+        st.markdown("- [Correlation](#correlation)")
+
 
 if __name__ == "__main__":
 
@@ -198,11 +223,28 @@ if __name__ == "__main__":
 
     with hydra.initialize(version_base=None, config_path="../../conf"):
         config = hydra.compose(config_name="main")
-    marchenko_pastur, initial_lookback_days, lookback_factor, lense_option, target_return = setup_page_and_sidebar(
+    marchenko_pastur, initial_lookback_days, lookback_factor, lense_option, target_return, show_performance_plot = setup_page_and_sidebar(
         config["style_conf"], add_to_sidebar=lambda: sidebar(config)
     )
     st.title(lense_option)
 
+    # Table of Contents
+    st.markdown("<h2>Table of Contents</h2>", unsafe_allow_html=True)
+    toc_cols = st.columns(3)
+    with toc_cols[0]:
+        st.markdown("- [Summary](#summary)")
+    with toc_cols[1]:
+        st.markdown("- [Momentum](#momentum-analysis)")
+    with toc_cols[2]:
+        st.markdown("- [Correlation](#correlation)")
+    st.markdown("---")
+
     show_market_performance(
-        config["tickers"], config["lenses"][lense_option], marchenko_pastur, initial_lookback_days, lookback_factor, target_return
+        config["tickers"],
+        config["lenses"][lense_option],
+        marchenko_pastur,
+        initial_lookback_days,
+        lookback_factor,
+        target_return,
+        show_performance_plot,
     )
