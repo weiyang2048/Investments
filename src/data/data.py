@@ -95,20 +95,28 @@ def normalize_prices(df: pd.DataFrame, time_column: str = "Date") -> pd.DataFram
     return df
 
 
-def compute_momentum(df: pd.DataFrame, window_sizes: List[int] = [7, 30, 90, 180, 360], time_column: str = "Date") -> Dict[int, pd.DataFrame]:
+def compute_momentum(
+    df: pd.DataFrame, window_sizes: List[int] = [7, 30, 90, 180, 360], time_column: str = "Date", target_return: float = 1.3
+) -> tuple[Dict[int, pd.DataFrame], pd.DataFrame]:
     """
-    Compute momentum for different window sizes.
+    Compute momentum for different window sizes and count threshold crossings.
 
     Args:
         df: DataFrame with price data (normalized or raw)
         window_sizes: List of window sizes in days for momentum calculation
         time_column: Name of the time column
+        target_return: Target annualized return for threshold calculation
 
     Returns:
-        Dictionary mapping window size to momentum DataFrame
+        Tuple of (momentum_data_dict, momentum_summary_dataframe)
     """
     momentum_data = {}
     symbols = df.select_dtypes(include=[np.number]).columns
+
+    # Track momentum threshold counts for each symbol
+    momentum_counts_long = {symbol: 0 for symbol in symbols}
+    momentum_counts_mid = {symbol: 0 for symbol in symbols}
+    momentum_counts_short = {symbol: 0 for symbol in symbols}
 
     for window in window_sizes:
         # Compute momentum: (current_price / price_window_days_ago) - 1
@@ -117,7 +125,64 @@ def compute_momentum(df: pd.DataFrame, window_sizes: List[int] = [7, 30, 90, 180
         momentum = momentum.dropna()
         momentum_data[window] = momentum
 
-    return momentum_data
+        # Get the last window*3 rows for better analysis
+        display_rows = min(window * 3, len(momentum))
+        momentum_display = momentum.tail(display_rows)
+
+        # Calculate threshold: (1+y1)^(252/window) = target_return
+        y1_threshold = target_return ** (window / 252) - 1
+
+        # Count symbols with momentum above threshold
+        for symbol in symbols:
+            if symbol in momentum_display.columns:
+                last_momentum = momentum_display[symbol].iloc[-1]
+                if last_momentum > y1_threshold:
+                    momentum_counts_long[symbol] += 1
+                    if window <= 90:
+                        momentum_counts_mid[symbol] += 1
+                    if window <= 7:
+                        momentum_counts_short[symbol] += 1
+
+    # Create momentum summary DataFrame
+    momentum_summary_long = pd.DataFrame(list(momentum_counts_long.items()), columns=["Symbol", "Momentum_Count_Long"])
+    momentum_summary_long = momentum_summary_long.sort_values(by="Momentum_Count_Long", ascending=False)
+    momentum_summary_mid = pd.DataFrame(list(momentum_counts_mid.items()), columns=["Symbol", "Momentum_Count_Mid"])
+    momentum_summary_mid = momentum_summary_mid.sort_values(by="Momentum_Count_Mid", ascending=False)
+    momentum_summary_short = pd.DataFrame(list(momentum_counts_short.items()), columns=["Symbol", "Momentum_Count_Short"])
+    momentum_summary_short = momentum_summary_short.sort_values(by="Momentum_Count_Short", ascending=False)
+
+    # Combine all momentum summaries into a single DataFrame
+    # First, ensure all DataFrames have the same columns by getting the union of all symbols
+    all_symbols = set(momentum_summary_long["Symbol"]) | set(momentum_summary_mid["Symbol"]) | set(momentum_summary_short["Symbol"])
+
+    # Create a combined DataFrame with all symbols
+    combined_data = {}
+    for symbol in all_symbols:
+        long_count = (
+            momentum_summary_long[momentum_summary_long["Symbol"] == symbol]["Momentum_Count_Long"].iloc[0]
+            if symbol in momentum_summary_long["Symbol"].values
+            else 0
+        )
+        mid_count = (
+            momentum_summary_mid[momentum_summary_mid["Symbol"] == symbol]["Momentum_Count_Mid"].iloc[0]
+            if symbol in momentum_summary_mid["Symbol"].values
+            else 0
+        )
+        short_count = (
+            momentum_summary_short[momentum_summary_short["Symbol"] == symbol]["Momentum_Count_Short"].iloc[0]
+            if symbol in momentum_summary_short["Symbol"].values
+            else 0
+        )
+
+        combined_data[symbol] = {"Momentum_S": short_count, "Momentum_M": mid_count, "Momentum_L": long_count}
+
+    # Create the combined DataFrame
+    combined_data = pd.DataFrame(combined_data)
+    column_sums = combined_data.sum()
+    combined_data = combined_data[column_sums.sort_values(ascending=False).index]
+    # momentum_combined = combined_data
+
+    return momentum_data, combined_data
 
 
 if __name__ == "__main__":

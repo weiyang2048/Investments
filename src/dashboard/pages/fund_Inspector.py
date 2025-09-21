@@ -161,7 +161,7 @@ def display_country_exposure_map_streamlit(snap: dict):
 
         col1, col2 = st.columns([1, 1])
         with col1:
-            st.plotly_chart(create_country_exposure_table(exposure_df), use_container_width=True)
+            st.plotly_chart(create_country_exposure_table(exposure_df))
 
         with col2:
             world_map = create_plotly_choropleth(
@@ -171,7 +171,7 @@ def display_country_exposure_map_streamlit(snap: dict):
                 hover_name_col="Country",
                 color_scale="YlOrRd",
             )
-            st.plotly_chart(world_map, use_container_width=True)
+            st.plotly_chart(world_map)
 
 
 def main_fund_inspect_page(selections: list):
@@ -225,7 +225,6 @@ def main_fund_inspect_page(selections: list):
         st.markdown("<span class='field'>Style Box Breakdown </span>", unsafe_allow_html=True)
         st.dataframe(
             style_box_df.style.format("{:.2f}").background_gradient(cmap="Reds", axis=None),
-            use_container_width=False,
             width=250,
         )
 
@@ -256,7 +255,7 @@ def main_fund_inspect_page(selections: list):
             hover_data={"EndDate": True, "Value": ":.2f"},
         )
 
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig)
 
     if "weiya" in os.path.expanduser("~"):
         # if st.button("Show All Snapshot Data", key="show_all_snapshot_data"):

@@ -82,7 +82,7 @@ def pivoted_to_corr(df: pd.DataFrame, plot: bool = False, streamlit: bool = Fals
         if streamlit:
             rows = st.columns([1, 2, 1])
             with rows[1]:
-                st.pyplot(fig, use_container_width=False)
+                st.pyplot(fig)
             # show table of corr_matrix
             # st.dataframe(corr_matrix)
             # if local, show df_pivot_count

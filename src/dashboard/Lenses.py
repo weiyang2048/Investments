@@ -12,6 +12,11 @@ from src.dashboard.create_page import setup_page_and_sidebar
 import pandas as pd
 from src.association import pivoted_to_corr
 from src.viz.cmaps import custom_cmap
+from src.viz.streamlit_display import (
+    display_dataframe,
+    display_table_of_contents,
+    display_section_header,
+)
 
 
 def sidebar(config):
@@ -29,15 +34,6 @@ def sidebar(config):
         value=False,
         key="show_performance_plot_input",
     )
-    st.sidebar.markdown("<hr>", unsafe_allow_html=True)
-    st.sidebar.markdown("Correlation Denoising")
-    marchenko_pastur = st.sidebar.checkbox(
-        "Marchenko Pastur",
-        value=True,
-        key="marchenko_pastur_input",
-    )
-
-    st.sidebar.markdown("<hr>", unsafe_allow_html=True)
     initial_lookback_days = st.sidebar.number_input(
         "Initial Lookback Days",
         min_value=1,
@@ -47,15 +43,6 @@ def sidebar(config):
         help="Enter the initial number of days for the analysis period.",
         key="lookback_days_input",
     )
-    target_return = st.sidebar.slider(
-        "Target Return",
-        min_value=1.1,
-        max_value=2.5,
-        value=1.3,
-        step=0.1,
-        help="Target annualized return for momentum threshold calculation.",
-        key="target_return_input",
-    )
     lookback_factor = st.sidebar.number_input(
         "Lookback Factor",
         min_value=1,
@@ -64,6 +51,23 @@ def sidebar(config):
         step=1,
         help="Enter the factor to multiply the lookback days.",
         key="lookback_factor_input",
+    )
+    st.sidebar.markdown("<hr>", unsafe_allow_html=True)
+    target_return = st.sidebar.slider(
+        "Target Return",
+        min_value=1.1,
+        max_value=2.5,
+        value=1.5,
+        step=0.1,
+        help="Target annualized return for momentum threshold calculation.",
+        key="target_return_input",
+    )
+    st.sidebar.markdown("<hr>", unsafe_allow_html=True)
+    st.sidebar.markdown("Correlation Denoising")
+    marchenko_pastur = st.sidebar.checkbox(
+        "Marchenko Pastur",
+        value=True,
+        key="marchenko_pastur_input",
     )
 
     return marchenko_pastur, initial_lookback_days, lookback_factor, lense_option, target_return, show_performance_plot
@@ -88,37 +92,16 @@ def show_market_performance(
 
     # Generate look_back_days list based on user input
     look_back_days = [int(initial_lookback_days * (lookback_factor**i)) for i in range(6)]
-    summaries = dict()
     momentum_summaries = dict()
     dfs = dict()
     for i, symbol_type in enumerate(symbol_types):
         with tabs[i]:
             if symbol_type == "Summary":
-                # Display performance summaries
-                for idx, symbol_type in enumerate(summaries.keys()):
-                    count_df = summaries[symbol_type]
-                    center_cols = st.columns([1, 6, 1])
-                    with center_cols[1]:
-                        styled_df = (
-                            count_df.style.set_properties(**{"font-weight": "bold"})
-                            .background_gradient(cmap="RdYlGn", vmin=-10, vmax=20, axis=1)
-                            .set_caption(f"{symbol_type} - Performance")
-                        )
-                        st.dataframe(styled_df, use_container_width=True, hide_index=False)
 
                 # Display momentum summaries
                 for idx, symbol_type in enumerate(momentum_summaries.keys()):
                     momentum_df = momentum_summaries[symbol_type]
-                    if not momentum_df.empty:
-                        center_cols = st.columns([1, 6, 1])
-                        with center_cols[1]:
-                            styled_momentum = (
-                                momentum_df.style.set_properties(**{"font-weight": "bold"})
-                                .background_gradient(cmap="RdYlGn", vmin=0, vmax=5, axis=1)
-                                .set_caption(f"{symbol_type} - Momentum")
-                            )
-                            st.dataframe(styled_momentum, use_container_width=True, hide_index=False)
-
+                    display_dataframe(momentum_df, symbol_type, "Momentum Combined")
                 for symbol_type in dfs.keys():
                     df_pivot = dfs[symbol_type].copy()
                     pivoted_to_corr(df_pivot, plot=True, streamlit=True, marchenko_pastur=marchenko_pastur)
@@ -140,16 +123,7 @@ def show_market_performance(
                     line_styles_dict,
                     equity_config,
                 )
-                count_df = pd.DataFrame(list(count_dict.items()), columns=["Symbol", "Count"])
-                count_df.query("Count != 0", inplace=True)
-                count_df["weight"] = count_df["Count"]
-                count_df = count_df[["Symbol", "weight"]]
-                count_df = count_df.sort_values(by="weight", ascending=False)
-                # Transpose so symbols are columns and add Price label
-                count_df_t = count_df.set_index("Symbol").T
-                count_df_t.index = ["Price"]
-                summaries[symbol_type] = count_df_t
-                momentum_fig, momentum_summary = create_momentum_plot(
+                momentum_fig, momentum_combined = create_momentum_plot(
                     df_pivot,
                     symbols,
                     window_sizes=[7, 30, 90, 180, 360],
@@ -158,61 +132,34 @@ def show_market_performance(
                     equity_config=equity_config,
                     target_return=target_return,
                 )
-                # Store momentum summary for Summary tab
-                momentum_summaries[symbol_type] = momentum_summary
-                center_cols = st.columns([1, 6, 1])
-                # INSERT_YOUR_CODE
-                # --- h3 summary section ---
-                st.markdown("<h3 id='summary'>Summary</h3>", unsafe_allow_html=True)
 
-                if not momentum_summary.empty:
-                    center_cols = st.columns([1, 6, 1])
-                    with center_cols[1]:
-                        styled_momentum = momentum_summary.style.set_properties(**{"font-weight": "bold"}).background_gradient(
-                            cmap="RdYlGn", vmin=0, vmax=5, axis=1
-                        )
-                        st.dataframe(styled_momentum, use_container_width=True, hide_index=False)
-                with center_cols[1]:
-                    st.dataframe(
-                        count_df_t.style.set_properties(**{"font-weight": "bold"}).background_gradient(cmap="RdYlGn", vmin=-3, vmax=3, axis=1),
-                        use_container_width=True,
-                        hide_index=False,
-                    )
                 if show_performance_plot:
-                    st.plotly_chart(fig, use_container_width=True, config={"displayModeBar": False})
+                    st.plotly_chart(fig, config={"displayModeBar": False})
 
-                st.markdown("<h3 id='momentum-analysis'>Momentum</h3>", unsafe_allow_html=True)
+                display_section_header("Momentum", "momentum-analysis")
+                momentum_summaries[symbol_type] = momentum_combined
 
-                # Display momentum summary table
+                display_dataframe(
+                    momentum_combined,
+                    symbol_type,
+                    "Momentum Combined",
+                )
 
-                st.plotly_chart(momentum_fig, use_container_width=True, config={"displayModeBar": False})
+                st.plotly_chart(momentum_fig, config={"displayModeBar": False})
 
                 # @ aggregations
                 melt_df = df_pivot.melt(id_vars=["Date"], var_name="Symbol", value_name="Price")
                 melt_df.sort_values(by=["Symbol", "Date"], inplace=True, ascending=True)
-                center_cols = st.columns([1, 6, 1])
-                st.markdown("<h3 id='correlation'>Correlation</h3>", unsafe_allow_html=True)
+
+                display_section_header("Correlation", "correlation")
                 pivoted_to_corr(df_pivot, plot=True, streamlit=True, marchenko_pastur=marchenko_pastur)
 
-                with center_cols[1]:
-                    stats_df = aggregate_performance(melt_df)
-                    styled = stats_df.style.background_gradient(cmap=custom_cmap, axis=0, vmin=-0.2, vmax=0.2, gmap=None).format("{:.2%}")
-                    st.dataframe(
-                        styled,
-                        use_container_width=True,
-                        hide_index=False,
-                    )
+                stats_df = aggregate_performance(melt_df)
+                styled_stats = stats_df.style.background_gradient(cmap=custom_cmap, axis=0, vmin=-0.2, vmax=0.2, gmap=None).format("{:.2%}")
+                display_dataframe(styled_stats, centered=True)
 
     # Bottom Table of Contents
-    st.markdown("---")
-    st.markdown("<h2>Table of Contents</h2>", unsafe_allow_html=True)
-    toc_cols = st.columns(3)
-    with toc_cols[0]:
-        st.markdown("- [Summary](#summary)")
-    with toc_cols[1]:
-        st.markdown("- [Momentum](#momentum-analysis)")
-    with toc_cols[2]:
-        st.markdown("- [Correlation](#correlation)")
+    display_table_of_contents()
 
 
 if __name__ == "__main__":
@@ -229,15 +176,7 @@ if __name__ == "__main__":
     st.title(lense_option)
 
     # Table of Contents
-    st.markdown("<h2>Table of Contents</h2>", unsafe_allow_html=True)
-    toc_cols = st.columns(3)
-    with toc_cols[0]:
-        st.markdown("- [Summary](#summary)")
-    with toc_cols[1]:
-        st.markdown("- [Momentum](#momentum-analysis)")
-    with toc_cols[2]:
-        st.markdown("- [Correlation](#correlation)")
-    st.markdown("---")
+    display_table_of_contents()
 
     show_market_performance(
         config["tickers"],
