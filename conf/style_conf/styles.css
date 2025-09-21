@@ -66,9 +66,12 @@
 
 /* @ main body */
 .stMainBlockContainer {
-    margin-left: 2%;
-    margin-right: 2%;
+    margin-left: 0%;
+    margin-right: 0%;
+    padding-left: 3%;
+    padding-right: 3%;
     padding-top: 2%;
+
     background-color: black;
 
     button {
