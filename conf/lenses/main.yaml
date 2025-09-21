@@ -1,15 +1,17 @@
 main:
-  Regions: ${lenses.regional.regions}
-  Sectors: ${union:[ARKW, ARKQ, BKCH, DMAT, HYDR, URA, LIT, AIQ,SHLD, EUAD, EUFN], ${get_keys:tickers.sectors}}
-  Stable: ${union:${lenses.regional.USxUS},[CORO], ${get_keys:tickers.sectors}}
+  Regions: ${union:${lenses.regional.regions}, [CORO]}
+  Sectors: ${union:[ARKW, ARKQ, BKCH, DMAT, HYDR, URA, LIT, AIQ, BAI, TEK, SHLD, IDEF, EUAD, EUFN], ${get_keys:tickers.sectors}}
+  Stable: ${union:${lenses.regional.USxUS},[CORO,TEK], ${get_keys:tickers.sectors}, ${get_keys:tickers.income}}
 
 zoo:
-  globalX: ${get_keys:tickers.globalX}
+  iactive: ${get_keys:tickers.iactive}
   ARK: ${get_keys:tickers.ark}
   invescoMomentum: ${get_keys:tickers.momentum}
+  globalX: ${get_keys:tickers.globalX}
+  income: ${get_keys:tickers.income}
 
 regional:
-  USxUS: [SPMO, IDMO, FEM, AVUV, AVDV, AVES, IAUM, IBIT]
+  USxUS: [SPMO, IDMO, FEM, AVUV, AVDV, AVES, IAUM, IBIT, ETHA]
   regions: ${union:${lenses.regional.USxUS},[CEE,  FLN, AFK, AIA, ASEA, IPAC, FEP]}
   countries: ${union:${lenses.regional.USxUS},${get_keys:tickers.regions}}
 # sectoral:
