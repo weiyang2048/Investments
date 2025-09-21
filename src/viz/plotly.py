@@ -102,6 +102,5 @@ def create_plotly_choropleth(
     # no colorbar
     fig.update_layout(coloraxis_showscale=False)
     plotly_config["layout"].update(layout)
-    print(plotly_config["layout"])
     fig.update_layout(plotly_config["layout"])
     return fig

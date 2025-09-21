@@ -15,8 +15,6 @@ def display_dataframe(
     df: pd.DataFrame,
     symbol_type: Optional[str] = None,
     data_type: Optional[str] = None,
-    vmin: float = 0,
-    vmax: float = 5,
     centered: bool = True,
     hide_index: bool = False,
     cmap: str = "RdYlGn",
@@ -32,8 +30,6 @@ def display_dataframe(
         df: DataFrame to display
         symbol_type: Type of symbol (e.g., "ETF", "Stock") for caption generation
         data_type: Type of data (e.g., "Performance", "Momentum") for caption generation
-        vmin: Minimum value for color gradient
-        vmax: Maximum value for color gradient
         centered: Whether to center the DataFrame in a column layout
         hide_index: Whether to hide the DataFrame index
         check_empty: Whether to skip display if DataFrame is empty
@@ -52,7 +48,7 @@ def display_dataframe(
         # Create styling for the DataFrame
         styled_df = (
             df.style.set_properties(**{"font-weight": "bold"})
-            .background_gradient(cmap=cmap, vmin=vmin, vmax=vmax, axis=1)
+            .background_gradient(cmap=cmap, axis=1)
             .set_caption(caption or f"{symbol_type} - {data_type}")
         )
     else:
@@ -81,35 +77,6 @@ def _display_dataframe_with_size(
         st.dataframe(df, hide_index=hide_index, use_container_width=True if width is None else False, **style_kwargs)
     else:
         st.dataframe(df, hide_index=hide_index, **style_kwargs)
-
-
-def display_performance_dataframe(df: pd.DataFrame, symbol_type: str, vmin: float = -10, vmax: float = 20, **kwargs) -> None:
-    """
-    Display a performance DataFrame with standard styling.
-
-    Args:
-        df: Performance DataFrame
-        symbol_type: Type of symbol for caption
-        vmin: Minimum value for color gradient
-        vmax: Maximum value for color gradient
-        **kwargs: Additional arguments passed to display_dataframe()
-    """
-    display_dataframe(df, symbol_type=symbol_type, data_type="Performance", vmin=vmin, vmax=vmax, **kwargs)
-
-
-def display_momentum_dataframe(df: pd.DataFrame, symbol_type: str, momentum_type: str, vmin: float = 0, vmax: float = 5, **kwargs) -> None:
-    """
-    Display a momentum DataFrame with standard styling.
-
-    Args:
-        df: Momentum DataFrame
-        symbol_type: Type of symbol for caption
-        momentum_type: Type of momentum (e.g., "Short", "Mid", "Long")
-        vmin: Minimum value for color gradient
-        vmax: Maximum value for color gradient
-        **kwargs: Additional arguments passed to display_dataframe()
-    """
-    display_dataframe(df, symbol_type=symbol_type, data_type=f"Momentum {momentum_type}", vmin=vmin, vmax=vmax, **kwargs)
 
 
 def display_table_of_contents(sections: Optional[list] = None) -> None:

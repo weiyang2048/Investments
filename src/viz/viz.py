@@ -155,8 +155,8 @@ def create_momentum_plot(
     # Normalize the data first
     df_norm = normalize_prices(df)
 
-    # Compute momentum for all window sizes
-    momentum_data = compute_momentum(df_norm, window_sizes)
+    # Compute momentum for all window sizes and get momentum counts
+    momentum_data, momentum_combined = compute_momentum(df_norm, window_sizes, target_return=target_return)
 
     n_windows = len(window_sizes)
     fig = make_subplots(
@@ -173,9 +173,6 @@ def create_momentum_plot(
 
     if line_styles_dict is None:
         line_styles_dict = {symbol: "solid" for symbol in symbols}
-
-    # Track momentum threshold counts for each symbol
-    momentum_counts = {symbol: 0 for symbol in symbols}
 
     for idx, window in enumerate(window_sizes):
         momentum_df = momentum_data[window]
@@ -225,13 +222,6 @@ def create_momentum_plot(
         # Add horizontal line based on window size: (1+y1)^(252/window) = target_return
         y1_threshold = target_return ** (window / 252) - 1
         fig.add_hline(y=y1_threshold, line_dash="dash", line_color="lightgreen", opacity=0.7, row=idx + 1, col=1)
-
-        # Count symbols with momentum above threshold (all symbols)
-        for symbol in symbols:
-            if symbol in momentum_display.columns:
-                last_momentum = momentum_display[symbol].iloc[-1]
-                if last_momentum > y1_threshold:
-                    momentum_counts[symbol] += 1
 
         # Plot renormalized price on the right y-axis (all symbols, but only top 3 visible)
         for symbol in symbols:
@@ -294,13 +284,4 @@ def create_momentum_plot(
         ),
     )
 
-    # Create momentum summary DataFrame
-    momentum_summary = pd.DataFrame(list(momentum_counts.items()), columns=["Symbol", "Momentum_Count"])
-    momentum_summary = momentum_summary[momentum_summary["Momentum_Count"] > 0]  # Only show symbols with counts > 0
-    momentum_summary = momentum_summary.sort_values(by="Momentum_Count", ascending=False)
-
-    # Transpose so symbols are columns and add Momentum label
-    momentum_summary_t = momentum_summary.set_index("Symbol").T
-    momentum_summary_t.index = ["Momentum"]
-
-    return fig, momentum_summary_t
+    return fig, momentum_combined
