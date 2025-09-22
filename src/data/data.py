@@ -108,15 +108,13 @@ def compute_momentum(
         target_return: Target annualized return for threshold calculation
 
     Returns:
-        Tuple of (momentum_data_dict, momentum_summary_dataframe)
+        Tuple of (momentum_data_dict, momentum_combined_dict) where:
+        - momentum_data_dict: {window_size: momentum_dataframe}
+        - momentum_combined_dict: {window_size: {symbol: count}}
     """
     momentum_data = {}
+    momentum_combined = {}
     symbols = df.select_dtypes(include=[np.number]).columns
-
-    # Track momentum threshold counts for each symbol
-    momentum_counts_long = {symbol: 0 for symbol in symbols}
-    momentum_counts_mid = {symbol: 0 for symbol in symbols}
-    momentum_counts_short = {symbol: 0 for symbol in symbols}
 
     for window in window_sizes:
         # Compute momentum: (current_price / price_window_days_ago) - 1
@@ -132,58 +130,21 @@ def compute_momentum(
         # Calculate threshold: (1+y1)^(252/window) = target_return
         y1_threshold = target_return ** (window / 252) - 1
 
+        # Initialize counts for this window
+        window_counts = {symbol: 0 for symbol in symbols}
+
         # Count symbols with momentum above threshold
         for symbol in symbols:
             if symbol in momentum_display.columns:
                 last_momentum = momentum_display[symbol].iloc[-1]
                 if last_momentum > y1_threshold:
-                    momentum_counts_long[symbol] += 1
-                    if window <= 90:
-                        momentum_counts_mid[symbol] += 1
-                    if window <= 7:
-                        momentum_counts_short[symbol] += 1
+                    window_counts[symbol] = 1
 
-    # Create momentum summary DataFrame
-    momentum_summary_long = pd.DataFrame(list(momentum_counts_long.items()), columns=["Symbol", "Momentum_Count_Long"])
-    momentum_summary_long = momentum_summary_long.sort_values(by="Momentum_Count_Long", ascending=False)
-    momentum_summary_mid = pd.DataFrame(list(momentum_counts_mid.items()), columns=["Symbol", "Momentum_Count_Mid"])
-    momentum_summary_mid = momentum_summary_mid.sort_values(by="Momentum_Count_Mid", ascending=False)
-    momentum_summary_short = pd.DataFrame(list(momentum_counts_short.items()), columns=["Symbol", "Momentum_Count_Short"])
-    momentum_summary_short = momentum_summary_short.sort_values(by="Momentum_Count_Short", ascending=False)
-
-    # Combine all momentum summaries into a single DataFrame
-    # First, ensure all DataFrames have the same columns by getting the union of all symbols
-    all_symbols = set(momentum_summary_long["Symbol"]) | set(momentum_summary_mid["Symbol"]) | set(momentum_summary_short["Symbol"])
-
-    # Create a combined DataFrame with all symbols
-    combined_data = {}
-    for symbol in all_symbols:
-        long_count = (
-            momentum_summary_long[momentum_summary_long["Symbol"] == symbol]["Momentum_Count_Long"].iloc[0]
-            if symbol in momentum_summary_long["Symbol"].values
-            else 0
-        )
-        mid_count = (
-            momentum_summary_mid[momentum_summary_mid["Symbol"] == symbol]["Momentum_Count_Mid"].iloc[0]
-            if symbol in momentum_summary_mid["Symbol"].values
-            else 0
-        )
-        short_count = (
-            momentum_summary_short[momentum_summary_short["Symbol"] == symbol]["Momentum_Count_Short"].iloc[0]
-            if symbol in momentum_summary_short["Symbol"].values
-            else 0
-        )
-
-        combined_data[symbol] = {"Momentum_S": short_count, "Momentum_M": mid_count, "Momentum_L": long_count}
-
-    # Create the combined DataFrame
-    combined_data = pd.DataFrame(combined_data)
-    column_sums = combined_data.sum()
-    combined_data = combined_data[column_sums.sort_values(ascending=False).index]
-    # momentum_combined = combined_data
-
-    return momentum_data, combined_data
-
-
-if __name__ == "__main__":
-    df = get_daily_prices_list(["GDE", "AIVI", "DOL", "DGRW"], "5y")
+        momentum_combined[window] = window_counts
+    momentum_combined = pd.DataFrame(momentum_combined).T
+    # cumulative sum of the counts
+    momentum_combined = momentum_combined.cumsum()
+    # sort columns by the sum of the column counts
+    col_sums = momentum_combined.sum(axis=0)
+    momentum_combined = momentum_combined[col_sums.sort_values(ascending=False).index]
+    return momentum_data, momentum_combined

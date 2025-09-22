@@ -115,7 +115,7 @@ def show_market_performance(
                 # Create and display plot
                 colors_dict = {symbol: equity_config.get(symbol, {}).get("color", get_random_style("color")) for symbol in symbols}
                 line_styles_dict = {symbol: equity_config.get(symbol, {}).get("line_style", get_random_style("line_style")) for symbol in symbols}
-                fig, df_normalized, count_dict = create_performance_plot(
+                fig, df_normalized = create_performance_plot(
                     df_pivot,
                     symbols,
                     look_back_days,
@@ -159,7 +159,12 @@ def show_market_performance(
                 display_dataframe(styled_stats, centered=True)
 
     # Bottom Table of Contents
-    display_table_of_contents()
+    display_table_of_contents(
+        sections=[
+            {"name": "Momentum", "anchor": "momentum-analysis"},
+            {"name": "Correlation", "anchor": "correlation"},
+        ]
+    )
 
 
 if __name__ == "__main__":
@@ -176,7 +181,12 @@ if __name__ == "__main__":
     st.title(lense_option)
 
     # Table of Contents
-    display_table_of_contents()
+    display_table_of_contents(
+        sections=[
+            {"name": "Momentum", "anchor": "momentum-analysis"},
+            {"name": "Correlation", "anchor": "correlation"},
+        ]
+    )
 
     show_market_performance(
         config["tickers"],

@@ -17,7 +17,7 @@ def create_performance_plot(
     line_styles_dict: Dict[str, str],
     equity_config: Dict[str, Dict],
     transformation: Callable[[float], float] = lambda x: x,
-) -> go.Figure:
+) -> tuple[go.Figure, pd.DataFrame]:
     """
     Create a multi-subplot figure showing normalized performance.
 
@@ -40,7 +40,6 @@ def create_performance_plot(
         horizontal_spacing=0.03,
     )
     stats = Stats(normalize_prices(df))
-    count_dict = {symbol: 0 for symbol in symbols}
     for i, days in enumerate(look_back_days):
         df_normalized = normalize_prices(df.iloc[-days:])
         # reorder the columns to match the order of the symbols
@@ -52,11 +51,6 @@ def create_performance_plot(
         top_3_symbols = [symbols_in_this_plot[j] for j in np.argsort(current_ratios)[-1:-4:-1]]
         negative_symbols = [symbols_in_this_plot[j] for j in np.argsort(current_ratios) if current_ratios[j] < 0]
         visible_symbols = set(top_3_symbols + negative_symbols)
-        for symbol in top_3_symbols:
-            count_dict[symbol] += 1
-        if days < 90:
-            for symbol in negative_symbols:
-                count_dict[symbol] -= 1
         for symbol in symbols:
             keys = ["name", "region", "industry", "n_holdings"]
             keys = [key for key in keys if key in equity_config.get(symbol, {})]
@@ -126,7 +120,7 @@ def create_performance_plot(
         ),
     )
 
-    return fig, df_normalized, count_dict
+    return fig, df_normalized
 
 
 def create_momentum_plot(
