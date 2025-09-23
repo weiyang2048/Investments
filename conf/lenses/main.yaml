@@ -1,7 +1,7 @@
 main:
-  Regions: ${union:${lenses.regional.regions}, [CORO]}
-  Sectors: ${union:[ARKW, ARKQ, BKCH, DMAT, HYDR, URA, LIT, AIQ, BAI, TEK, SHLD, IDEF, EUAD, EUFN], ${get_keys:tickers.sectors}}
-  Stable: ${union:${lenses.regional.USxUS},[CORO,TEK], ${get_keys:tickers.sectors}, ${get_keys:tickers.income}}
+  Regions: ${lenses.regional.regions}
+  Sectors: ${union:[ARKW, ARKQ, BKCH, DMAT, HYDR, URA, LIT, AIQ, SHLD], ${get_keys:tickers.sectors}}
+  Stable: ${union:${lenses.regional.USxUS}, ${get_keys:tickers.sectors}}
 
 zoo:
   iactive: ${get_keys:tickers.iactive}
@@ -9,6 +9,7 @@ zoo:
   invescoMomentum: ${get_keys:tickers.momentum}
   globalX: ${get_keys:tickers.globalX}
   income: ${get_keys:tickers.income}
+  pennie: [HOUS, OPEN]
 
 regional:
   USxUS: [SPMO, IDMO, FEM, AVUV, AVDV, AVES, IAUM, IBIT, ETHA]

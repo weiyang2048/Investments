@@ -38,6 +38,13 @@ def create_fund_symbol_selector() -> str:
     # % Option 1: Select from popular categories
     fund_list = list(popular_funds.keys())
 
+    # Initialize random selection on first load
+    if "random_category_index" not in st.session_state:
+        random_category_index = random.choice(range(len(fund_list)))
+        random_fund_index = random.choice(range(len(popular_funds[fund_list[random_category_index]])))
+        st.session_state.random_category_index = random_category_index
+        st.session_state.random_fund_index = random_fund_index
+
     selected_category = st.sidebar.selectbox(
         "Select Category:",
         fund_list,
