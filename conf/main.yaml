@@ -1,3 +1,19 @@
+lenses:
+  main:
+    Regions: ${lenses.regional.regions}
+    Sectors: ${union:[ARKW, ARKQ, BKCH, DMAT, HYDR, URA, LIT, AIQ, SHLD], ${get_keys:tickers.sectors}}
+    Stable: ${union:${lenses.regional.USxUS}, ${get_keys:tickers.sectors}}
+  zoo:
+    ARK: ${get_keys:tickers.ark}
+    invescoMomentum: ${get_keys:tickers.momentum}
+    globalX: ${get_keys:tickers.globalX}
+    pennie: [HOUS, OPEN, BINI, LCID]
+
+  regional:
+    USxUS: [SPMO, IDMO, FEM, AVUV, AVDV, AVES, IAUM, IBIT, ETHA]
+    regions: ${union:${lenses.regional.USxUS},[CEE,  FLN, AFK, AIA, ASEA, IPAC, FEP], [COLO, EPU]}
+    countries: ${union:${lenses.regional.USxUS},${get_keys:tickers.regions}}
+target_return: 1.3
 defaults:
   - style_conf: [shared_configs, color_line_styles]
   - tickers:
@@ -7,6 +23,3 @@ defaults:
       - globalX
       - momentum
       - ark
-      - iactive
-      - income
-  - lenses: [main]
