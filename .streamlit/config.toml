@@ -1,5 +1,6 @@
 # https://docs.streamlit.io/develop/api-reference/configuration/config.toml
 [theme]
+base = "light"
 primaryColor = "lightgreen"
 backgroundColor = "black"
 secondaryBackgroundColor = "snow"
