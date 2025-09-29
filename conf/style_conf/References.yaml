@@ -1,12 +1,19 @@
-page_config:
-  page_title: References
-
-title: ${style_conf.page_config.page_title}
-
 color_dict:
   yFinance: rgba(128,0,128,1)
 
 # TODO: these should not be in the style_conf
+ETFs:
+  Ranks:
+    Yahoo Finance:
+      - title: Top ETFs
+        url: https://finance.yahoo.com/markets/etfs/top/?start=0&count=100
+    US News:
+      - title: US News ETFs Rankings
+        url: https://money.usnews.com/investing/rankings/etfs
+  Compare:
+    ETFrc:
+      - title: Fund Overlap
+        url: https://www.etfrc.com/funds/overlap.php
 Tools:
   Equity:
     Fund Manager:
@@ -16,16 +23,9 @@ Tools:
         url: https://www.vanguard.com/
       - title: Fidelity
         url: https://www.fidelity.com/
-    ETFs:
-      - title: yFinance Top ETFs
-        url: https://finance.yahoo.com/markets/etfs/top/?start=0&count=20
-        color: purple
-      - title: US News ETFs Rankings
-        url: https://money.usnews.com/investing/rankings/etfs
     Sectors:
       - title: yFinance US Sectors
         url: https://finance.yahoo.com/sectors/
-        color: purple
       - title: Sector Tracker
         url: https://www.sectorspdrs.com/sectortracker
     Portfolio Builder:
@@ -69,10 +69,6 @@ References:
     BLS [Bureau of Labor Statistics]:
       - title: BLS Economic Data
         url: https://www.bls.gov/
-      - title: CPI
-        url: https://www.bls.gov/cpi/
-      - title: Unemployment Rate
-        url: https://www.bls.gov/lau/
       - title: Labor Productivity
         url: https://data.bls.gov/timeseries/PRS85006092
     BEA [Bureau of Economic Analysis]:

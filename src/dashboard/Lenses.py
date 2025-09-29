@@ -96,6 +96,104 @@ def sidebar(config):
     return marchenko_pastur, initial_lookback_days, lookback_factor, lense_option, target_return, show_performance_plot, custom_symbols
 
 
+def _create_style_dicts(symbols, equity_config):
+    """Create color and line style dictionaries for symbols."""
+    colors_dict = {symbol: equity_config.get(symbol, {}).get("color", get_random_style("color")) for symbol in symbols}
+    line_styles_dict = {symbol: equity_config.get(symbol, {}).get("line_style", get_random_style("line_style")) for symbol in symbols}
+    return colors_dict, line_styles_dict
+
+
+def _process_symbol_data(symbols, period, streamlit=True):
+    """Load and process data for given symbols."""
+    return pivot_data(list(symbols), period, streamlit=streamlit)
+
+
+def _create_melted_dataframe(df_pivot):
+    """Create melted dataframe for performance analysis."""
+    melt_df = df_pivot.melt(id_vars=["Date"], var_name="Symbol", value_name="Price")
+    melt_df.sort_values(by=["Symbol", "Date"], inplace=True, ascending=True)
+    return melt_df
+
+
+def _display_performance_section(melt_df):
+    """Display performance statistics with styling."""
+    stats_df = aggregate_performance(melt_df)
+    styled_stats = stats_df.style.background_gradient(cmap=custom_cmap, axis=0, vmin=-0.2, vmax=0.2, gmap=None).format("{:.2%}")
+    display_dataframe(styled_stats, centered=True)
+
+
+def _process_symbol_tab(symbols, symbol_type, look_back_days, equity_config, target_return, 
+                       show_performance_plot, marchenko_pastur, dfs, momentum_summaries):
+    """Process a single symbol tab - handles both custom and regular symbols."""
+    period = f"{look_back_days[-1]}d"
+    
+    # Load and process data
+    df_pivot = _process_symbol_data(symbols, period)
+    dfs[symbol_type] = df_pivot
+    
+    # Create style dictionaries
+    colors_dict, line_styles_dict = _create_style_dicts(symbols, equity_config)
+    
+    # Create momentum plot
+    momentum_fig, momentum_combined = create_momentum_plot(
+        df_pivot,
+        symbols,
+        window_sizes=[7, 30, 90, 180, 360],
+        colors_dict=colors_dict,
+        line_styles_dict=line_styles_dict,
+        equity_config=equity_config,
+        target_return=target_return,
+    )
+    
+    # Display momentum section
+    display_section_header("Momentum")
+    momentum_summaries[symbol_type] = momentum_combined
+    display_dataframe(momentum_combined, symbol_type, "Momentum Combined")
+    st.plotly_chart(momentum_fig, config={"displayModeBar": False})
+    
+    # Create performance plot
+    fig, df_normalized = create_performance_plot(
+        df_pivot,
+        symbols,
+        look_back_days,
+        colors_dict,
+        line_styles_dict,
+        equity_config,
+    )
+    
+    # Display performance plot if requested
+    if show_performance_plot:
+        st.plotly_chart(fig, config={"displayModeBar": False})
+    
+    # Process data for correlation and performance analysis
+    melt_df = _create_melted_dataframe(df_pivot)
+    
+    # Display correlation section
+    display_section_header("Correlation")
+    pivoted_to_corr(df_pivot, plot=True, streamlit=True, marchenko_pastur=marchenko_pastur)
+    
+    # Display performance section (only for regular symbols, not custom)
+    if symbol_type != "Custom Symbols":
+        display_section_header("Performance")
+        _display_performance_section(melt_df)
+    else:
+        # For custom symbols, display performance without section header
+        _display_performance_section(melt_df)
+
+
+def _display_summary_tab(momentum_summaries, dfs, marchenko_pastur):
+    """Display the summary tab with all momentum summaries and correlations."""
+    # Display momentum summaries
+    for symbol_type in momentum_summaries.keys():
+        momentum_df = momentum_summaries[symbol_type]
+        display_dataframe(momentum_df, symbol_type, "Momentum Combined")
+    
+    # Display correlations
+    for symbol_type in dfs.keys():
+        df_pivot = dfs[symbol_type].copy()
+        pivoted_to_corr(df_pivot, plot=True, streamlit=True, marchenko_pastur=marchenko_pastur)
+
+
 def show_market_performance(
     equity_config: dict,
     portfolio_config: dict,
@@ -107,8 +205,6 @@ def show_market_performance(
     custom_symbols: list = None,
 ) -> None:
     """Function to show the market performance dashboard."""
-    # transformation = sidebar()
-
     # Symbol selection using tabs instead of sidebar radio
     symbol_types = [key for key in portfolio_config.keys()]
 
@@ -123,127 +219,25 @@ def show_market_performance(
     look_back_days = [int(initial_lookback_days * (lookback_factor**i)) for i in range(6)]
     momentum_summaries = dict()
     dfs = dict()
+    
     for i, symbol_type in enumerate(symbol_types):
         with tabs[i]:
             if symbol_type == "Summary":
-
-                # Display momentum summaries
-                for idx, symbol_type in enumerate(momentum_summaries.keys()):
-                    momentum_df = momentum_summaries[symbol_type]
-                    display_dataframe(momentum_df, symbol_type, "Momentum Combined")
-                for symbol_type in dfs.keys():
-                    df_pivot = dfs[symbol_type].copy()
-                    pivoted_to_corr(df_pivot, plot=True, streamlit=True, marchenko_pastur=marchenko_pastur)
+                _display_summary_tab(momentum_summaries, dfs, marchenko_pastur)
             elif symbol_type == "Custom Symbols":
                 if custom_symbols:
-                    symbols = custom_symbols
-                    period = f"{look_back_days[-1]}d"
-
-                    # Load and process data
-                    df_pivot = pivot_data(list(symbols), period, streamlit=True)
-                    dfs[symbol_type] = df_pivot
-                    # Create and display plot
-                    colors_dict = {symbol: equity_config.get(symbol, {}).get("color", get_random_style("color")) for symbol in symbols}
-                    line_styles_dict = {symbol: equity_config.get(symbol, {}).get("line_style", get_random_style("line_style")) for symbol in symbols}
-                    fig, df_normalized = create_performance_plot(
-                        df_pivot,
-                        symbols,
-                        look_back_days,
-                        colors_dict,
-                        line_styles_dict,
-                        equity_config,
+                    _process_symbol_tab(
+                        custom_symbols, symbol_type, look_back_days, equity_config, 
+                        target_return, show_performance_plot, marchenko_pastur, dfs, momentum_summaries
                     )
-                    momentum_fig, momentum_combined = create_momentum_plot(
-                        df_pivot,
-                        symbols,
-                        window_sizes=[7, 30, 90, 180, 360],
-                        colors_dict=colors_dict,
-                        line_styles_dict=line_styles_dict,
-                        equity_config=equity_config,
-                        target_return=target_return,
-                    )
-
-                    if show_performance_plot:
-                        st.plotly_chart(fig, config={"displayModeBar": False})
-
-                    display_section_header("Momentum")
-                    momentum_summaries[symbol_type] = momentum_combined
-
-                    display_dataframe(
-                        momentum_combined,
-                        symbol_type,
-                        "Momentum Combined",
-                    )
-
-                    st.plotly_chart(momentum_fig, config={"displayModeBar": False})
-
-                    # @ aggregations
-                    melt_df = df_pivot.melt(id_vars=["Date"], var_name="Symbol", value_name="Price")
-                    melt_df.sort_values(by=["Symbol", "Date"], inplace=True, ascending=True)
-
-                    display_section_header("Correlation")
-                    pivoted_to_corr(df_pivot, plot=True, streamlit=True, marchenko_pastur=marchenko_pastur)
-
-                    stats_df = aggregate_performance(melt_df)
-                    styled_stats = stats_df.style.background_gradient(cmap=custom_cmap, axis=0, vmin=-0.2, vmax=0.2, gmap=None).format("{:.2%}")
-                    display_dataframe(styled_stats, centered=True)
                 else:
                     st.info("No custom symbols provided. Please enter symbols in the sidebar.")
             else:
                 symbols = portfolio_config[symbol_type]
-                period = f"{look_back_days[-1]}d"
-
-                # Load and process data
-                df_pivot = pivot_data(list(symbols), period, streamlit=True)
-                dfs[symbol_type] = df_pivot
-                # Create and display plot
-                colors_dict = {symbol: equity_config.get(symbol, {}).get("color", get_random_style("color")) for symbol in symbols}
-                line_styles_dict = {symbol: equity_config.get(symbol, {}).get("line_style", get_random_style("line_style")) for symbol in symbols}
-
-                momentum_fig, momentum_combined = create_momentum_plot(
-                    df_pivot,
-                    symbols,
-                    window_sizes=[7, 30, 90, 180, 360],
-                    colors_dict=colors_dict,
-                    line_styles_dict=line_styles_dict,
-                    equity_config=equity_config,
-                    target_return=target_return,
+                _process_symbol_tab(
+                    symbols, symbol_type, look_back_days, equity_config, 
+                    target_return, show_performance_plot, marchenko_pastur, dfs, momentum_summaries
                 )
-
-                display_section_header("Momentum")
-                momentum_summaries[symbol_type] = momentum_combined
-
-                display_dataframe(
-                    momentum_combined,
-                    symbol_type,
-                    "Momentum Combined",
-                )
-
-                st.plotly_chart(momentum_fig, config={"displayModeBar": False})
-
-                # @ aggregations
-                melt_df = df_pivot.melt(id_vars=["Date"], var_name="Symbol", value_name="Price")
-                melt_df.sort_values(by=["Symbol", "Date"], inplace=True, ascending=True)
-
-                display_section_header("Correlation")
-                pivoted_to_corr(df_pivot, plot=True, streamlit=True, marchenko_pastur=marchenko_pastur)
-
-                display_section_header("Performance")
-                stats_df = aggregate_performance(melt_df)
-                styled_stats = stats_df.style.background_gradient(cmap=custom_cmap, axis=0, vmin=-0.2, vmax=0.2, gmap=None).format("{:.2%}")
-                display_dataframe(styled_stats, centered=True)
-
-                fig, df_normalized = create_performance_plot(
-                    df_pivot,
-                    symbols,
-                    look_back_days,
-                    colors_dict,
-                    line_styles_dict,
-                    equity_config,
-                )
-
-                if show_performance_plot:
-                    st.plotly_chart(fig, config={"displayModeBar": False})
 
     # Bottom Table of Contents
     display_table_of_contents(

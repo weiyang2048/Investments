@@ -1,13 +1,6 @@
-"""
-Streamlit DataFrame Display Utilities
-
-This module provides robust, reusable functions for displaying DataFrames in Streamlit
-with consistent styling and layout options. Designed to be used across multiple pages.
-"""
-
 import streamlit as st
 import pandas as pd
-from typing import Optional, Union, Dict, Any
+from typing import Optional
 from src.viz.cmaps import custom_cmap
 
 
@@ -80,19 +73,6 @@ def _display_dataframe_with_size(
 
 
 def display_table_of_contents(sections: Optional[list] = None) -> None:
-    """
-    Display a table of contents with customizable sections.
-
-    Args:
-        sections: List of section dictionaries with 'name' and 'anchor' keys.
-                 If None, uses default sections.
-    """
-    if sections is None:
-        sections = [
-            {"name": "Summary", "anchor": "summary"},
-            {"name": "Momentum", "anchor": "momentum-analysis"},
-            {"name": "Correlation", "anchor": "correlation"},
-        ]
 
     st.markdown("---")
     st.markdown("<h2>Table of Contents</h2>", unsafe_allow_html=True)
@@ -108,7 +88,7 @@ def display_table_of_contents(sections: Optional[list] = None) -> None:
     for i, section in enumerate(sections):
         col_idx = i % 3 if num_sections > 3 else i
         with cols[col_idx]:
-            st.markdown(f"- [{section['name']}](#{section['anchor']})")
+            st.markdown(f"- [{section}](#{section.lower()})")
 
 
 def display_section_header(header: str, anchor: Optional[str] = None) -> None:
@@ -119,7 +99,5 @@ def display_section_header(header: str, anchor: Optional[str] = None) -> None:
         header: Header text to display
         anchor: Optional anchor ID for navigation
     """
-    if anchor:
-        st.markdown(f"<h3 id='{anchor}'>{header}</h3>", unsafe_allow_html=True)
-    else:
-        st.markdown(f"### {header}")
+    anchor = anchor or header
+    st.markdown(f"<h3 id='{anchor.lower()}'>{header}</h3>", unsafe_allow_html=True)

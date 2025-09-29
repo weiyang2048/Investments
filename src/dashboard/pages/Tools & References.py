@@ -7,7 +7,7 @@ def show_references_page(dashboard_config: dict) -> None:
     st.set_page_config(
         **dashboard_config["page_config"],
     )
-    st.title(dashboard_config["title"])
+    st.title("References")
     # % style string
     style_css_url = dashboard_config["style_css_url"]
     with open(style_css_url, "r") as f:
@@ -24,7 +24,7 @@ def show_references_page(dashboard_config: dict) -> None:
         unsafe_allow_html=True,
     )
 
-    for section in ["Tools", "References"]:
+    for section in ["ETFs", "Tools", "References"]:
         st.markdown(f"## {section}")
         for item_type, items in dashboard_config[section].items():
             st.markdown(f"### **{item_type}**")
