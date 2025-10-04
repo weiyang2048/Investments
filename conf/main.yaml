@@ -1,8 +1,8 @@
 lenses:
   main:
-    Regions: ${union:${lenses.regional.regions}, [COLO, EPU]}
-    Sectors: ${union:[ARKW, ARKQ], [BKCH, GOEX, DMAT, HYDR, URA, LIT, AIQ, SHLD], ${get_keys:tickers.sectors}}
-    Stable: ${union:${lenses.regional.USxUS}, ${get_keys:tickers.sectors}}
+    Regions: ${union:${lenses.regional.regions}, [COLO, EPU, EIS]}
+    Sectors: ${union:[ARKW, ARKQ, ARKG], [BKCH, GOEX, DMAT, HYDR, URA, LIT, AIQ, EBIZ, SHLD], ${get_keys:tickers.sectors}}
+    Stable: ${union:${lenses.main.Regions}, ${lenses.main.Sectors}}
   zoo:
     ARK: ${get_keys:tickers.ark}
     invescoMomentum: ${get_keys:tickers.momentum}
@@ -13,7 +13,7 @@ lenses:
     regions: ${union:${lenses.regional.USxUS},[CEE,  FLN, AFK, AIA, ASEA, IPAC, FEP]}
     countries: ${union:${lenses.regional.USxUS},${get_keys:tickers.regions}}
 
-target_return: 1.25
+target_return: 1.35
 
 defaults:
   - style_conf: [shared_configs, color_line_styles]

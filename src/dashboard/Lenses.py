@@ -122,18 +122,19 @@ def _display_performance_section(melt_df):
     display_dataframe(styled_stats, centered=True)
 
 
-def _process_symbol_tab(symbols, symbol_type, look_back_days, equity_config, target_return, 
-                       show_performance_plot, marchenko_pastur, dfs, momentum_summaries):
+def _process_symbol_tab(
+    symbols, symbol_type, look_back_days, equity_config, target_return, show_performance_plot, marchenko_pastur, dfs, momentum_summaries
+):
     """Process a single symbol tab - handles both custom and regular symbols."""
     period = f"{look_back_days[-1]}d"
-    
+
     # Load and process data
     df_pivot = _process_symbol_data(symbols, period)
     dfs[symbol_type] = df_pivot
-    
+
     # Create style dictionaries
     colors_dict, line_styles_dict = _create_style_dicts(symbols, equity_config)
-    
+
     # Create momentum plot
     momentum_fig, momentum_combined = create_momentum_plot(
         df_pivot,
@@ -144,13 +145,13 @@ def _process_symbol_tab(symbols, symbol_type, look_back_days, equity_config, tar
         equity_config=equity_config,
         target_return=target_return,
     )
-    
+
     # Display momentum section
     display_section_header("Momentum")
     momentum_summaries[symbol_type] = momentum_combined
     display_dataframe(momentum_combined, symbol_type, "Momentum Combined")
     st.plotly_chart(momentum_fig, config={"displayModeBar": False})
-    
+
     # Create performance plot
     fig, df_normalized = create_performance_plot(
         df_pivot,
@@ -160,18 +161,18 @@ def _process_symbol_tab(symbols, symbol_type, look_back_days, equity_config, tar
         line_styles_dict,
         equity_config,
     )
-    
+
     # Display performance plot if requested
     if show_performance_plot:
         st.plotly_chart(fig, config={"displayModeBar": False})
-    
+
     # Process data for correlation and performance analysis
     melt_df = _create_melted_dataframe(df_pivot)
-    
+
     # Display correlation section
     display_section_header("Correlation")
     pivoted_to_corr(df_pivot, plot=True, streamlit=True, marchenko_pastur=marchenko_pastur)
-    
+
     # Display performance section (only for regular symbols, not custom)
     if symbol_type != "Custom Symbols":
         display_section_header("Performance")
@@ -187,7 +188,7 @@ def _display_summary_tab(momentum_summaries, dfs, marchenko_pastur):
     for symbol_type in momentum_summaries.keys():
         momentum_df = momentum_summaries[symbol_type]
         display_dataframe(momentum_df, symbol_type, "Momentum Combined")
-    
+
     # Display correlations
     for symbol_type in dfs.keys():
         df_pivot = dfs[symbol_type].copy()
@@ -219,7 +220,7 @@ def show_market_performance(
     look_back_days = [int(initial_lookback_days * (lookback_factor**i)) for i in range(6)]
     momentum_summaries = dict()
     dfs = dict()
-    
+
     for i, symbol_type in enumerate(symbol_types):
         with tabs[i]:
             if symbol_type == "Summary":
@@ -227,16 +228,30 @@ def show_market_performance(
             elif symbol_type == "Custom Symbols":
                 if custom_symbols:
                     _process_symbol_tab(
-                        custom_symbols, symbol_type, look_back_days, equity_config, 
-                        target_return, show_performance_plot, marchenko_pastur, dfs, momentum_summaries
+                        custom_symbols,
+                        symbol_type,
+                        look_back_days,
+                        equity_config,
+                        target_return,
+                        show_performance_plot,
+                        marchenko_pastur,
+                        dfs,
+                        momentum_summaries,
                     )
                 else:
                     st.info("No custom symbols provided. Please enter symbols in the sidebar.")
             else:
                 symbols = portfolio_config[symbol_type]
                 _process_symbol_tab(
-                    symbols, symbol_type, look_back_days, equity_config, 
-                    target_return, show_performance_plot, marchenko_pastur, dfs, momentum_summaries
+                    symbols,
+                    symbol_type,
+                    look_back_days,
+                    equity_config,
+                    target_return,
+                    show_performance_plot,
+                    marchenko_pastur,
+                    dfs,
+                    momentum_summaries,
                 )
 
     # Bottom Table of Contents
