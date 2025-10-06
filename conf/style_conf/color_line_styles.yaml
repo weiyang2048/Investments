@@ -41,7 +41,6 @@ colors:
   - lightseagreen
   - lightskyblue
   - lightslategray
-  - lightslategrey
   - lightsteelblue
   - lightyellow
   - lime
@@ -76,7 +75,6 @@ colors:
   - rosybrown
   - slateblue
   - slategray
-  - slategrey
   - snow
   - springgreen
   - steelblue
@@ -84,6 +82,7 @@ colors:
   - teal
   - thistle
   - tomato
+  - turquoise
 line_styles:
   - solid
   - dash

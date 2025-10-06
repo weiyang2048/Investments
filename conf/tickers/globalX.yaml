@@ -1,7 +1,7 @@
 # ! Commodities
 GOEX:
   name: Global X Gold Explorers ETF
-  color: goldenrod
+  color: gold
 SIL:
   name: Global X Silver Miners ETF
   color: silver
@@ -23,7 +23,7 @@ RNRG:
   name: Global X Renewable Energy Producers ETF
 BKCH:
   name: Global X Blockchain ETF
-  color: lavenderblush
+  color: magenta
 
 # @ Sector or Industry
 AIQ:

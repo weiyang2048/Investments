@@ -1,17 +1,20 @@
 lenses:
   main:
-    Regions: ${union:${lenses.regional.regions}, [COLO, EPU, EIS]}
-    Sectors: ${union:[ARKW, ARKQ, ARKG], [BKCH, GOEX, DMAT, HYDR, URA, LIT, AIQ, EBIZ, SHLD], ${get_keys:tickers.sectors}}
-    Stable: ${union:${lenses.main.Regions}, ${lenses.main.Sectors}}
+    Regions: ${union:${lenses.regional.regions}, [IAUM, IBIT, ETHA], [COLO, EPU, EIS]}
+    Sectors: ${union:[ARKW, ARKQ, ARKG, ARKX, ARKF], [BKCH, GOEX, DMAT, HYDR, URA, LIT, AIQ, EBIZ, SHLD], ${get_keys:tickers.sectors}}
+    Stable: ${union:${lenses.regional.regions}, [TRAMX], ${lenses.main.Sectors}}
   zoo:
     ARK: ${get_keys:tickers.ark}
     invescoMomentum: ${get_keys:tickers.momentum}
     globalX: ${get_keys:tickers.globalX}
     pennie: [HOUS, OPEN, BINI, LCID]
   regional:
-    USxUS: [SPMO, IDMO, FEM, AVUV, AVDV, AVES, IAUM, IBIT, ETHA]
+    USxUS: [SPMO, IDMO, FEM, AVUV, AVDV, AVES]
     regions: ${union:${lenses.regional.USxUS},[CEE,  FLN, AFK, AIA, ASEA, IPAC, FEP]}
     countries: ${union:${lenses.regional.USxUS},${get_keys:tickers.regions}}
+  presets:
+    alt_cash_income: [IAUM, IBIT, ETHA, JEPI, JEPQ,  SCHD, SCHY, DIVO, IDVO, EFAS, SDEM, SRET, SDIV, DIV, ALTY, BNDW]
+    rh: [IAUM, SHLD, VEU, GOOGL, SPMO, IXG, MSFT, SPEU, AIA, EUAD, EUFN]
 
 target_return: 1.35
 

@@ -20,7 +20,7 @@ ARKF:
 ARKG:
   name: ARK Genomic Revolution ETF
   region: US
-  color: rgba(255,215,0,1) # gold
+  color: turquoise
 ARKK:
   name: ARK Innovation ETF
   region: US
