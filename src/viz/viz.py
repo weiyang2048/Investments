@@ -331,7 +331,7 @@ def create_momentum_ranking_display(
         equity_config: Configuration for equity symbols
 
     Returns:
-        DataFrame with ranked symbols by summed annualized momentum
+        DataFrame with ranked symbols by summed annualized momentum (transposed)
     """
     # Normalize the data first
     df_norm = normalize_prices(df)
@@ -341,8 +341,16 @@ def create_momentum_ranking_display(
 
     # Add ETF names if available
     if equity_config:
-        ranking_df["ETF_Name"] = ranking_df["Symbol"].map(lambda x: equity_config.get(x, {}).get("name", "-"))
+        # ranking_df["ETF_Name"] = ranking_df["Symbol"].map(lambda x: equity_config.get(x, {}).get("name", "-"))
         # Reorder columns to show ETF name
-        ranking_df = ranking_df[[ "Symbol", "ETF_Name", "agg_momemtum"]]
+        ranking_df = ranking_df[[ "Symbol", "agg_momemtum"]]
 
-    return ranking_df
+    # Transpose the DataFrame
+    # Set Symbol as index for transposition
+    ranking_df_transposed = ranking_df.set_index("Symbol").T
+    ranking_df_transposed = ranking_df_transposed.round(2)
+    
+    # Set the index column as the index
+    # ranking_df_transposed = ranking_df_transposed.set_index("index")
+
+    return ranking_df_transposed
