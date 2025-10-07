@@ -4,7 +4,7 @@ from plotly.subplots import make_subplots
 from typing import List, Dict
 import numpy as np
 from src.stats import Stats
-from src.data import normalize_prices, compute_momentum
+from src.data import normalize_prices, compute_momentum, compute_annualized_momentum_sum
 from typing import Callable
 from src.configurations import get_random_style
 
@@ -17,7 +17,7 @@ def create_performance_plot(
     line_styles_dict: Dict[str, str],
     equity_config: Dict[str, Dict],
     transformation: Callable[[float], float] = lambda x: x,
-) -> tuple[go.Figure, pd.DataFrame]:
+) -> Dict[str, any]:
     """
     Create a multi-subplot figure showing normalized performance.
 
@@ -27,8 +27,14 @@ def create_performance_plot(
         look_back_days: List of lookback periods in days
         colors_dict: Dictionary mapping symbols to their colors
         line_styles_dict: Dictionary mapping symbols to their line styles
+        equity_config: Configuration for equity symbols
+        transformation: Function to transform the data
     Returns:
-        Plotly figure object
+        Dictionary containing:
+        - 'figure': Plotly figure object
+        - 'normalized_data': DataFrame with normalized price data
+        - 'symbols': List of symbols used
+        - 'look_back_days': List of lookback periods used
     """
     # Adjust the subplot grid to 2 rows and 3 columns
     fig = make_subplots(
@@ -67,6 +73,11 @@ def create_performance_plot(
                     showlegend=(i == 0),
                     visible=True if symbol in visible_symbols else "legendonly",
                     hovertemplate=f"<b style='color: {colors_dict[symbol]}'>Symbol:</b> {symbol}<br>"
+                    + (
+                        f"<b style='color: {colors_dict[symbol]}'>ETF Name:</b> {equity_config[symbol].get('name', '-')}<br>"
+                        if equity_config.get(symbol, {}).get("name")
+                        else ""
+                    )
                     + "".join([f"<b style='color: {colors_dict[symbol]}'>{key}:</b> {equity_config[symbol].get(key, '-')}<br>" for key in keys])
                     + f"<b style='color: {colors_dict[symbol]}'>Date:</b>"
                     + "%{x}<br>"
@@ -120,7 +131,7 @@ def create_performance_plot(
         ),
     )
 
-    return fig, df_normalized
+    return {"figure": fig, "normalized_data": df_normalized, "symbols": symbols, "look_back_days": look_back_days}
 
 
 def create_momentum_plot(
@@ -131,7 +142,7 @@ def create_momentum_plot(
     line_styles_dict: Dict[str, str] = None,
     equity_config: Dict[str, Dict] = None,
     target_return: float = 1.3,
-) -> tuple[go.Figure, pd.DataFrame]:
+) -> Dict[str, any]:
     """
     Create a momentum plot showing momentum and renormalized prices for different window sizes.
 
@@ -142,9 +153,14 @@ def create_momentum_plot(
         colors_dict: Dictionary mapping symbols to their colors
         line_styles_dict: Dictionary mapping symbols to their line styles
         equity_config: Configuration for equity symbols
+        target_return: Target annualized return for threshold calculation
 
     Returns:
-        Plotly figure object
+        Dictionary containing:
+        - 'figure': Plotly figure object
+        - 'momentum_combined': DataFrame with combined momentum data
+        - 'momentum_data': Dictionary of momentum data by window size
+        - 'window_sizes': List of window sizes used
     """
     # Normalize the data first
     df_norm = normalize_prices(df)
@@ -195,10 +211,13 @@ def create_momentum_plot(
         for symbol in symbols:
             if symbol in momentum_display.columns:
                 is_visible = symbol in top_3_symbols
+                # Calculate annualized momentum
+                annualized_momentum = (1 + momentum_display[symbol]) ** (252 / window) - 1
                 fig.add_trace(
                     go.Scatter(
                         x=momentum_display["Date"],
                         y=momentum_display[symbol],
+                        customdata=annualized_momentum,
                         name=f"{symbol}",
                         mode="lines+markers",
                         line=dict(color=colors_dict.get(symbol, "blue"), dash="solid"),
@@ -206,7 +225,15 @@ def create_momentum_plot(
                         legendgroup=symbol,  # Changed from f"{symbol}_momentum"
                         showlegend=(idx == 0),
                         visible=True if is_visible else "legendonly",
-                        hovertemplate=f"<b>{symbol} Momentum</b><br>" f"Date: %{{x}}<br>" f"Momentum: %{{y:.2%}}<extra></extra>",
+                        hovertemplate=f"<b>{symbol} Momentum</b><br>"
+                        + (
+                            f"<b>ETF Name:</b> {equity_config[symbol].get('name', '-')}<br>"
+                            if equity_config and equity_config.get(symbol, {}).get("name")
+                            else ""
+                        )
+                        + f"Date: %{{x}}<br>"
+                        + f"Momentum: %{{y:.2%}}<br>"
+                        + f"Annualized: %{{customdata:.1%}}<extra></extra>",
                     ),
                     row=idx + 1,
                     col=1,
@@ -245,7 +272,14 @@ def create_momentum_plot(
                         legendgroup=symbol,  # Changed from f"{symbol}_price"
                         showlegend=False,
                         visible=True if is_visible else "legendonly",
-                        hovertemplate=f"<b>{symbol} Renorm Price</b><br>" f"Date: %{{x}}<br>" f"Price: %{{y:.2f}}<extra></extra>",
+                        hovertemplate=f"<b>{symbol} Renorm Price</b><br>"
+                        + (
+                            f"<b>ETF Name:</b> {equity_config[symbol].get('name', '-')}<br>"
+                            if equity_config and equity_config.get(symbol, {}).get("name")
+                            else ""
+                        )
+                        + f"Date: %{{x}}<br>"
+                        + f"Price: %{{y:.2f}}<extra></extra>",
                     ),
                     row=idx + 1,
                     col=1,
@@ -278,4 +312,37 @@ def create_momentum_plot(
         ),
     )
 
-    return fig, momentum_combined
+    return {"figure": fig, "momentum_combined": momentum_combined, "momentum_data": momentum_data, "window_sizes": window_sizes}
+
+
+def create_momentum_ranking_display(
+    df: pd.DataFrame,
+    symbols: List[str],
+    window_sizes: List[int] = [7, 30, 90, 180, 360],
+    equity_config: Dict[str, Dict] = None,
+) -> pd.DataFrame:
+    """
+    Create a ranking display showing the sum of annualized momentum across all windows.
+
+    Args:
+        df: DataFrame with price data
+        symbols: List of symbols to analyze
+        window_sizes: List of window sizes in days for momentum calculation
+        equity_config: Configuration for equity symbols
+
+    Returns:
+        DataFrame with ranked symbols by summed annualized momentum
+    """
+    # Normalize the data first
+    df_norm = normalize_prices(df)
+
+    # Compute the summed annualized momentum
+    ranking_df = compute_annualized_momentum_sum(df_norm, window_sizes)
+
+    # Add ETF names if available
+    if equity_config:
+        ranking_df["ETF_Name"] = ranking_df["Symbol"].map(lambda x: equity_config.get(x, {}).get("name", "-"))
+        # Reorder columns to show ETF name
+        ranking_df = ranking_df[[ "Symbol", "ETF_Name", "agg_momemtum"]]
+
+    return ranking_df

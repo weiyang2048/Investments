@@ -26,6 +26,9 @@ BKCH:
   color: magenta
 
 # @ Sector or Industry
+CHPX:
+  name: AI Semiconductor & Quantum ETF
+  color: greenyellow
 AIQ:
   name: Global X Artificial Intelligence & Technology ETF
   region: Global

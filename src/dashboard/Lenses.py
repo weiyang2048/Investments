@@ -6,7 +6,7 @@ import hydra
 import numpy as np
 from src.data import pivot_data
 from src.performence.aggregation import aggregate_performance
-from src.viz.viz import create_performance_plot, create_momentum_plot
+from src.viz.viz import create_performance_plot, create_momentum_plot, create_momentum_ranking_display
 from src.configurations.style_picker import get_random_style
 from src.dashboard.create_page import setup_page_and_sidebar
 import pandas as pd
@@ -136,7 +136,9 @@ def _process_symbol_tab(
     colors_dict, line_styles_dict = _create_style_dicts(symbols, equity_config)
 
     # Create momentum plot
-    momentum_fig, momentum_combined = create_momentum_plot(
+    # target_return = target_return + 0.15 if "rh" in symbol_type else target_return
+
+    momentum_result = create_momentum_plot(
         df_pivot,
         symbols,
         window_sizes=[7, 30, 90, 180, 360],
@@ -145,15 +147,29 @@ def _process_symbol_tab(
         equity_config=equity_config,
         target_return=target_return,
     )
+    momentum_fig = momentum_result["figure"]
+    momentum_combined = momentum_result["momentum_combined"]
 
     # Display momentum section
     display_section_header("Momentum")
+    st.write("target_return", target_return)
+
     momentum_summaries[symbol_type] = momentum_combined
     display_dataframe(momentum_combined, symbol_type, "Momentum Combined")
+
+    # Display momentum ranking
+    momentum_ranking = create_momentum_ranking_display(
+        df_pivot,
+        symbols,
+        window_sizes=[7, 30, 90, 180, 360],
+        equity_config=equity_config,
+    )
+    display_dataframe(momentum_ranking, symbol_type, "agg_momemtum")
+
     st.plotly_chart(momentum_fig, config={"displayModeBar": False})
 
     # Create performance plot
-    fig, df_normalized = create_performance_plot(
+    performance_result = create_performance_plot(
         df_pivot,
         symbols,
         look_back_days,
@@ -161,6 +177,8 @@ def _process_symbol_tab(
         line_styles_dict,
         equity_config,
     )
+    fig = performance_result["figure"]
+    df_normalized = performance_result["normalized_data"]
 
     # Display performance plot if requested
     if show_performance_plot:
@@ -182,12 +200,24 @@ def _process_symbol_tab(
         _display_performance_section(melt_df)
 
 
-def _display_summary_tab(momentum_summaries, dfs, marchenko_pastur):
+def _display_summary_tab(momentum_summaries, dfs, marchenko_pastur, equity_config):
     """Display the summary tab with all momentum summaries and correlations."""
     # Display momentum summaries
     for symbol_type in momentum_summaries.keys():
         momentum_df = momentum_summaries[symbol_type]
         display_dataframe(momentum_df, symbol_type, "Momentum Combined")
+
+        # Display momentum ranking for each symbol type
+        if symbol_type in dfs.keys():
+            df_pivot = dfs[symbol_type].copy()
+            symbols = [col for col in df_pivot.columns if col != "Date"]
+            momentum_ranking = create_momentum_ranking_display(
+                df_pivot,
+                symbols,
+                window_sizes=[7, 30, 90, 180, 360],
+                equity_config=equity_config,
+            )
+            display_dataframe(momentum_ranking, symbol_type, "Momentum Ranking")
 
     # Display correlations
     for symbol_type in dfs.keys():
@@ -224,7 +254,7 @@ def show_market_performance(
     for i, symbol_type in enumerate(symbol_types):
         with tabs[i]:
             if symbol_type == "Summary":
-                _display_summary_tab(momentum_summaries, dfs, marchenko_pastur)
+                _display_summary_tab(momentum_summaries, dfs, marchenko_pastur, equity_config)
             elif symbol_type == "Custom Symbols":
                 if custom_symbols:
                     _process_symbol_tab(

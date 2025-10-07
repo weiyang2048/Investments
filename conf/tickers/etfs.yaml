@@ -82,3 +82,9 @@ IBIT:
   industry: Commodity
   color: rgba(255, 0, 0, 0.5)
   line_style: dash
+ETHA:
+  name: iShares Ether Trust ETF
+  region: Global
+  industry: Commodity
+  color: rgba(255, 0, 0, 0.5)
+  line_style: dash

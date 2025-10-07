@@ -148,3 +148,49 @@ def compute_momentum(
     col_sums = momentum_combined.sum(axis=0)
     momentum_combined = momentum_combined[col_sums.sort_values(ascending=False).index]
     return momentum_data, momentum_combined
+
+
+def compute_annualized_momentum_sum(df: pd.DataFrame, window_sizes: List[int] = [7, 30, 90, 180, 360], time_column: str = "Date") -> pd.DataFrame:
+    """
+    Compute the sum of annualized momentum across all window sizes for each symbol.
+
+    Args:
+        df: DataFrame with price data (normalized or raw)
+        window_sizes: List of window sizes in days for momentum calculation
+        time_column: Name of the time column
+
+    Returns:
+        DataFrame with symbols and their summed annualized momentum, ranked by total momentum
+    """
+    symbols = df.select_dtypes(include=[np.number]).columns
+    agg_momemtum = {}
+
+    for symbol in symbols:
+        total_annualized_momentum = 0
+
+        for window in window_sizes:
+            # Compute momentum: (current_price / price_window_days_ago) - 1
+            momentum = df[symbol].rolling(window=window).apply(lambda x: x.iloc[-1] / x.iloc[0] - 1)
+            momentum = momentum.dropna()
+
+            if len(momentum) > 0:
+                # Get the last value for this window
+                last_momentum = momentum.iloc[-1]
+                # Annualize the momentum: (1 + momentum)^(252/window) - 1
+                annualized_momentum = (1 + last_momentum) ** (252 / window) - 1
+                total_annualized_momentum += annualized_momentum * window
+
+        # Weighted average of annualized momentum by window size
+        total_weight = sum(window_sizes)
+        agg_momemtum[symbol] = total_annualized_momentum / total_weight if total_weight != 0 else 0
+
+    # Create DataFrame and rank by total annualized momentum
+    result_df = pd.DataFrame(
+        [{"Symbol": symbol, "agg_momemtum": agg_momemtum.round(2)} for symbol, agg_momemtum in agg_momemtum.items()]
+    ).round(2)
+
+    # Sort by momentum sum in descending order and add rank
+    result_df = result_df.sort_values("agg_momemtum", ascending=False).reset_index(drop=True)
+    result_df["Rank"] = range(1, len(result_df) + 1)
+
+    return result_df[["Rank", "Symbol", "agg_momemtum"]]

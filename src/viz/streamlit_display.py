@@ -16,32 +16,13 @@ def display_dataframe(
     height: Optional[int] = None,
     **style_kwargs,
 ) -> None:
-    """
-    Unified helper function to display DataFrames with flexible styling options.
-
-    Args:
-        df: DataFrame to display
-        symbol_type: Type of symbol (e.g., "ETF", "Stock") for caption generation
-        data_type: Type of data (e.g., "Performance", "Momentum") for caption generation
-        centered: Whether to center the DataFrame in a column layout
-        hide_index: Whether to hide the DataFrame index
-        check_empty: Whether to skip display if DataFrame is empty
-        cmap: Color map for background gradient
-        caption: Custom caption (overrides symbol_type + data_type)
-        width: Width of the DataFrame display
-        height: Height of the DataFrame display
-        **style_kwargs: Additional arguments passed to st.dataframe()
-
-    Returns:
-        None
-    """
 
     # Determine if we need to create styling or use pre-styled DataFrame
     if symbol_type and data_type:
         # Create styling for the DataFrame
         styled_df = (
             df.style.set_properties(**{"font-weight": "bold"})
-            .background_gradient(cmap=cmap, axis=1)
+            .background_gradient(cmap=cmap, axis=1 if df.shape[1] > df.shape[0] else 0)
             .set_caption(caption or f"{symbol_type} - {data_type}")
         )
     else:

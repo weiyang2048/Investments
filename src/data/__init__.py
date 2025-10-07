@@ -5,6 +5,7 @@ from .data import (
     pivot_data,
     normalize_prices,
     compute_momentum,
+    compute_annualized_momentum_sum,
 )
 from .mstar import get_fund_snap
 
@@ -15,6 +16,7 @@ __all__ = [
     "pivot_data",
     "normalize_prices",
     "compute_momentum",
+    "compute_annualized_momentum_sum",
     # * morningstar
     "get_fund_snap",
 ]
