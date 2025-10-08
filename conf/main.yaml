@@ -1,6 +1,6 @@
 lenses:
   main:
-    Regions: ${union:${lenses.regional.regions}, [IAUM, IBIT, ETHA], [COLO, EPU, EIS]}
+    Regions: ${union:${lenses.regional.regions}, [IAUM, IBIT, ETHA], [COLO, EPU, EIS], [AVGO, DASH, GE, RTX]}
     Sectors: ${union:[ARKW, ARKQ, ARKG], [BKCH, GOEX, DMAT, HYDR, URA, LIT, AIQ, SHLD], [QTUM], ${get_keys:tickers.sectors}}
     Combined: ${union:${lenses.regional.regions}, [TRAMX], ${lenses.main.Sectors}}
   zoo:
