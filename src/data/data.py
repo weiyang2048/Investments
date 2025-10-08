@@ -48,7 +48,7 @@ def get_daily_prices_list(symbols: List[str], period: str = "1mo", streamlit: bo
         dfs.append(df)
         logger.opt(ansi=True).log(
             "data",
-            f"Downloaded {symbol} data for the last {period}",
+            f"Downloaded {symbol} data for the last {period}, df.shape: {df.shape}",
         )
     if not dfs:
         return pd.DataFrame()
