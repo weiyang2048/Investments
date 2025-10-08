@@ -72,11 +72,21 @@ def sidebar(config):
     )
 
     st.sidebar.markdown("<hr>", unsafe_allow_html=True)
-    st.sidebar.markdown("Prices")
+    st.sidebar.markdown("Plots")
     show_performance_plot = st.sidebar.checkbox(
         "Show Prices",
         value=False,
         key="show_performance_plot_input",
+    )
+    show_momentum_plot = st.sidebar.checkbox(
+        "Show Momentum Plot",
+        value=False,
+        key="show_momentum_plot_input",
+    )
+    show_correlation_plot = st.sidebar.checkbox(
+        "Show Correlation Plot",
+        value=False,
+        key="show_correlation_plot_input",
     )
     initial_lookback_days = st.sidebar.number_input(
         "Initial Lookback Days",
@@ -96,7 +106,7 @@ def sidebar(config):
         help="Enter the factor to multiply the lookback days.",
         key="lookback_factor_input",
     )
-    return marchenko_pastur, initial_lookback_days, lookback_factor, lense_option, target_return, show_performance_plot, custom_symbols
+    return marchenko_pastur, initial_lookback_days, lookback_factor, lense_option, target_return, show_performance_plot, show_momentum_plot, show_correlation_plot, custom_symbols
 
 
 def _create_style_dicts(symbols, equity_config):
@@ -126,7 +136,7 @@ def _display_performance_section(melt_df):
 
 
 def _process_symbol_tab(
-    symbols, symbol_type, look_back_days, equity_config, target_return, show_performance_plot, marchenko_pastur, dfs, momentum_summaries
+    symbols, symbol_type, look_back_days, equity_config, target_return, show_performance_plot, show_momentum_plot, show_correlation_plot, marchenko_pastur, dfs, momentum_summaries
 ):
     """Process a single symbol tab - handles both custom and regular symbols."""
     period = f"{look_back_days[-1]}d"
@@ -138,53 +148,63 @@ def _process_symbol_tab(
     # Create style dictionaries
     colors_dict, line_styles_dict = _create_style_dicts(symbols, equity_config)
 
-    # Create momentum plot
-    # target_return = target_return + 0.15 if "rh" in symbol_type else target_return
-
-    momentum_result = create_momentum_plot(
-        df_pivot,
-        symbols,
-        window_sizes=WINDOW_SIZES,
-        colors_dict=colors_dict,
-        line_styles_dict=line_styles_dict,
-        equity_config=equity_config,
-        target_return=target_return,
-    )
-    momentum_fig = momentum_result["figure"]
-    momentum_combined = momentum_result["momentum_combined"]
-
     # Display momentum section
     display_section_header("Momentum")
     st.write("target_return", target_return)
 
-    # Create momentum ranking first
+    # Create momentum ranking first (always needed for data analysis)
     momentum_ranking = _create_momentum_ranking(df_pivot, symbols, equity_config)
     
+    # Only create momentum plot if requested
+    if show_momentum_plot:
+        momentum_result = create_momentum_plot(
+            df_pivot,
+            symbols,
+            window_sizes=WINDOW_SIZES,
+            colors_dict=colors_dict,
+            line_styles_dict=line_styles_dict,
+            equity_config=equity_config,
+            target_return=target_return,
+        )
+        momentum_fig = momentum_result["figure"]
+        momentum_combined = momentum_result["momentum_combined"]
+        
+        # Add momentum ranking as first row and sort columns
+        momentum_combined_with_ranking = _add_momentum_ranking_to_momentum_df(momentum_combined, momentum_ranking)
+        display_dataframe(momentum_combined_with_ranking, symbol_type, "Momentum Combined")
+        
+        # Display momentum plot
+        st.plotly_chart(momentum_fig, config={"displayModeBar": False})
+    else:
+        # Still compute momentum data for analysis but don't create plot
+        from src.data import normalize_prices, compute_momentum
+        df_norm = normalize_prices(df_pivot)
+        momentum_data, momentum_combined = compute_momentum(df_norm, WINDOW_SIZES, target_return=target_return)
+        
+        # Add momentum ranking as first row and sort columns
+        momentum_combined_with_ranking = _add_momentum_ranking_to_momentum_df(momentum_combined, momentum_ranking)
+        display_dataframe(momentum_combined_with_ranking, symbol_type, "Momentum Combined")
+        
+    # Store momentum data for summary (moved outside conditional)
     momentum_summaries[symbol_type] = momentum_combined
     
-    # Add momentum ranking as first row and sort columns
-    momentum_combined_with_ranking = _add_momentum_ranking_to_momentum_df(momentum_combined, momentum_ranking)
-    display_dataframe(momentum_combined_with_ranking, symbol_type, "Momentum Combined")
-
     # Display momentum ranking
     display_dataframe(momentum_ranking, symbol_type, "am")
 
-    st.plotly_chart(momentum_fig, config={"displayModeBar": False})
-
-    # Create performance plot
-    performance_result = create_performance_plot(
-        df_pivot,
-        symbols,
-        look_back_days,
-        colors_dict,
-        line_styles_dict,
-        equity_config,
-    )
-    fig = performance_result["figure"]
-    df_normalized = performance_result["normalized_data"]
-
-    # Display performance plot if requested
+    # Create performance plot only if requested
     if show_performance_plot:
+        performance_result = create_performance_plot(
+            df_pivot,
+            symbols,
+            look_back_days,
+            colors_dict,
+            line_styles_dict,
+            equity_config,
+        )
+        fig = performance_result["figure"]
+        df_normalized = performance_result["normalized_data"]
+        
+        # Display performance plot
         st.plotly_chart(fig, config={"displayModeBar": False})
 
     # Process data for correlation and performance analysis
@@ -192,7 +212,13 @@ def _process_symbol_tab(
 
     # Display correlation section
     display_section_header("Correlation")
-    pivoted_to_corr(df_pivot, plot=True, streamlit=True, marchenko_pastur=marchenko_pastur)
+    if show_correlation_plot:
+        pivoted_to_corr(df_pivot, plot=True, streamlit=True, marchenko_pastur=marchenko_pastur)
+    else:
+        # Still compute correlation matrix for data analysis but don't display plot
+        corr_matrix = pivoted_to_corr(df_pivot, plot=False, streamlit=True, marchenko_pastur=marchenko_pastur)
+        corr_matrix = corr_matrix.round(0).astype(int)
+        display_dataframe(corr_matrix, symbol_type, "Correlation Matrix")
 
     # Display performance section
     if symbol_type != "Custom Symbols":
@@ -233,7 +259,7 @@ def _get_momentum_ranking_for_symbol_type(symbol_type, dfs, equity_config):
     return None
 
 
-def _display_summary_tab(momentum_summaries, dfs, marchenko_pastur, equity_config):
+def _display_summary_tab(momentum_summaries, dfs, marchenko_pastur, equity_config, show_correlation_plot):
     """Display the summary tab with all momentum summaries and correlations."""
     # Display momentum summaries
     for symbol_type in momentum_summaries.keys():
@@ -251,7 +277,12 @@ def _display_summary_tab(momentum_summaries, dfs, marchenko_pastur, equity_confi
     # Display correlations
     for symbol_type in dfs.keys():
         df_pivot = dfs[symbol_type].copy()
-        pivoted_to_corr(df_pivot, plot=True, streamlit=True, marchenko_pastur=marchenko_pastur)
+        if show_correlation_plot:
+            pivoted_to_corr(df_pivot, plot=True, streamlit=True, marchenko_pastur=marchenko_pastur)
+        else:
+            # Still compute correlation matrix for data analysis but don't display plot
+            corr_matrix = pivoted_to_corr(df_pivot, plot=False, streamlit=True, marchenko_pastur=marchenko_pastur)
+            display_dataframe(corr_matrix, symbol_type, "Correlation Matrix")
 
 
 def show_market_performance(
@@ -262,6 +293,8 @@ def show_market_performance(
     lookback_factor: int = 3,
     target_return: float = 1.4,
     show_performance_plot: bool = True,
+    show_momentum_plot: bool = False,
+    show_correlation_plot: bool = False,
     custom_symbols: list = None,
 ) -> None:
     """Function to show the market performance dashboard."""
@@ -283,7 +316,7 @@ def show_market_performance(
     for i, symbol_type in enumerate(symbol_types):
         with tabs[i]:
             if symbol_type == "Summary":
-                _display_summary_tab(momentum_summaries, dfs, marchenko_pastur, equity_config)
+                _display_summary_tab(momentum_summaries, dfs, marchenko_pastur, equity_config, show_correlation_plot)
             elif symbol_type == "Custom Symbols":
                 if custom_symbols:
                     _process_symbol_tab(
@@ -293,6 +326,8 @@ def show_market_performance(
                         equity_config,
                         target_return,
                         show_performance_plot,
+                        show_momentum_plot,
+                        show_correlation_plot,
                         marchenko_pastur,
                         dfs,
                         momentum_summaries,
@@ -308,6 +343,8 @@ def show_market_performance(
                     equity_config,
                     target_return,
                     show_performance_plot,
+                    show_momentum_plot,
+                    show_correlation_plot,
                     marchenko_pastur,
                     dfs,
                     momentum_summaries,
@@ -331,7 +368,7 @@ if __name__ == "__main__":
 
     with hydra.initialize(version_base=None, config_path="../../conf"):
         config = hydra.compose(config_name="main")
-    marchenko_pastur, initial_lookback_days, lookback_factor, lense_option, target_return, show_performance_plot, custom_symbols = (
+    marchenko_pastur, initial_lookback_days, lookback_factor, lense_option, target_return, show_performance_plot, show_momentum_plot, show_correlation_plot, custom_symbols = (
         setup_page_and_sidebar(config["style_conf"], add_to_sidebar=lambda: sidebar(config))
     )
     st.title(lense_option)
@@ -353,5 +390,7 @@ if __name__ == "__main__":
         lookback_factor,
         target_return,
         show_performance_plot,
+        show_momentum_plot,
+        show_correlation_plot,
         custom_symbols,
     )

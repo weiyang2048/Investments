@@ -11,6 +11,10 @@ AIA:
   region: Asia
   color: rgba(255,90,90,1) # red
   line_style: solid
+TRAMX:
+  name: T. Rowe Price Africa & Middle East Fund
+  color: forestgreen
+  line_style: solid
 # Latin America
 FLN:
   name: "First Trust Latin America AlphaDEX Fund"

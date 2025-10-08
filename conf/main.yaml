@@ -1,8 +1,8 @@
 lenses:
   main:
-    Regions: ${union:${lenses.regional.regions}, [IAUM, IBIT, ETHA], [COLO, EPU, EIS], [AVGO, DASH, GE, RTX]}
-    Sectors: ${union:[ARKW, ARKQ, ARKG], [BKCH, GOEX, DMAT, HYDR, URA, LIT, AIQ, SHLD], [QTUM], ${get_keys:tickers.sectors}}
-    Combined: ${union:${lenses.regional.regions}, [TRAMX], ${lenses.main.Sectors}}
+    Regions: ${union:${lenses.regional.regions}, [IAUM, SIL, IBIT, ETHA], [EPU, EWY, EWS]}
+    Sectors: ${union:[ARKW, ARKQ, ARKG], [BKCH, GOEX, SLVP, DMAT, HYDR, URA, LIT, AIQ, SHLD], [QTUM], ${get_keys:tickers.sectors}}
+    stocks: ${union:[AVGO, DASH, GE, RTX], [AU, SHOP, TCEHY,  SSRM, HSBC, LYG]}
   zoo:
     ARK: ${get_keys:tickers.ark}
     invescoMomentum: ${get_keys:tickers.momentum}
@@ -16,6 +16,7 @@ lenses:
     rh: ${union:[IAUM, SHLD, VEU, GOOGL, SPMO, MSFT, SPEU, AIA, EUAD]}
     fdt: [OPEN, IBIT, IAUM, IXN, IPAC, SHLD, AIA, JXI, TRAMX, RXI, IEMG, XMMO, VTI, VT, FZILX,  SPMO, AVDV, VXUS, AVUV, IDMO, EUAD, LCID]
     alt_cash_income: [IAUM, IBIT, ETHA, JEPI, JEPQ,  SCHD, SCHY, DIVO, IDVO, EFAS, SDEM, SRET, SDIV, DIV, ALTY, BNDW]
+  indices:
     sp100: [NVDA, MSFT, AAPL, AMZN, META, GOOGL,  ELF, LLY, AVGO,
           TSLA, UNH, JPM, V, WMT, MA, XOM, COST, HD, PG,
           ABBV, MRK, CRM, ADBE, JNJ, AMD, TMO, ACN, CVX, ORCL,
@@ -27,6 +28,18 @@ lenses:
           NOC, SNPS, WM, MCO, AMT, ORLY, SRE, ITW, EXC, ETN,
           PSA, DUK, PLD, CDNS, TRV, GWW, FDX, EMR, ROP, FTNT
           ]
+    adr100: [
+            TSM, ASML, SAP, AZN, TM, NVO, SNY, ING, BBVA, BABA,
+            TD, RY, ENB, BP, HSBC, GLNCY, SAN, BNPQY, UBS, BTI,
+            NVS, NSRGY, SONY, VWAGY, GSK, TOT, DEO, ALIZY,
+            SIEGY, CRH, LUX, VOD, BAYRY, BASFY, AEG, CIB, WB,
+            ABEV, CNI, SHOP, NOK, TEF, DB, CHA,
+            PHG, DTEGY, SSRM, ERIC, RDY, IBN, INFY,
+            WIT, HDB, MELI, YUMC, JD, PDD, MKTAY,
+            STLA, LYG, ACGBY, RACE, E, EQNR, BZ, EC,
+            BAP, VIV, BCS, BHP, NTES, AU, SBS, CIG,
+            HMC, PCAR, FNMA, KUBTY, MRAM, TCEHY, DQ, VIVHY, PBR, UL, 
+            ]
 target_return: 1.35
 
 defaults:

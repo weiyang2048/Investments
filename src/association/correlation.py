@@ -24,7 +24,7 @@ def denoise_corr_marchenko_pastur(corr: pd.DataFrame, q: float = None) -> pd.Dat
 
     eigvals, eigvecs = np.linalg.eigh(corr.values)
     n = corr.shape[0]
-    if q is None:
+    if q is None or q == 0:
         q = 2.0
 
     lambda_plus = (1 + np.sqrt(1.0 / q)) ** 2
@@ -38,8 +38,8 @@ def denoise_corr_marchenko_pastur(corr: pd.DataFrame, q: float = None) -> pd.Dat
 def pivoted_to_corr(df: pd.DataFrame, plot: bool = False, streamlit: bool = False, marchenko_pastur: bool = True) -> pd.DataFrame:
     df_pivot = df.copy()
     df_pivot.drop(columns=["Date"], inplace=True)
-    # # show number of observations for each symbol and sort by number of observations
     df_pivot_count = df_pivot.apply(lambda x: x.count(), axis=0)
+    # # show number of observations for each symbol and sort by number of observations
     df_pivot_count = df_pivot_count.sort_values(ascending=False)
     df_pivot.dropna(axis=0, inplace=True)
     q = df_pivot.shape[0] / df_pivot.shape[1]
