@@ -18,6 +18,9 @@ from src.viz.streamlit_display import (
     display_section_header,
 )
 
+# Constants
+WINDOW_SIZES = [7, 30, 90, 180, 360]
+
 
 def parse_custom_symbols(symbols_text):
     """Parse comma-separated symbols and clean them."""
@@ -141,7 +144,7 @@ def _process_symbol_tab(
     momentum_result = create_momentum_plot(
         df_pivot,
         symbols,
-        window_sizes=[7, 30, 90, 180, 360],
+        window_sizes=WINDOW_SIZES,
         colors_dict=colors_dict,
         line_styles_dict=line_styles_dict,
         equity_config=equity_config,
@@ -154,17 +157,17 @@ def _process_symbol_tab(
     display_section_header("Momentum")
     st.write("target_return", target_return)
 
+    # Create momentum ranking first
+    momentum_ranking = _create_momentum_ranking(df_pivot, symbols, equity_config)
+    
     momentum_summaries[symbol_type] = momentum_combined
-    display_dataframe(momentum_combined, symbol_type, "Momentum Combined")
+    
+    # Add momentum ranking as first row and sort columns
+    momentum_combined_with_ranking = _add_momentum_ranking_to_momentum_df(momentum_combined, momentum_ranking)
+    display_dataframe(momentum_combined_with_ranking, symbol_type, "Momentum Combined")
 
     # Display momentum ranking
-    momentum_ranking = create_momentum_ranking_display(
-        df_pivot,
-        symbols,
-        window_sizes=[7, 30, 90, 180, 360],
-        equity_config=equity_config,
-    )
-    display_dataframe(momentum_ranking, symbol_type, "agg_momemtum")
+    display_dataframe(momentum_ranking, symbol_type, "am")
 
     st.plotly_chart(momentum_fig, config={"displayModeBar": False})
 
@@ -191,13 +194,43 @@ def _process_symbol_tab(
     display_section_header("Correlation")
     pivoted_to_corr(df_pivot, plot=True, streamlit=True, marchenko_pastur=marchenko_pastur)
 
-    # Display performance section (only for regular symbols, not custom)
+    # Display performance section
     if symbol_type != "Custom Symbols":
         display_section_header("Performance")
-        _display_performance_section(melt_df)
+    _display_performance_section(melt_df)
+
+
+def _add_momentum_ranking_to_momentum_df(momentum_df, momentum_ranking):
+    """Sort momentum_df columns by momentum_ranking values."""
+    # Get the agg_momentum values from momentum_ranking (transposed format)
+    if 'am' in momentum_ranking.index:
+        ranking_values = momentum_ranking.loc['am']
     else:
-        # For custom symbols, display performance without section header
-        _display_performance_section(melt_df)
+        # If not transposed, get from the agg_momentum column
+        ranking_values = momentum_ranking.set_index('Symbol')['am']
+    
+    # Sort columns by the momentum ranking values (descending order)
+    sorted_columns = ranking_values.sort_values(ascending=False).index
+    return momentum_df[sorted_columns]
+
+
+def _create_momentum_ranking(df_pivot, symbols, equity_config):
+    """Create momentum ranking display for given symbols."""
+    return create_momentum_ranking_display(
+        df_pivot,
+        symbols,
+        window_sizes=WINDOW_SIZES,
+        equity_config=equity_config,
+    )
+
+
+def _get_momentum_ranking_for_symbol_type(symbol_type, dfs, equity_config):
+    """Get momentum ranking for a symbol type if it exists in dfs."""
+    if symbol_type in dfs.keys():
+        df_pivot = dfs[symbol_type].copy()
+        symbols = [col for col in df_pivot.columns if col != "Date"]
+        return _create_momentum_ranking(df_pivot, symbols, equity_config)
+    return None
 
 
 def _display_summary_tab(momentum_summaries, dfs, marchenko_pastur, equity_config):
@@ -205,19 +238,15 @@ def _display_summary_tab(momentum_summaries, dfs, marchenko_pastur, equity_confi
     # Display momentum summaries
     for symbol_type in momentum_summaries.keys():
         momentum_df = momentum_summaries[symbol_type]
-        display_dataframe(momentum_df, symbol_type, "Momentum Combined")
-
-        # Display momentum ranking for each symbol type
-        if symbol_type in dfs.keys():
-            df_pivot = dfs[symbol_type].copy()
-            symbols = [col for col in df_pivot.columns if col != "Date"]
-            momentum_ranking = create_momentum_ranking_display(
-                df_pivot,
-                symbols,
-                window_sizes=[7, 30, 90, 180, 360],
-                equity_config=equity_config,
-            )
+        momentum_ranking = _get_momentum_ranking_for_symbol_type(symbol_type, dfs, equity_config)
+        
+        if momentum_ranking is not None:
+            # Sort columns by momentum ranking
+            momentum_df_sorted = _add_momentum_ranking_to_momentum_df(momentum_df, momentum_ranking)
+            display_dataframe(momentum_df_sorted, symbol_type, "Momentum Combined")
             display_dataframe(momentum_ranking, symbol_type, "Momentum Ranking")
+        else:
+            display_dataframe(momentum_df, symbol_type, "Momentum Combined")
 
     # Display correlations
     for symbol_type in dfs.keys():

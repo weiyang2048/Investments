@@ -163,7 +163,7 @@ def compute_annualized_momentum_sum(df: pd.DataFrame, window_sizes: List[int] = 
         DataFrame with symbols and their summed annualized momentum, ranked by total momentum
     """
     symbols = df.select_dtypes(include=[np.number]).columns
-    agg_momemtum = {}
+    am = {}
 
     for symbol in symbols:
         total_annualized_momentum = 0
@@ -182,15 +182,15 @@ def compute_annualized_momentum_sum(df: pd.DataFrame, window_sizes: List[int] = 
 
         # Weighted average of annualized momentum by window size
         total_weight = sum(window_sizes)
-        agg_momemtum[symbol] = total_annualized_momentum / total_weight if total_weight != 0 else 0
+        am[symbol] = total_annualized_momentum / total_weight if total_weight != 0 else 0
 
     # Create DataFrame and rank by total annualized momentum
     result_df = pd.DataFrame(
-        [{"Symbol": symbol, "agg_momemtum": np.round(agg_momemtum, 2)} for symbol, agg_momemtum in agg_momemtum.items()]
+        [{"Symbol": symbol, "am": np.round(am, 2)} for symbol, am in am.items()]
     ).round(2)
 
     # Sort by momentum sum in descending order and add rank
-    result_df = result_df.sort_values("agg_momemtum", ascending=False).reset_index(drop=True)
+    result_df = result_df.sort_values("am", ascending=False).reset_index(drop=True)
     result_df["Rank"] = range(1, len(result_df) + 1)
 
-    return result_df[["Rank", "Symbol", "agg_momemtum"]]
+    return result_df[["Rank", "Symbol", "am"]]
