@@ -2,7 +2,7 @@ lenses:
   main:
     Regions: ${union:${lenses.regional.regions}, [IAUM, SIL, IBIT, ETHA], [EPU, EWY, EWS]}
     Sectors: ${union:[ARKW, ARKQ, ARKG], [BKCH, GOEX, SLVP, DMAT, HYDR, URA, LIT, AIQ, SHLD], [QTUM], ${get_keys:tickers.sectors}}
-    stocks: ${union:[AVGO, DASH, GE, RTX], [AU, SHOP, TCEHY,  SSRM, HSBC, LYG]}
+    stocks: ${union:[AVGO, DASH, GE, RTX, ORCL, AMD], [AU, SHOP, TCEHY,  MRAM, BABA, TSM, CIB, SSRM, HSBC, LYG]}
   zoo:
     ARK: ${get_keys:tickers.ark}
     invescoMomentum: ${get_keys:tickers.momentum}
@@ -23,7 +23,7 @@ lenses:
           PEP, MCD, PFE, DHR, NFLX, VZ, TXN, WFC, ABT, QCOM,
           DIS, LIN, UPS, HON, SBUX, MS, SCHW, BMY, CAT, AMGN,
           RTX, C, GS, GE, COP, ADP, DASH, WELL, CB, ADI,
-          CMCSA, MO, CEG, BKNG, DE, LMT, TGT, USB, BLK, 
+          CMCSA, MO,  BKNG, DE, LMT, TGT, USB, BLK, 
           SYK, MDT, REGN, SPGI, ZTS, INTU, BK, ISRG, AON, PGR,
           NOC, SNPS, WM, MCO, AMT, ORLY, SRE, ITW, EXC, ETN,
           PSA, DUK, PLD, CDNS, TRV, GWW, FDX, EMR, ROP, FTNT
@@ -31,8 +31,8 @@ lenses:
     adr100: [
             TSM, ASML, SAP, AZN, TM, NVO, SNY, ING, BBVA, BABA,
             TD, RY, ENB, BP, HSBC, GLNCY, SAN, BNPQY, UBS, BTI,
-            NVS, NSRGY, SONY, VWAGY, GSK, TOT, DEO, ALIZY,
-            SIEGY, CRH, LUX, VOD, BAYRY, BASFY, AEG, CIB, WB,
+            NVS, NSRGY, SONY, VWAGY, GSK,  DEO, ALIZY,
+            SIEGY, CRH,  VOD, BAYRY, BASFY, AEG, CIB, WB,
             ABEV, CNI, SHOP, NOK, TEF, DB, CHA,
             PHG, DTEGY, SSRM, ERIC, RDY, IBN, INFY,
             WIT, HDB, MELI, YUMC, JD, PDD, MKTAY,
