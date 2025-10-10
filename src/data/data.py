@@ -167,7 +167,7 @@ def compute_annualized_momentum_sum(df: pd.DataFrame, window_sizes: List[int] = 
 
     for symbol in symbols:
         total_annualized_momentum = 0
-
+        total_weight = 0 
         for window in window_sizes:
             # Compute momentum: (current_price / price_window_days_ago) - 1
             momentum = df[symbol].rolling(window=window).apply(lambda x: x.iloc[-1] / x.iloc[0] - 1)
@@ -178,10 +178,12 @@ def compute_annualized_momentum_sum(df: pd.DataFrame, window_sizes: List[int] = 
                 last_momentum = momentum.iloc[-1]
                 # Annualize the momentum: (1 + momentum)^(252/window) - 1, cap at 2
                 annualized_momentum = min((1 + last_momentum) ** (252 / window) - 1, 1)
-                total_annualized_momentum += annualized_momentum * 1
+                weight = 1 / np.log(window)
+                annualized_momentum = annualized_momentum * weight
+                total_weight += weight
+                total_annualized_momentum += annualized_momentum
 
         # Weighted average of annualized momentum by window size
-        total_weight = len(window_sizes)
         am[symbol] = total_annualized_momentum / total_weight if total_weight != 0 else 0
 
     # Create DataFrame and rank by total annualized momentum

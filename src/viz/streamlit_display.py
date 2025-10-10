@@ -11,13 +11,18 @@ def display_dataframe(
     hide_index: bool = False,
     cmap: str = "RdYlGn",
     caption: Optional[str] = None,
+    vmin: Optional[float] = None,
     **style_kwargs,
 ) -> None:
-    """Display DataFrame with optional styling and centering."""
+    """Display DataFrame with optional styling, centering, and vmin for colormap."""
     if symbol_type and data_type:
         styled_df = (
             df.style.set_properties(**{"font-weight": "bold"})
-            .background_gradient(cmap=cmap, axis=1 if df.shape[1] > df.shape[0] else 0)
+            .background_gradient(
+                cmap=cmap,
+                axis=1 if df.shape[1] > df.shape[0] else 0,
+                vmin=vmin
+            )
             .set_caption(caption or f"{symbol_type} - {data_type}")
             .format("{:.2}", subset=[col for col in df.columns if df[col].dtype == "float64"])
             .format("{:.0f}", subset=[col for col in df.columns if df[col].dtype == "int64"])

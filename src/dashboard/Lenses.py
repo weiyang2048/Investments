@@ -106,7 +106,17 @@ def sidebar(config):
         help="Enter the factor to multiply the lookback days.",
         key="lookback_factor_input",
     )
-    return marchenko_pastur, initial_lookback_days, lookback_factor, lense_option, target_return, show_performance_plot, show_momentum_plot, show_correlation_plot, custom_symbols
+    return (
+        marchenko_pastur,
+        initial_lookback_days,
+        lookback_factor,
+        lense_option,
+        target_return,
+        show_performance_plot,
+        show_momentum_plot,
+        show_correlation_plot,
+        custom_symbols,
+    )
 
 
 def _create_style_dicts(symbols, equity_config):
@@ -136,7 +146,17 @@ def _display_performance_section(melt_df):
 
 
 def _process_symbol_tab(
-    symbols, symbol_type, look_back_days, equity_config, target_return, show_performance_plot, show_momentum_plot, show_correlation_plot, marchenko_pastur, dfs, momentum_summaries
+    symbols,
+    symbol_type,
+    look_back_days,
+    equity_config,
+    target_return,
+    show_performance_plot,
+    show_momentum_plot,
+    show_correlation_plot,
+    marchenko_pastur,
+    dfs,
+    momentum_summaries,
 ):
     """Process a single symbol tab - handles both custom and regular symbols."""
     period = f"{look_back_days[-1]}d"
@@ -154,7 +174,7 @@ def _process_symbol_tab(
 
     # Create momentum ranking first (always needed for data analysis)
     momentum_ranking = _create_momentum_ranking(df_pivot, symbols, equity_config)
-    
+
     # Only create momentum plot if requested
     if show_momentum_plot:
         momentum_result = create_momentum_plot(
@@ -168,28 +188,29 @@ def _process_symbol_tab(
         )
         momentum_fig = momentum_result["figure"]
         momentum_combined = momentum_result["momentum_combined"]
-        
+
         # Add momentum ranking as first row and sort columns
         momentum_combined_with_ranking = _add_momentum_ranking_to_momentum_df(momentum_combined, momentum_ranking)
         display_dataframe(momentum_combined_with_ranking, symbol_type, "Momentum Combined")
-        
+
         # Display momentum plot
         st.plotly_chart(momentum_fig, config={"displayModeBar": False})
     else:
         # Still compute momentum data for analysis but don't create plot
         from src.data import normalize_prices, compute_momentum
+
         df_norm = normalize_prices(df_pivot)
         momentum_data, momentum_combined = compute_momentum(df_norm, WINDOW_SIZES, target_return=target_return)
-        
+
         # Add momentum ranking as first row and sort columns
         momentum_combined_with_ranking = _add_momentum_ranking_to_momentum_df(momentum_combined, momentum_ranking)
         display_dataframe(momentum_combined_with_ranking, symbol_type, "Momentum Combined")
-        
+
     # Store momentum data for summary (moved outside conditional)
     momentum_summaries[symbol_type] = momentum_combined
-    
+
     # Display momentum ranking
-    display_dataframe(momentum_ranking, symbol_type, "am")
+    display_dataframe(momentum_ranking, symbol_type, "am", vmin=0.1)
 
     # Create performance plot only if requested
     if show_performance_plot:
@@ -203,7 +224,7 @@ def _process_symbol_tab(
         )
         fig = performance_result["figure"]
         df_normalized = performance_result["normalized_data"]
-        
+
         # Display performance plot
         st.plotly_chart(fig, config={"displayModeBar": False})
 
@@ -229,12 +250,12 @@ def _process_symbol_tab(
 def _add_momentum_ranking_to_momentum_df(momentum_df, momentum_ranking):
     """Sort momentum_df columns by momentum_ranking values."""
     # Get the agg_momentum values from momentum_ranking (transposed format)
-    if 'am' in momentum_ranking.index:
-        ranking_values = momentum_ranking.loc['am']
+    if "am" in momentum_ranking.index:
+        ranking_values = momentum_ranking.loc["am"]
     else:
         # If not transposed, get from the agg_momentum column
-        ranking_values = momentum_ranking.set_index('Symbol')['am']
-    
+        ranking_values = momentum_ranking.set_index("Symbol")["am"]
+
     # Sort columns by the momentum ranking values (descending order)
     sorted_columns = ranking_values.sort_values(ascending=False).index
     return momentum_df[sorted_columns]
@@ -265,7 +286,7 @@ def _display_summary_tab(momentum_summaries, dfs, marchenko_pastur, equity_confi
     for symbol_type in momentum_summaries.keys():
         momentum_df = momentum_summaries[symbol_type]
         momentum_ranking = _get_momentum_ranking_for_symbol_type(symbol_type, dfs, equity_config)
-        
+
         if momentum_ranking is not None:
             # Sort columns by momentum ranking
             momentum_df_sorted = _add_momentum_ranking_to_momentum_df(momentum_df, momentum_ranking)
@@ -368,9 +389,17 @@ if __name__ == "__main__":
 
     with hydra.initialize(version_base=None, config_path="../../conf"):
         config = hydra.compose(config_name="main")
-    marchenko_pastur, initial_lookback_days, lookback_factor, lense_option, target_return, show_performance_plot, show_momentum_plot, show_correlation_plot, custom_symbols = (
-        setup_page_and_sidebar(config["style_conf"], add_to_sidebar=lambda: sidebar(config))
-    )
+    (
+        marchenko_pastur,
+        initial_lookback_days,
+        lookback_factor,
+        lense_option,
+        target_return,
+        show_performance_plot,
+        show_momentum_plot,
+        show_correlation_plot,
+        custom_symbols,
+    ) = setup_page_and_sidebar(config["style_conf"], add_to_sidebar=lambda: sidebar(config))
     st.title(lense_option)
 
     # Table of Contents
