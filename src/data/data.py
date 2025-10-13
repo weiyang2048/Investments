@@ -8,6 +8,14 @@ import streamlit as st
 import numpy as np
 
 
+class Ticker:
+    def __init__(self, symbol: str):
+        self.symbol = symbol
+        self.ticker = yf.Ticker(symbol)
+    
+    def get_daily_prices(self, period: str = "1mo") -> pd.DataFrame:
+        return self.ticker.history(period=period)
+
 def get_daily_prices(symbol: str, period: str = "1mo") -> pd.DataFrame:
     """
     Get daily price data for a single symbol using yfinance
@@ -167,7 +175,7 @@ def compute_annualized_momentum_sum(df: pd.DataFrame, window_sizes: List[int] = 
 
     for symbol in symbols:
         total_annualized_momentum = 0
-        total_weight = 0 
+        total_weight = 0
         for window in window_sizes:
             # Compute momentum: (current_price / price_window_days_ago) - 1
             momentum = df[symbol].rolling(window=window).apply(lambda x: x.iloc[-1] / x.iloc[0] - 1)
@@ -187,9 +195,7 @@ def compute_annualized_momentum_sum(df: pd.DataFrame, window_sizes: List[int] = 
         am[symbol] = total_annualized_momentum / total_weight if total_weight != 0 else 0
 
     # Create DataFrame and rank by total annualized momentum
-    result_df = pd.DataFrame(
-        [{"Symbol": symbol, "am": np.round(am, 2)} for symbol, am in am.items()]
-    ).round(2)
+    result_df = pd.DataFrame([{"Symbol": symbol, "am": np.round(am, 2)} for symbol, am in am.items()]).round(2)
 
     # Sort by momentum sum in descending order and add rank
     result_df = result_df.sort_values("am", ascending=False).reset_index(drop=True)

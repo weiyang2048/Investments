@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 from typing import Optional
+import numpy as np
 
 
 def display_dataframe(
@@ -21,7 +22,7 @@ def display_dataframe(
             .background_gradient(
                 cmap=cmap,
                 axis=1 if df.shape[1] > df.shape[0] else 0,
-                vmin=vmin
+                vmin=min(vmin, np.max(df)) if vmin else None
             )
             .set_caption(caption or f"{symbol_type} - {data_type}")
             .format("{:.2}", subset=[col for col in df.columns if df[col].dtype == "float64"])
