@@ -1,6 +1,6 @@
 lenses:
   main:
-    Regions: ${union:[SPMO, IDMO, FEM, AVUV, AVDV, AVES],[CEE,  FLN, AFK, AIA, ASEA, IPAC, FEP], [IAUM, SIL, IBIT, ETHA], [EPU, EWY, EWS, EWN]}
+    Regions: ${union:[SPMO, IDMO, FEM, AVUV, AVDV, AVES],[CEE,  FLN, AFK, AIA, ASEA, IPAC, FEP], [IAUM, SIL, IBIT, ETHA], [VNAM, EPU, EWY, EWS, EWN]}
     Sectors: ${union:[ARKW, ARKQ, ARKG], [BKCH, GOEX, SLVP, COPX, DMAT, HYDR, URA, LIT, AIQ, SHLD], [QTUM], ${get_keys:tickers.sectors}}
     Commodities: [IAUM, GOEX, SIVR, SLVP, PPLT, COPX, DMAT, HYDR, URA, LIT, IEO, DBA, BTC, ETH, BKCH ]
     income: [ SCHD, SCHY,LVHI, LVHD, GPIQ, GPIX, JEPI, JEPQ, DIVO, IDVO, EFAS, SDEM]
