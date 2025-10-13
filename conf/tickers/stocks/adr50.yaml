@@ -1,0 +1,161 @@
+# Top 50 ADR (American Depositary Receipts) Companies by Market Cap
+# Sorted by approximate market capitalization
+
+TSM:
+  name: Taiwan Semiconductor Manufacturing Co Ltd
+
+AZN:
+  name: AstraZeneca PLC
+
+ASML:
+  name: ASML Holding NV
+
+SAP:
+  name: SAP SE
+
+NVS:
+  name: Novartis AG
+
+NVO:
+  name: Novo Nordisk A/S
+
+TM:
+  name: Toyota Motor Corp
+
+HSBC:
+  name: HSBC Holdings PLC
+
+SHEL:
+  name: Shell PLC
+
+HDB:
+  name: HDFC Bank Ltd
+
+SONY:
+  name: Sony Group Corporation
+
+MUFG:
+  name: Mitsubishi UFJ Financial Group Inc
+
+ARM:
+  name: Arm Holdings PLC
+
+UL:
+  name: Unilever PLC
+
+SAN:
+  name: Banco Santander SA
+
+BHP:
+  name: BHP Group Ltd
+
+TTE:
+  name: TotalEnergies SE
+
+BUD:
+  name: Anheuser-Busch Inbev SA
+
+SNY:
+  name: Sanofi SA
+
+BTI:
+  name: British American Tobacco PLC
+
+RIO:
+  name: Rio Tinto PLC
+
+SE:
+  name: Sea Ltd
+
+BBVA:
+  name: Banco Bilbao Vizcaya Argentaria SA
+
+SMFG:
+  name: Sumitomo Mitsui Financial Group Inc
+
+NTES:
+  name: NetEase Inc
+
+GSK:
+  name: GSK plc
+
+BP:
+  name: BP PLC
+
+RELX:
+  name: Relx PLC
+
+MFG:
+  name: Mizuho Financial Group Inc
+
+PBR:
+  name: Petroleo Brasileiro SA Petrobras
+
+ING:
+  name: ING Groep NV
+
+INFY:
+  name: Infosys Ltd
+
+BCS:
+  name: Barclays PLC
+
+LYG:
+  name: Lloyds Banking Group PLC
+
+EQNR:
+  name: Equinor ASA
+
+IBN:
+  name: ICICI Bank Ltd
+
+PKX:
+  name: Posco Holdings Inc
+
+DEO:
+  name: Diageo PLC
+
+ARGX:
+  name: argenx SE
+
+VIPS:
+  name: Vipshop Holdings Ltd
+
+TCOM:
+  name: Trip.com Group Ltd
+
+BABA:
+  name: Alibaba Group Holding Ltd
+
+VALE:
+  name: Vale SA
+
+PDD:
+  name: PDD Holdings Inc
+
+BIDU:
+  name: Baidu Inc
+
+TAK:
+  name: Takeda Pharmaceutical Co Ltd
+
+HMC:
+  name: Honda Motor Co Ltd
+
+HLN:
+  name: HALEON PLC
+
+GFI:
+  name: Gold Fields Ltd
+
+TEVA:
+  name: Teva Pharmaceutical Industries Ltd
+
+LI:
+  name: Li Auto Inc
+
+NIO:
+  name: NIO Inc
+
+XPEV:
+  name: XPeng Inc

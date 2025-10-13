@@ -1,46 +1,24 @@
 lenses:
   main:
     Regions: ${union:${lenses.regional.regions}, [IAUM, SIL, IBIT, ETHA], [EPU, EWY, EWS, EWN]}
-    Sectors: ${union:[ARKW, ARKQ, ARKG], [BKCH, GOEX, SLVP, DMAT, HYDR, URA, LIT, AIQ, SHLD], [QTUM], ${get_keys:tickers.sectors}}
+    Sectors: ${union:[ARKW, ARKQ, ARKG], [BKCH, GOEX, SLVP, COPX, DMAT, HYDR, URA, LIT, AIQ, SHLD], [QTUM], ${get_keys:tickers.sectors}}
     Commodities: [IAUM, GOEX, SIVR, SLVP, PPLT, COPX, DMAT, HYDR, URA, LIT, IEO, DBA, BTC, ETH, BKCH ]
     income: [ SCHD, SCHY,LVHI, LVHD, GPIQ, GPIX, JEPI, JEPQ, DIVO, IDVO, EFAS, SDEM]
     stocks: ${union:[AVGO, DASH, GE, RTX, ORCL, AMD], [AU, SHOP, TCEHY,  MRAM, BABA, TSM, CIB, SSRM, HSBC, LYG]}
-  zoo:
+  EtfIssuers:
     ARK: ${get_keys:tickers.ark}
     invescoMomentum: ${get_keys:tickers.momentum}
     globalX: ${get_keys:tickers.globalX}
-    pennie: [HOUS, OPEN, BINI, LCID]
   regional:
     USxUS: [SPMO, IDMO, FEM, AVUV, AVDV, AVES]
     regions: ${union:${lenses.regional.USxUS},[CEE,  FLN, AFK, AIA, ASEA, IPAC, FEP]}
     countries: ${union:${lenses.regional.USxUS},${get_keys:tickers.regions}}
   presets:
-    rh: [IAUM, SHLD, MSFT, VEU, GOOGL, SPMO, AIA, EUAD]
-    fdt: [SPMO, BKCH, IAUM, GOEX, SLVP, IDMO, ARKQ, TRAMX, FZILX, AIQ, XMMO, SHLD, AIA, EUAD, JXI, VT, VTI, IXN, OPEN]
-  indices:
-    sp100: [NVDA, MSFT, AAPL, AMZN, META, GOOGL,  ELF, LLY, AVGO,
-          TSLA, UNH, JPM, V, WMT, MA, XOM, COST, HD, PG,
-          ABBV, MRK, CRM, ADBE, JNJ, AMD, TMO, ACN, CVX, ORCL,
-          PEP, MCD, PFE, DHR, NFLX, VZ, TXN, WFC, ABT, QCOM,
-          DIS, LIN, UPS, HON, SBUX, MS, SCHW, BMY, CAT, AMGN,
-          RTX, C, GS, GE, COP, ADP, DASH, WELL, CB, ADI,
-          CMCSA, MO,  BKNG, DE, LMT, TGT, USB, BLK, 
-          SYK, MDT, REGN, SPGI, ZTS, INTU, BK, ISRG, AON, PGR,
-          NOC, SNPS, WM, MCO, AMT, ORLY, SRE, ITW, EXC, ETN,
-          PSA, DUK, PLD, CDNS, TRV, GWW, FDX, EMR, ROP, FTNT
-          ]
-    adr100: [
-            TSM, ASML, SAP, AZN, TM, NVO, SNY, ING, BBVA, BABA,
-            TD, RY, ENB, BP, HSBC, GLNCY, SAN, BNPQY, UBS, BTI,
-            NVS, NSRGY, SONY, VWAGY, GSK,  DEO, ALIZY,
-            SIEGY, CRH,  VOD, BAYRY, BASFY, AEG, CIB, WB,
-            ABEV, CNI, SHOP, NOK, TEF, DB, CHA,
-            PHG, DTEGY, SSRM, ERIC, RDY, IBN, INFY,
-            WIT, HDB, MELI, YUMC, JD, PDD, MKTAY,
-            STLA, LYG, ACGBY, RACE, E, EQNR, BZ, EC,
-            BAP, VIV, BCS, BHP, NTES, AU, SBS, CIG,
-            HMC, PCAR, FNMA, KUBTY, MRAM, TCEHY, DQ, VIVHY, PBR, UL, 
-            ]
+    rh: [IAUM,  MSFT, VEU, GOOGL, SPMO, AIA, EUAD]
+    fdt: [SPMO, BKCH, IAUM, GOEX, SLVP, IDMO, ARKQ, TRAMX, AIQ, XMMO, SHLD, AIA, EUAD, JXI, VT, VTI, IXN, OPEN]
+  themes:
+    sp50: ${get_keys:tickers.stocks.sp50}
+    adr50: ${get_keys:tickers.stocks.adr50}
 target_return: 1.35
 
 defaults:
@@ -52,3 +30,5 @@ defaults:
       - globalX
       - momentum
       - ark
+      - stocks/sp50
+      - stocks/adr50
