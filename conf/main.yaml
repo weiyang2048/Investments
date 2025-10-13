@@ -15,8 +15,8 @@ lenses:
     regions: ${union:${lenses.regional.USxUS},[CEE,  FLN, AFK, AIA, ASEA, IPAC, FEP]}
     countries: ${union:${lenses.regional.USxUS},${get_keys:tickers.regions}}
   presets:
-    rh: [IAUM, SHLD, MSFT, VEU, GOOGL, SPMO, SPEU, AIA, EUAD]
-    fdt: [SPMO, BKCH, IAUM, GOEX, SLVP, IDMO, ARKQ, TRAMX, FZILX, AIQ, XMMO, SHLD, AIA, SPMO, EUAD, JXI, RXI, VT, VTI, IXN, OPEN, IBIT]
+    rh: [IAUM, SHLD, MSFT, VEU, GOOGL, SPMO, AIA, EUAD]
+    fdt: [SPMO, BKCH, IAUM, GOEX, SLVP, IDMO, ARKQ, TRAMX, FZILX, AIQ, XMMO, SHLD, AIA, EUAD, JXI, VT, VTI, IXN, OPEN]
   indices:
     sp100: [NVDA, MSFT, AAPL, AMZN, META, GOOGL,  ELF, LLY, AVGO,
           TSLA, UNH, JPM, V, WMT, MA, XOM, COST, HD, PG,
