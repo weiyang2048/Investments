@@ -1,18 +1,18 @@
 lenses:
   main:
-    Regions: ${union:[SPMO, IDMO, FEM, AVUV, AVDV, AVES],[CEE,  FLN, AFK, AIA, ASEA, IPAC, FEP], [IAUM, SIL, IBIT, ETHA], [VNAM, EPU, EWY, EWS, EWN]}
+    Regions: ${union:[ CEE,  FLN, AFK, AIA, ASEA, IPAC, FEP], [IAUM, SIL, PPLT, IBIT, ETHA], [VNAM, EPU, EZA, EIS]}
     Sectors: ${union:[ARKW, ARKQ, ARKG], [BKCH, GOEX, SLVP, COPX, DMAT, HYDR, URA, LIT, AIQ, SHLD], [QTUM], ${get_keys:tickers.sectors}}
     Commodities: [IAUM, GOEX, SIVR, SLVP, PPLT, COPX, DMAT, HYDR, URA, LIT, IEO, DBA, BTC, ETH, BKCH ]
-    income: [ SCHD, SCHY,LVHI, LVHD, GPIQ, GPIX, JEPI, JEPQ, DIVO, IDVO, EFAS, SDEM]
-    stocks: ${union:[AVGO, DASH, GE, RTX, ORCL, AMD], [AU, SHOP, TCEHY,  MRAM, BABA, TSM, CIB, SSRM, HSBC, LYG]}
+  themes:
+    regions: ${union:[SPMO, IDMO, FEM, AVUV, AVDV, AVES],${get_keys:tickers.regions}}
+    income: [BTCC, BPI, ETCO, SCHD, SCHY,LVHI, LVHD, GPIQ, GPIX, JEPI, JEPQ, DIVO, IDVO, EFAS, SDEM]
+    sp50: ${get_keys:tickers.stocks.sp50}
+    adr50: ${get_keys:tickers.stocks.adr50}
   EtfIssuers:
     ARK: ${get_keys:tickers.ark}
     invescoMomentum: ${get_keys:tickers.momentum}
     globalX: ${get_keys:tickers.globalX}
-  themes:
-    regions: ${union:[SPMO, IDMO, FEM, AVUV, AVDV, AVES],${get_keys:tickers.regions}}
-    sp50: ${get_keys:tickers.stocks.sp50}
-    adr50: ${get_keys:tickers.stocks.adr50}
+
   presets:
     rh: [IAUM,  MSFT, VEU, GOOGL, SPMO, AIA, EUAD]
     fdt: [SPMO, BKCH, IAUM, GOEX, SLVP, IDMO, ARKQ, TRAMX, AIQ, XMMO, SHLD, AIA, EUAD, JXI, VT, VTI, IXN, OPEN]
