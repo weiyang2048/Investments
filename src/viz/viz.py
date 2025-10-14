@@ -237,9 +237,12 @@ def create_momentum_ranking_display(
     df_norm = normalize_prices(df)
     ranking_df = compute_annualized_momentum_sum(df_norm, window_sizes)
     
-    # Keep only Symbol and am columns, then transpose
-    # print(ranking_df.columns)
-    ranking_df = ranking_df[["Symbol", "am", 'm7', 'm30', 'm90', 'm180', 'm360']]
+    # Dynamically create column names based on window sizes
+    momentum_columns = [f"m{window}" for window in window_sizes]
+    columns_to_keep = ["Symbol", "am"] + momentum_columns
+    
+    # Keep only Symbol, am, and dynamic momentum columns, then transpose
+    ranking_df = ranking_df[columns_to_keep]
     return ranking_df.set_index("Symbol").T.round(2)
 
 

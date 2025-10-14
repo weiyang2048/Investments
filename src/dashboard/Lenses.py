@@ -1,3 +1,4 @@
+import time
 from src.configurations.yaml import register_resolvers
 import streamlit as st
 
@@ -15,8 +16,7 @@ from src.viz.streamlit_display import (
     display_section_header,
 )
 
-# Constants
-WINDOW_SIZES = [7, 30, 90, 180, 360]
+# Window sizes are now computed dynamically from initial_lookback_days and lookback_factor
 
 
 def parse_custom_symbols(symbols_text):
@@ -34,7 +34,7 @@ def parse_custom_symbols(symbols_text):
 def sidebar(config):
     lenses = config["lenses"]
     lense_option = st.sidebar.radio(
-        "Lense",
+        "Lenses",
         lenses.keys(),
         help="Choose the lense to display\n",
         key="lense_option",
@@ -89,7 +89,7 @@ def sidebar(config):
         "Initial Lookback Days",
         min_value=1,
         max_value=3650,
-        value=7,
+        value=5,
         step=1,
         help="Enter the initial number of days for the analysis period.",
         key="lookback_days_input",
@@ -120,14 +120,12 @@ def _process_and_prepare_data(symbols, period, equity_config, streamlit=True):
     """Load, process data and create style dictionaries for given symbols."""
     # Load and process data
     df_pivot = pivot_data(list(symbols), period, streamlit=streamlit)
-    
+
     # Create style dictionaries
     colors_dict = {symbol: equity_config.get(symbol, {}).get("color", get_random_style("color")) for symbol in symbols}
     line_styles_dict = {symbol: equity_config.get(symbol, {}).get("line_style", get_random_style("line_style")) for symbol in symbols}
-    
+
     return df_pivot, colors_dict, line_styles_dict
-
-
 
 
 def _process_symbol_tab(
@@ -142,12 +140,15 @@ def _process_symbol_tab(
     marchenko_pastur,
     dfs,
     momentum_summaries,
+    log_col,
 ):
     """Process a single symbol tab - handles both custom and regular symbols."""
     period = f"{look_back_days[-1]}d"
 
-    # Load, process data and create style dictionaries
-    df_pivot, colors_dict, line_styles_dict = _process_and_prepare_data(symbols, period, equity_config)
+    # Load, process data and create style 
+    with st.spinner("Downloading and Processing data..."):
+        df_pivot, colors_dict, line_styles_dict = _process_and_prepare_data(symbols, period, equity_config)
+    log_col.success(f"Data Loaded at {time.strftime('%Y-%m-%d %H:%M:%S')}")
     dfs[symbol_type] = df_pivot
 
     # Display momentum section
@@ -155,14 +156,14 @@ def _process_symbol_tab(
     st.write("target_return", target_return)
 
     # Create momentum ranking first (always needed for data analysis)
-    momentum_ranking, _ = _create_and_sort_momentum_data(df_pivot)
+    momentum_ranking, _ = _create_and_sort_momentum_data(df_pivot, look_back_days)
 
     # Only create momentum plot if requested
     if show_momentum_plot:
         momentum_result = create_momentum_plot(
             df_pivot,
             symbols,
-            window_sizes=WINDOW_SIZES,
+            window_sizes=look_back_days,
             colors_dict=colors_dict,
             line_styles_dict=line_styles_dict,
             equity_config=equity_config,
@@ -180,7 +181,7 @@ def _process_symbol_tab(
         from src.data import normalize_prices, compute_momentum
 
         df_norm = normalize_prices(df_pivot)
-        _, momentum_combined = compute_momentum(df_norm, WINDOW_SIZES, target_return=target_return)
+        _, momentum_combined = compute_momentum(df_norm, look_back_days, target_return=target_return)
 
         # momentum_combined data is computed but not displayed
 
@@ -219,14 +220,14 @@ def _process_symbol_tab(
     # Performance section removed as requested
 
 
-def _create_and_sort_momentum_data(df_pivot, momentum_df=None):
+def _create_and_sort_momentum_data(df_pivot, window_sizes, momentum_df=None):
     """Create momentum ranking and sort momentum dataframe by ranking values."""
     # Create momentum ranking
     momentum_ranking = create_momentum_ranking_display(
         df_pivot,
-        window_sizes=WINDOW_SIZES,
+        window_sizes=window_sizes,
     )
-    
+
     # Sort momentum_df columns by momentum_ranking values if provided
     if momentum_df is not None:
         # Get the agg_momentum values from momentum_ranking (transposed format)
@@ -235,45 +236,13 @@ def _create_and_sort_momentum_data(df_pivot, momentum_df=None):
         else:
             # If not transposed, get from the agg_momentum column
             ranking_values = momentum_ranking.set_index("Symbol")["am"]
-        
+
         # Sort columns by the momentum ranking values (descending order)
         sorted_columns = ranking_values.sort_values(ascending=False).index
         momentum_df_sorted = momentum_df[sorted_columns]
         return momentum_ranking, momentum_df_sorted
-    
+
     return momentum_ranking, None
-
-
-def _get_momentum_ranking_for_symbol_type(symbol_type, dfs):
-    """Get momentum ranking for a symbol type if it exists in dfs."""
-    if symbol_type in dfs.keys():
-        df_pivot = dfs[symbol_type].copy()
-        momentum_ranking, _ = _create_and_sort_momentum_data(df_pivot)
-        return momentum_ranking
-    return None
-
-
-def _display_summary_tab(momentum_summaries, dfs, marchenko_pastur, show_correlation_plot):
-    """Display the summary tab with all momentum summaries and correlations."""
-    # Display momentum summaries
-    for symbol_type in momentum_summaries.keys():
-        momentum_df = momentum_summaries[symbol_type]
-        momentum_ranking = _get_momentum_ranking_for_symbol_type(symbol_type, dfs)
-
-        if momentum_ranking is not None:
-            # Only display momentum ranking table
-            display_dataframe(momentum_ranking, symbol_type, "Momentum Ranking")
-
-    # Display correlations
-    for symbol_type in dfs.keys():
-        df_pivot = dfs[symbol_type].copy()
-        if show_correlation_plot:
-            pivoted_to_corr(df_pivot, plot=True, streamlit=True, marchenko_pastur=marchenko_pastur)
-        else:
-            # Still compute correlation matrix for data analysis but don't display plot
-            corr_matrix = pivoted_to_corr(df_pivot, plot=False, streamlit=True, marchenko_pastur=marchenko_pastur)
-            display_dataframe(corr_matrix, symbol_type, "Correlation Matrix")
-
 
 def show_market_performance(
     equity_config: dict,
@@ -288,57 +257,67 @@ def show_market_performance(
     custom_symbols: list = None,
 ) -> None:
     """Function to show the market performance dashboard."""
-    # Symbol selection using tabs instead of sidebar radio
+    # First selection: Symbol types (previously handled by tabs)
     symbol_types = [key for key in portfolio_config.keys()]
 
-    # Add custom symbols tab if custom symbols are provided
+    # Add custom symbols option if custom symbols are provided
     if custom_symbols:
         symbol_types = symbol_types + ["Custom Symbols"]
 
-    symbol_types = symbol_types + ["Summary"]
-    tabs = st.tabs(symbol_types)
+    # Summary removed per request
+
+    # Symbol type selection (previously handled by tabs)
+    col1, col2, col3 = st.columns([1, 4, 1])
+    with col2:
+        selected_symbol_type = st.radio(
+            "Select Lense",
+            symbol_types,
+            key="lense_selector",
+            help="Choose which symbol type to analyze",
+            horizontal=True,
+            label_visibility="visible",
+        )
 
     # Generate look_back_days list based on user input
     look_back_days = [int(initial_lookback_days * (lookback_factor**i)) for i in range(6)]
     momentum_summaries = dict()
     dfs = dict()
 
-    for i, symbol_type in enumerate(symbol_types):
-        with tabs[i]:
-            if symbol_type == "Summary":
-                _display_summary_tab(momentum_summaries, dfs, marchenko_pastur, show_correlation_plot)
-            elif symbol_type == "Custom Symbols":
-                if custom_symbols:
-                    _process_symbol_tab(
-                        custom_symbols,
-                        symbol_type,
-                        look_back_days,
-                        equity_config,
-                        target_return,
-                        show_performance_plot,
-                        show_momentum_plot,
-                        show_correlation_plot,
-                        marchenko_pastur,
-                        dfs,
-                        momentum_summaries,
-                    )
-                else:
-                    st.info("No custom symbols provided. Please enter symbols in the sidebar.")
-            else:
-                symbols = portfolio_config[symbol_type]
-                _process_symbol_tab(
-                    symbols,
-                    symbol_type,
-                    look_back_days,
-                    equity_config,
-                    target_return,
-                    show_performance_plot,
-                    show_momentum_plot,
-                    show_correlation_plot,
-                    marchenko_pastur,
-                    dfs,
-                    momentum_summaries,
-                )
+    # Process the selected symbol type
+    if selected_symbol_type == "Custom Symbols":
+        if custom_symbols:
+            _process_symbol_tab(
+                custom_symbols,
+                selected_symbol_type,
+                look_back_days,
+                equity_config,
+                target_return,
+                show_performance_plot,
+                show_momentum_plot,
+                show_correlation_plot,
+                marchenko_pastur,
+                dfs,
+                momentum_summaries,
+                log_col = col3
+            )
+        else:
+            st.info("No custom symbols provided. Please enter symbols in the sidebar.")
+    else:
+        symbols = portfolio_config[selected_symbol_type]
+        _process_symbol_tab(
+            symbols,
+            selected_symbol_type,
+            look_back_days,
+            equity_config,
+            target_return,
+            show_performance_plot,
+            show_momentum_plot,
+            show_correlation_plot,
+            marchenko_pastur,
+            dfs,
+            momentum_summaries,
+            log_col = col3,
+        )
 
     # Bottom Table of Contents
     display_table_of_contents(
@@ -369,6 +348,7 @@ if __name__ == "__main__":
         show_correlation_plot,
         custom_symbols,
     ) = setup_page_and_sidebar(config["style_conf"], add_to_sidebar=lambda: sidebar(config))
+
     st.title(lense_option)
 
     # Table of Contents
