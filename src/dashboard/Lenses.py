@@ -1,17 +1,14 @@
-from re import T
 from src.configurations.yaml import register_resolvers
 import streamlit as st
 
 import hydra
 import numpy as np
 from src.data import pivot_data
-from src.performence.aggregation import aggregate_performance
 from src.viz.viz import create_performance_plot, create_momentum_plot, create_momentum_ranking_display
 from src.configurations.style_picker import get_random_style
 from src.dashboard.create_page import setup_page_and_sidebar
 import pandas as pd
 from src.association import pivoted_to_corr
-from src.viz.cmaps import custom_cmap
 from src.viz.streamlit_display import (
     display_dataframe,
     display_table_of_contents,
@@ -119,30 +116,18 @@ def sidebar(config):
     )
 
 
-def _create_style_dicts(symbols, equity_config):
-    """Create color and line style dictionaries for symbols."""
+def _process_and_prepare_data(symbols, period, equity_config, streamlit=True):
+    """Load, process data and create style dictionaries for given symbols."""
+    # Load and process data
+    df_pivot = pivot_data(list(symbols), period, streamlit=streamlit)
+    
+    # Create style dictionaries
     colors_dict = {symbol: equity_config.get(symbol, {}).get("color", get_random_style("color")) for symbol in symbols}
     line_styles_dict = {symbol: equity_config.get(symbol, {}).get("line_style", get_random_style("line_style")) for symbol in symbols}
-    return colors_dict, line_styles_dict
+    
+    return df_pivot, colors_dict, line_styles_dict
 
 
-def _process_symbol_data(symbols, period, streamlit=True):
-    """Load and process data for given symbols."""
-    return pivot_data(list(symbols), period, streamlit=streamlit)
-
-
-def _create_melted_dataframe(df_pivot):
-    """Create melted dataframe for performance analysis."""
-    melt_df = df_pivot.melt(id_vars=["Date"], var_name="Symbol", value_name="Price")
-    melt_df.sort_values(by=["Symbol", "Date"], inplace=True, ascending=True)
-    return melt_df
-
-
-def _display_performance_section(melt_df):
-    """Display performance statistics with styling."""
-    stats_df = aggregate_performance(melt_df)
-    styled_stats = stats_df.style.background_gradient(cmap=custom_cmap, axis=0, vmin=-0.2, vmax=0.2, gmap=None).format("{:.2%}")
-    display_dataframe(styled_stats, centered=True)
 
 
 def _process_symbol_tab(
@@ -161,19 +146,16 @@ def _process_symbol_tab(
     """Process a single symbol tab - handles both custom and regular symbols."""
     period = f"{look_back_days[-1]}d"
 
-    # Load and process data
-    df_pivot = _process_symbol_data(symbols, period)
+    # Load, process data and create style dictionaries
+    df_pivot, colors_dict, line_styles_dict = _process_and_prepare_data(symbols, period, equity_config)
     dfs[symbol_type] = df_pivot
-
-    # Create style dictionaries
-    colors_dict, line_styles_dict = _create_style_dicts(symbols, equity_config)
 
     # Display momentum section
     display_section_header("Momentum")
     st.write("target_return", target_return)
 
     # Create momentum ranking first (always needed for data analysis)
-    momentum_ranking = _create_momentum_ranking(df_pivot, symbols, equity_config)
+    momentum_ranking, _ = _create_and_sort_momentum_data(df_pivot)
 
     # Only create momentum plot if requested
     if show_momentum_plot:
@@ -189,9 +171,7 @@ def _process_symbol_tab(
         momentum_fig = momentum_result["figure"]
         momentum_combined = momentum_result["momentum_combined"]
 
-        # Add momentum ranking as first row and sort columns
-        momentum_combined_with_ranking = _add_momentum_ranking_to_momentum_df(momentum_combined, momentum_ranking)
-        display_dataframe(momentum_combined_with_ranking, symbol_type, "Momentum Combined")
+        # momentum_combined data is computed but not displayed
 
         # Display momentum plot
         st.plotly_chart(momentum_fig, config={"displayModeBar": False})
@@ -200,11 +180,9 @@ def _process_symbol_tab(
         from src.data import normalize_prices, compute_momentum
 
         df_norm = normalize_prices(df_pivot)
-        momentum_data, momentum_combined = compute_momentum(df_norm, WINDOW_SIZES, target_return=target_return)
+        _, momentum_combined = compute_momentum(df_norm, WINDOW_SIZES, target_return=target_return)
 
-        # Add momentum ranking as first row and sort columns
-        momentum_combined_with_ranking = _add_momentum_ranking_to_momentum_df(momentum_combined, momentum_ranking)
-        display_dataframe(momentum_combined_with_ranking, symbol_type, "Momentum Combined")
+        # momentum_combined data is computed but not displayed
 
     # Store momentum data for summary (moved outside conditional)
     momentum_summaries[symbol_type] = momentum_combined
@@ -228,9 +206,6 @@ def _process_symbol_tab(
         # Display performance plot
         st.plotly_chart(fig, config={"displayModeBar": False})
 
-    # Process data for correlation and performance analysis
-    melt_df = _create_melted_dataframe(df_pivot)
-
     # Display correlation section
     display_section_header("Correlation")
     if show_correlation_plot:
@@ -241,59 +216,53 @@ def _process_symbol_tab(
         corr_matrix = corr_matrix.round(0).astype(int)
         display_dataframe(corr_matrix, symbol_type, "Correlation Matrix")
 
-    # Display performance section
-    if symbol_type != "Custom Symbols":
-        display_section_header("Performance")
-    _display_performance_section(melt_df)
+    # Performance section removed as requested
 
 
-def _add_momentum_ranking_to_momentum_df(momentum_df, momentum_ranking):
-    """Sort momentum_df columns by momentum_ranking values."""
-    # Get the agg_momentum values from momentum_ranking (transposed format)
-    if "am" in momentum_ranking.index:
-        ranking_values = momentum_ranking.loc["am"]
-    else:
-        # If not transposed, get from the agg_momentum column
-        ranking_values = momentum_ranking.set_index("Symbol")["am"]
-
-    # Sort columns by the momentum ranking values (descending order)
-    sorted_columns = ranking_values.sort_values(ascending=False).index
-    return momentum_df[sorted_columns]
-
-
-def _create_momentum_ranking(df_pivot, symbols, equity_config):
-    """Create momentum ranking display for given symbols."""
-    return create_momentum_ranking_display(
+def _create_and_sort_momentum_data(df_pivot, momentum_df=None):
+    """Create momentum ranking and sort momentum dataframe by ranking values."""
+    # Create momentum ranking
+    momentum_ranking = create_momentum_ranking_display(
         df_pivot,
-        symbols,
         window_sizes=WINDOW_SIZES,
-        equity_config=equity_config,
     )
+    
+    # Sort momentum_df columns by momentum_ranking values if provided
+    if momentum_df is not None:
+        # Get the agg_momentum values from momentum_ranking (transposed format)
+        if "am" in momentum_ranking.index:
+            ranking_values = momentum_ranking.loc["am"]
+        else:
+            # If not transposed, get from the agg_momentum column
+            ranking_values = momentum_ranking.set_index("Symbol")["am"]
+        
+        # Sort columns by the momentum ranking values (descending order)
+        sorted_columns = ranking_values.sort_values(ascending=False).index
+        momentum_df_sorted = momentum_df[sorted_columns]
+        return momentum_ranking, momentum_df_sorted
+    
+    return momentum_ranking, None
 
 
-def _get_momentum_ranking_for_symbol_type(symbol_type, dfs, equity_config):
+def _get_momentum_ranking_for_symbol_type(symbol_type, dfs):
     """Get momentum ranking for a symbol type if it exists in dfs."""
     if symbol_type in dfs.keys():
         df_pivot = dfs[symbol_type].copy()
-        symbols = [col for col in df_pivot.columns if col != "Date"]
-        return _create_momentum_ranking(df_pivot, symbols, equity_config)
+        momentum_ranking, _ = _create_and_sort_momentum_data(df_pivot)
+        return momentum_ranking
     return None
 
 
-def _display_summary_tab(momentum_summaries, dfs, marchenko_pastur, equity_config, show_correlation_plot):
+def _display_summary_tab(momentum_summaries, dfs, marchenko_pastur, show_correlation_plot):
     """Display the summary tab with all momentum summaries and correlations."""
     # Display momentum summaries
     for symbol_type in momentum_summaries.keys():
         momentum_df = momentum_summaries[symbol_type]
-        momentum_ranking = _get_momentum_ranking_for_symbol_type(symbol_type, dfs, equity_config)
+        momentum_ranking = _get_momentum_ranking_for_symbol_type(symbol_type, dfs)
 
         if momentum_ranking is not None:
-            # Sort columns by momentum ranking
-            momentum_df_sorted = _add_momentum_ranking_to_momentum_df(momentum_df, momentum_ranking)
-            display_dataframe(momentum_df_sorted, symbol_type, "Momentum Combined")
+            # Only display momentum ranking table
             display_dataframe(momentum_ranking, symbol_type, "Momentum Ranking")
-        else:
-            display_dataframe(momentum_df, symbol_type, "Momentum Combined")
 
     # Display correlations
     for symbol_type in dfs.keys():
@@ -337,7 +306,7 @@ def show_market_performance(
     for i, symbol_type in enumerate(symbol_types):
         with tabs[i]:
             if symbol_type == "Summary":
-                _display_summary_tab(momentum_summaries, dfs, marchenko_pastur, equity_config, show_correlation_plot)
+                _display_summary_tab(momentum_summaries, dfs, marchenko_pastur, show_correlation_plot)
             elif symbol_type == "Custom Symbols":
                 if custom_symbols:
                     _process_symbol_tab(
@@ -375,8 +344,8 @@ def show_market_performance(
     display_table_of_contents(
         sections=[
             "Momentum",
-            "Correlation",
             "Performance",
+            "Correlation",
         ]
     )
 
@@ -406,8 +375,8 @@ if __name__ == "__main__":
     display_table_of_contents(
         sections=[
             "Momentum",
-            "Correlation",
             "Performance",
+            "Correlation",
         ]
     )
 

@@ -168,14 +168,18 @@ def compute_annualized_momentum_sum(df: pd.DataFrame, window_sizes: List[int] = 
         time_column: Name of the time column
 
     Returns:
-        DataFrame with symbols and their summed annualized momentum, ranked by total momentum
+        DataFrame with symbols, individual window annualized momentum columns, 
+        weighted average momentum, and rank
     """
     symbols = df.select_dtypes(include=[np.number]).columns
     am = {}
-
+    individual_momentum = {}
+    
     for symbol in symbols:
         total_annualized_momentum = 0
         total_weight = 0
+        symbol_momentum = {}
+        
         for window in window_sizes:
             # Compute momentum: (current_price / price_window_days_ago) - 1
             momentum = df[symbol].rolling(window=window).apply(lambda x: x.iloc[-1] / x.iloc[0] - 1)
@@ -186,19 +190,34 @@ def compute_annualized_momentum_sum(df: pd.DataFrame, window_sizes: List[int] = 
                 last_momentum = momentum.iloc[-1]
                 # Annualize the momentum: (1 + momentum)^(252/window) - 1, cap at 2
                 annualized_momentum = min((1 + last_momentum) ** (252 / window) - 1, 1)
+                symbol_momentum[f"am{window}"] = np.round(annualized_momentum, 4)
+                
                 weight = 1 / np.log(window)
-                annualized_momentum = annualized_momentum * weight
+                weighted_momentum = annualized_momentum * weight
                 total_weight += weight
-                total_annualized_momentum += annualized_momentum
+                total_annualized_momentum += weighted_momentum
+            else:
+                symbol_momentum[f"am{window}"] = 0.0
 
         # Weighted average of annualized momentum by window size
         am[symbol] = total_annualized_momentum / total_weight if total_weight != 0 else 0
+        individual_momentum[symbol] = symbol_momentum
 
-    # Create DataFrame and rank by total annualized momentum
-    result_df = pd.DataFrame([{"Symbol": symbol, "am": np.round(am, 2)} for symbol, am in am.items()]).round(2)
+    # Create DataFrame with individual momentum columns
+    result_data = []
+    for symbol in symbols:
+        row = {"Symbol": symbol, "am": np.round(am[symbol], 4)}
+        row.update(individual_momentum[symbol])
+        result_data.append(row)
+    
+    result_df = pd.DataFrame(result_data)
 
-    # Sort by momentum sum in descending order and add rank
+    # Sort by weighted average momentum in descending order and add rank
     result_df = result_df.sort_values("am", ascending=False).reset_index(drop=True)
     result_df["Rank"] = range(1, len(result_df) + 1)
 
-    return result_df[["Rank", "Symbol", "am"]]
+    # Reorder columns to put Rank and Symbol first, then individual windows, then weighted average
+    window_cols = [f"am{w}" for w in window_sizes]
+    result_df = result_df[["Rank", "Symbol"] + window_cols + ["am"]]
+
+    return result_df

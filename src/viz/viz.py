@@ -231,16 +231,15 @@ def create_momentum_plot(
 
 def create_momentum_ranking_display(
     df: pd.DataFrame,
-    symbols: List[str],
     window_sizes: List[int] = [7, 30, 90, 180, 360],
-    equity_config: Dict[str, Dict] = None,
 ) -> pd.DataFrame:
     """Create a ranking display showing the sum of annualized momentum across all windows."""
     df_norm = normalize_prices(df)
     ranking_df = compute_annualized_momentum_sum(df_norm, window_sizes)
     
     # Keep only Symbol and am columns, then transpose
-    ranking_df = ranking_df[["Symbol", "am"]]
+    # print(ranking_df.columns)
+    ranking_df = ranking_df[["Symbol", "am", 'am7', 'am30', 'am90', 'am180', 'am360']]
     return ranking_df.set_index("Symbol").T.round(2)
 
 
