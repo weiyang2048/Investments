@@ -239,7 +239,7 @@ def create_momentum_ranking_display(
     
     # Keep only Symbol and am columns, then transpose
     # print(ranking_df.columns)
-    ranking_df = ranking_df[["Symbol", "am", 'am7', 'am30', 'am90', 'am180', 'am360']]
+    ranking_df = ranking_df[["Symbol", "am", 'm7', 'm30', 'm90', 'm180', 'm360']]
     return ranking_df.set_index("Symbol").T.round(2)
 
 

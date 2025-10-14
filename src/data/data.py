@@ -190,14 +190,14 @@ def compute_annualized_momentum_sum(df: pd.DataFrame, window_sizes: List[int] = 
                 last_momentum = momentum.iloc[-1]
                 # Annualize the momentum: (1 + momentum)^(252/window) - 1, cap at 2
                 annualized_momentum = min((1 + last_momentum) ** (252 / window) - 1, 1)
-                symbol_momentum[f"am{window}"] = np.round(annualized_momentum, 4)
+                symbol_momentum[f"m{window}"] = np.round(annualized_momentum, 4)
                 
                 weight = 1 / np.log(window)
                 weighted_momentum = annualized_momentum * weight
                 total_weight += weight
                 total_annualized_momentum += weighted_momentum
             else:
-                symbol_momentum[f"am{window}"] = 0.0
+                symbol_momentum[f"m{window}"] = 0.0
 
         # Weighted average of annualized momentum by window size
         am[symbol] = total_annualized_momentum / total_weight if total_weight != 0 else 0
@@ -217,7 +217,7 @@ def compute_annualized_momentum_sum(df: pd.DataFrame, window_sizes: List[int] = 
     result_df["Rank"] = range(1, len(result_df) + 1)
 
     # Reorder columns to put Rank and Symbol first, then individual windows, then weighted average
-    window_cols = [f"am{w}" for w in window_sizes]
+    window_cols = [f"m{w}" for w in window_sizes]
     result_df = result_df[["Rank", "Symbol"] + window_cols + ["am"]]
 
     return result_df
