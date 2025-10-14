@@ -6,6 +6,7 @@ from .data import (
     normalize_prices,
     compute_momentum,
     compute_annualized_momentum_sum,
+    Ticker,
 )
 from .mstar import get_fund_snap
 
@@ -19,4 +20,5 @@ __all__ = [
     "compute_annualized_momentum_sum",
     # * morningstar
     "get_fund_snap",
+    "Ticker",
 ]

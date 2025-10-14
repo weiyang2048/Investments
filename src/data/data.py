@@ -9,6 +9,22 @@ import numpy as np
 
 
 class Ticker:
+    """
+    attributes:
+        * symbol: str
+        * ticker: yfinance.Ticker
+            * actions: pd.DataFrame; columns: Dividends, Stock Splits, [ETF] Capital Gains; index: Dates
+            * analyst_price_targets: [STOCK] dict; keys: current, high, low, mean, median
+            * balance_sheet, balancesheet: [STOCK] pd.DataFrame; columns: 5 Dates (yearly); index: financials 76 items
+            * calendar : [STOCK] dict; keys: Dividend/Ex-Dividend/Earnings Date, Earnings/Revem=nue High/Low/Average
+            * cash_flow, cashflow : [STOCK] pd.DataFrame; columns: 5 Dates (yearly); index: financials x items
+            * dividends: pd.Series; index: Dates
+            * earnings_dates: [STOCK] pd.DataFrame; columns: EPS Estimate, Reported EPS, Surprise(%); index: Earnings Dates
+            * earnings_estimate: [STOCK] pd.DataFrame; columns: avg, low, high, yearAgoEps, numberOfAnalysts, growth; index: period, 0q, +1q, 0y, +1y
+            * earnings_history: [STOCK] pd.DataFrame; columns: epsActual, epsEstimate, epsDifference, surprisePercent; index: quarter 4 yearly
+            * eps_revisions: [STOCK] pd.DataFrame; columns : upLast7days	upLast30days	downLast30days	downLast7Days; index : period, 0q, +1q, 0y, +1y
+            * eps_trend: columns current	7daysAgo	30daysAgo	60daysAgo	90daysAg; index period : 0q, +1q, 0y, +1y
+    """
     def __init__(self, symbol: str):
         self.symbol = symbol
         self.ticker = yf.Ticker(symbol)
@@ -144,7 +160,10 @@ def compute_momentum(
         # Count symbols with momentum above threshold
         for symbol in symbols:
             if symbol in momentum_display.columns:
-                last_momentum = momentum_display[symbol].iloc[-1]
+                if len(momentum_display[symbol]) == 0:
+                    window_counts[symbol] = 0
+                    continue
+                last_momentum = momentum_display[symbol].iloc[-1] 
                 if last_momentum > y1_threshold:
                     window_counts[symbol] = 1
 
@@ -181,23 +200,32 @@ def compute_annualized_momentum_sum(df: pd.DataFrame, window_sizes: List[int] = 
         symbol_momentum = {}
         
         for window in window_sizes:
-            # Compute momentum: (current_price / price_window_days_ago) - 1
-            momentum = df[symbol].rolling(window=window).apply(lambda x: x.iloc[-1] / x.iloc[0] - 1)
-            momentum = momentum.dropna()
-
-            if len(momentum) > 0:
-                # Get the last value for this window
-                last_momentum = momentum.iloc[-1]
-                # Annualize the momentum: (1 + momentum)^(252/window) - 1, cap at 2
-                annualized_momentum = min((1 + last_momentum) ** (252 / window) - 1, 1)
-                symbol_momentum[f"m{window}"] = np.round(annualized_momentum, 4)
-                
-                weight = 1 / np.log(window)
-                weighted_momentum = annualized_momentum * weight
-                total_weight += weight
-                total_annualized_momentum += weighted_momentum
+            # Check if data length is sufficient for the window
+            if len(df[symbol]) < window:
+                # If data is less than window, set momentum to null and weight to 0
+                symbol_momentum[f"m{window}"] = np.nan
+                # weight remains 0 (not added to total_weight)
             else:
-                symbol_momentum[f"m{window}"] = 0.0
+                # Compute momentum: (current_price / price_window_days_ago) - 1
+                momentum = df[symbol].rolling(window=window).apply(lambda x: x.iloc[-1] / x.iloc[0] - 1)
+                momentum = momentum.dropna()
+
+                if len(momentum) > 0:
+                    # Get the last value for this window
+                    if len(momentum) == 0:
+                        symbol_momentum[f"m{window}"] = np.nan
+                        continue
+                    last_momentum = momentum.iloc[-1]
+                    # Annualize the momentum: (1 + momentum)^(252/window) - 1, cap at 2
+                    annualized_momentum = min((1 + last_momentum) ** (252 / window) - 1, 1)
+                    symbol_momentum[f"m{window}"] = np.round(annualized_momentum, 4)
+                    
+                    weight = 1 / np.log(window)
+                    weighted_momentum = annualized_momentum * weight
+                    total_weight += weight
+                    total_annualized_momentum += weighted_momentum
+                else:
+                    symbol_momentum[f"m{window}"] = np.nan
 
         # Weighted average of annualized momentum by window size
         am[symbol] = total_annualized_momentum / total_weight if total_weight != 0 else 0
