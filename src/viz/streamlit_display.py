@@ -22,7 +22,8 @@ def display_dataframe(
             .background_gradient(
                 cmap=cmap,
                 axis=1 if df.shape[1] > df.shape[0] else 0,
-                vmin=min(vmin, np.max(df)) if vmin else None
+                vmin=min(vmin, np.max(df)) if vmin else None,
+                vmax=np.max(df) if vmin else None
             )
             .set_caption(caption or f"{symbol_type} - {data_type}")
             .format("{:.2}", subset=[col for col in df.columns if df[col].dtype == "float64"])
