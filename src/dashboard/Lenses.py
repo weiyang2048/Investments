@@ -15,6 +15,7 @@ from src.viz.streamlit_display import (
     display_table_of_contents,
     display_section_header,
 )
+from src.data import normalize_prices, compute_momentum
 
 # Window sizes are now computed dynamically from initial_lookback_days and lookback_factor
 
@@ -72,7 +73,7 @@ def sidebar(config):
     st.sidebar.markdown("Plots")
     show_performance_plot = st.sidebar.checkbox(
         "Show Prices",
-        value=False,
+        value=True,
         key="show_performance_plot_input",
     )
     show_momentum_plot = st.sidebar.checkbox(
@@ -153,24 +154,25 @@ def _process_symbol_tab(
 
     # Display momentum section
     display_section_header("Momentum")
-    st.write("target_return", target_return)
 
     # Create momentum ranking first (always needed for data analysis)
-    momentum_ranking, _ = _create_and_sort_momentum_data(df_pivot, look_back_days)
+    with st.spinner("Computing momentum ranking..."):
+        momentum_ranking, _ = _create_and_sort_momentum_data(df_pivot, look_back_days)
 
     # Only create momentum plot if requested
     if show_momentum_plot:
-        momentum_result = create_momentum_plot(
-            df_pivot,
-            symbols,
-            window_sizes=look_back_days,
-            colors_dict=colors_dict,
-            line_styles_dict=line_styles_dict,
-            equity_config=equity_config,
-            target_return=target_return,
-        )
-        momentum_fig = momentum_result["figure"]
-        momentum_combined = momentum_result["momentum_combined"]
+        with st.spinner("Computing momentum plot..."):
+            momentum_result = create_momentum_plot(
+                df_pivot,
+                symbols,
+                window_sizes=look_back_days,
+                colors_dict=colors_dict,
+                line_styles_dict=line_styles_dict,
+                equity_config=equity_config,
+                target_return=target_return,
+            )
+            momentum_fig = momentum_result["figure"]
+            momentum_combined = momentum_result["momentum_combined"]
 
         # momentum_combined data is computed but not displayed
 
@@ -178,10 +180,10 @@ def _process_symbol_tab(
         st.plotly_chart(momentum_fig, config={"displayModeBar": False})
     else:
         # Still compute momentum data for analysis but don't create plot
-        from src.data import normalize_prices, compute_momentum
 
         df_norm = normalize_prices(df_pivot)
-        _, momentum_combined = compute_momentum(df_norm, look_back_days, target_return=target_return)
+        with st.spinner("Computing momentum..."):
+            _, momentum_combined = compute_momentum(df_norm, look_back_days, target_return=target_return)
 
         # momentum_combined data is computed but not displayed
 
@@ -193,24 +195,23 @@ def _process_symbol_tab(
 
     # Create performance plot only if requested
     if show_performance_plot:
-        performance_result = create_performance_plot(
-            df_pivot,
-            symbols,
-            look_back_days,
-            colors_dict,
-            line_styles_dict,
-            equity_config,
-        )
-        fig = performance_result["figure"]
-        df_normalized = performance_result["normalized_data"]
-
-        # Display performance plot
+        with st.spinner("Creating performance plot..."):
+            performance_result = create_performance_plot(
+                df_pivot,
+                symbols,
+                look_back_days,
+                colors_dict,
+                line_styles_dict,
+                equity_config,
+            )
+            fig = performance_result["figure"]
         st.plotly_chart(fig, config={"displayModeBar": False})
 
     # Display correlation section
     display_section_header("Correlation")
     if show_correlation_plot:
-        pivoted_to_corr(df_pivot, plot=True, streamlit=True, marchenko_pastur=marchenko_pastur)
+        with st.spinner("Computing correlation plot..."):
+            pivoted_to_corr(df_pivot, plot=True, streamlit=True, marchenko_pastur=marchenko_pastur)
     else:
         # Still compute correlation matrix for data analysis but don't display plot
         corr_matrix = pivoted_to_corr(df_pivot, plot=False, streamlit=True, marchenko_pastur=marchenko_pastur)
