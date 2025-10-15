@@ -89,7 +89,7 @@ def sidebar(config):
         "Initial Lookback Days",
         min_value=1,
         max_value=3650,
-        value=5,
+        value=6,
         step=1,
         help="Enter the initial number of days for the analysis period.",
         key="lookback_days_input",

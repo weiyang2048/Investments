@@ -6,7 +6,7 @@ lenses:
     Stocks: ${union:[AVGO, ORCL], [GFI, TSM], [OPEN, LCID]}
   themes:
     regions: ${union:[SPMO, IDMO, FEM, AVUV, AVDV, AVES],${get_keys:tickers.regions}}
-    income: [MAXI, BPI, SCHD, SCHY,LVHI, LVHD, GPIQ, GPIX, JEPI, JEPQ, DIVO, IDVO, EFAS, SDEM]
+    income: [MAXI, BPI, BCCC,  SCHD, SCHY,LVHI, LVHD, GPIQ, GPIX, JEPI, JEPQ, DIVO, IDVO, EFAS, SDEM]
     sp50: ${get_keys:tickers.stocks.sp50}
     adr50: ${get_keys:tickers.stocks.adr50}
   EtfIssuers:
