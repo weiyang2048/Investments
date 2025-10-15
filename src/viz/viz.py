@@ -91,31 +91,6 @@ def create_performance_plot(
             fig.update_xaxes(showgrid=False, row=i // 2 + 1, col=i % 2 + 1)
             fig.update_yaxes(showgrid=False, row=i // 2 + 1, col=i % 2 + 1)
         
-        # Add annotation with performance summary
-        top_3_styled = [f'<span style="color: {colors_dict[symbol]}">{symbol}</span>' 
-                       for symbol in top_3_symbols]
-        negative_styled = [f'<span style="color: {colors_dict[symbol]}">{symbol}</span>' 
-                          for symbol in negative_symbols]
-        
-        ratio_text = "".join([
-            f"<span style='color: {colors_dict[symbol]}'>{ratio*100:.0f}</span>"
-            f"{'<span style=\"color: snow; opacity: 0.3\">|</span><br>' if (k+1) % 6 == 0 else ''}"
-            for k, symbol, ratio in zip(range(len(symbols_in_plot)), symbols_in_plot, current_ratios)
-        ])
-        
-        annotations = (
-            "<span style='color: snow; opacity: 0.3'>|</span>" + ratio_text +
-            f"{'<span style=\"color: snow; opacity: 0.3\">|</span><br>' if len(symbols_in_plot) % 6 != 0 else ''}"
-            f"{' + '.join(top_3_styled)}<br>{' - ' if negative_styled else ''}{' - '.join(negative_styled)}<br>"
-        )
-        
-        fig.add_annotation(
-            x=min(df_normalized["Date"]), y=min(df_normalized.iloc[-1, 1:]),
-            text=annotations,
-            font=dict(color="lightgreen" if stats.avg_return > 0 else "coral", size=10),
-            opacity=1, bgcolor="black", xanchor="left", yanchor="bottom",
-            showarrow=False, row=i // 2 + 1, col=i % 2 + 1,
-        )
     
     fig.update_layout(
         height=800, showlegend=True, plot_bgcolor="black", paper_bgcolor="black",

@@ -323,7 +323,6 @@ def show_market_performance(
     display_table_of_contents(
         sections=[
             "Momentum",
-            "Performance",
             "Correlation",
         ]
     )
@@ -355,7 +354,6 @@ if __name__ == "__main__":
     display_table_of_contents(
         sections=[
             "Momentum",
-            "Performance",
             "Correlation",
         ]
     )
