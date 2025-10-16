@@ -1,23 +1,19 @@
 lenses:
   main:
-    Regions: ${union:[ CEE,  FLN, AFK, AIA, ASEA, IPAC, FEP], [IAUM, SIL, PPLT, IBIT, ETHA], [VNAM, EPU, EZA, EIS, ARGT]}
+    Regions: ${union:[SPMO, IDMO,EEMO, CEE,  FLN, AFK, AIA, ASEA, IPAC, FEP], [IAUM,  SIVR, PPLT, IBIT, ETHA], [VNAM, EWY, EPU, EWK, NFTY, EPOL, EZA, EIS, ARGT]}
     Sectors: ${union:[ARKW, ARKQ, ARKG], [QTUM, REMX], [BKCH, GOEX, SLVP, COPX, DMAT, HYDR, URA, LIT, AIQ, SHLD], ${get_keys:tickers.sectors}}
     Commodities: [IAUM, GOEX, SIVR, SLVP, PPLT, COPX, REMX, DMAT, HYDR, URA, LIT, IEO, DBA, BTC, ETH, BKCH ]
-    Stocks: ${union:[AVGO, ORCL], [GFI, TSM], [OPEN, LCID]}
+    Stocks: ${union:[AVGO, CAT], [ASM, ARGX], [OPEN, LCID]}
+    r: [IAUM, VEU, GOOGL, SPMO, AIA]
+    f: ${union:[SPMO, BKCH, IAUM, GOEX, SLVP, ARKQ, TRAMX, AIQ, XMMO, SHLD, AIA, JXI, IXN], ${lenses.main.Stocks}}
   themes:
     regions: ${union:[SPMO, IDMO, FEM, AVUV, AVDV, AVES],${get_keys:tickers.regions}}
-    income: [MAXI, BPI, BCCC,  SCHD, SCHY,LVHI, LVHD, GPIQ, GPIX, JEPI, JEPQ, DIVO, IDVO, EFAS, SDEM]
+    income: [YGLD, MAXI, BPI, BCCC,  SCHD, SCHY,LVHI, LVHD, GPIQ, GPIX, JEPI, JEPQ, DIVO, IDVO, EFAS, SDEM]
     sp50: ${get_keys:tickers.stocks.sp50}
     adr50: ${get_keys:tickers.stocks.adr50}
-  EtfIssuers:
     ARK: ${get_keys:tickers.ark}
     invescoMomentum: ${get_keys:tickers.momentum}
     globalX: ${get_keys:tickers.globalX}
-
-  presets:
-    rh: [IAUM, VEU, GOOGL, SPMO, AIA, EUAD]
-    fdt: [SPMO, BKCH, IAUM, GOEX, SLVP, ARKQ, TRAMX, AIQ, XMMO, SHLD, AIA, EUAD, JXI, VTI, IXN, OPEN]
-target_return: 1.35
 
 defaults:
   - style_conf: [shared_configs, color_line_styles]

@@ -32,178 +32,6 @@ def _create_hover_template(symbol: str, colors_dict: Dict[str, str], equity_conf
     
     return base_template
 
-
-def _get_default_colors(symbols: List[str]) -> Dict[str, str]:
-    """Get default colors for symbols."""
-    return {symbol: f"hsl({i*360/len(symbols)}, 70%, 50%)" for i, symbol in enumerate(symbols)}
-
-
-def _get_default_line_styles(symbols: List[str]) -> Dict[str, str]:
-    """Get default line styles for symbols."""
-    return {symbol: "solid" for symbol in symbols}
-
-
-def create_performance_plot(
-    df: pd.DataFrame,
-    symbols: List[str],
-    look_back_days: List[int],
-    colors_dict: Dict[str, str],
-    line_styles_dict: Dict[str, str],
-    equity_config: Dict[str, Dict],
-    transformation: Callable[[float], float] = lambda x: x,
-) -> Dict[str, any]:
-    """Create a multi-subplot figure showing normalized performance."""
-    fig = make_subplots(
-        rows=3, cols=2,
-        subplot_titles=[f"{days} trading days" for days in look_back_days],
-        vertical_spacing=0.1, horizontal_spacing=0.03,
-    )
-    
-    for i, days in enumerate(look_back_days):
-        df_normalized = normalize_prices(df.iloc[-days:])[["Date"] + symbols]
-        stats = Stats(df_normalized)
-        current_ratios = list(stats.ratios(transformation))
-        
-        # Get visible symbols (top 3 + negative)
-        symbols_in_plot = list(df_normalized.columns[1:])
-        top_3_symbols = [symbols_in_plot[j] for j in np.argsort(current_ratios)[-1:-4:-1]]
-        negative_symbols = [symbols_in_plot[j] for j in np.argsort(current_ratios) if current_ratios[j] < 0]
-        visible_symbols = set(top_3_symbols + negative_symbols)
-        
-        # Add traces for each symbol
-        for symbol in symbols:
-            keys = [key for key in ["name", "region", "industry", "n_holdings"] 
-                   if key in equity_config.get(symbol, {})]
-            size = 6 if df_normalized.shape[0] < 30 else 1
-            
-            fig.add_trace(
-                go.Scatter(
-                    x=df_normalized["Date"], y=df_normalized[symbol],
-                    name=symbol, mode="lines+markers",
-                    line=dict(color=colors_dict[symbol], dash=line_styles_dict[symbol]),
-                    marker=dict(color=colors_dict[symbol], size=size),
-                    legendgroup=symbol, showlegend=(i == 0),
-                    visible=True if symbol in visible_symbols else "legendonly",
-                    hovertemplate=_create_hover_template(symbol, colors_dict, equity_config, keys),
-                ),
-                row=(i // 2) + 1, col=(i % 2) + 1,
-            )
-            fig.update_xaxes(showgrid=False, row=i // 2 + 1, col=i % 2 + 1)
-            fig.update_yaxes(showgrid=False, row=i // 2 + 1, col=i % 2 + 1)
-        
-    
-    fig.update_layout(
-        height=800, showlegend=True, plot_bgcolor="black", paper_bgcolor="black",
-        font=dict(color="white"), hovermode="closest", autosize=True,
-        margin=dict(l=0, r=0, t=60, b=0),
-        legend=dict(orientation="h", yanchor="bottom", y=1.05, xanchor="center", x=0.5,
-                   font=dict(color="white"), bgcolor="black"),
-    )
-
-    return {"figure": fig, "normalized_data": df_normalized, "symbols": symbols, "look_back_days": look_back_days}
-
-
-def create_momentum_plot(
-    df: pd.DataFrame,
-    symbols: List[str],
-    window_sizes: List[int] = [7, 30, 90, 180, 360],
-    colors_dict: Dict[str, str] = None,
-    line_styles_dict: Dict[str, str] = None,
-    equity_config: Dict[str, Dict] = None,
-    target_return: float = 1.3,
-) -> Dict[str, any]:
-    """Create a momentum plot showing momentum and renormalized prices for different window sizes."""
-    df_norm = normalize_prices(df)
-    momentum_data, momentum_combined = compute_momentum(df_norm, window_sizes, target_return=target_return)
-    
-    colors_dict = colors_dict or _get_default_colors(symbols)
-    line_styles_dict = line_styles_dict or _get_default_line_styles(symbols)
-    
-    n_windows = len(window_sizes)
-    fig = make_subplots(
-        rows=n_windows, cols=1,
-        subplot_titles=[f"Momentum and Price (window={window} days)" for window in window_sizes],
-        vertical_spacing=0.05,
-        specs=[[{"secondary_y": True}] for _ in range(n_windows)],
-    )
-
-    for idx, window in enumerate(window_sizes):
-        momentum_df = momentum_data[window]
-        display_rows = min(window * 3, len(momentum_df))
-        momentum_display = momentum_df.tail(display_rows)
-
-        # Get top 3 symbols by momentum
-        valid_symbols = [s for s in symbols if s in momentum_display.columns]
-        momentum_values = [momentum_display[s].iloc[-1] for s in valid_symbols]
-        top_3_symbols = [valid_symbols[i] for i in np.argsort(momentum_values)[-3:]] if len(valid_symbols) >= 3 else valid_symbols
-
-        # Plot momentum traces
-        for symbol in symbols:
-            if symbol in momentum_display.columns:
-                annualized_momentum = (1 + momentum_display[symbol]) ** (252 / window) - 1
-                fig.add_trace(
-                    go.Scatter(
-                        x=momentum_display["Date"], y=momentum_display[symbol],
-                        customdata=annualized_momentum, name=symbol, mode="lines+markers",
-                        line=dict(color=colors_dict.get(symbol, "blue"), dash="solid"),
-                        marker=dict(size=3), legendgroup=symbol, showlegend=(idx == 0),
-                        visible=True if symbol in top_3_symbols else "legendonly",
-                        hovertemplate=_create_hover_template(symbol, colors_dict, equity_config or {}, 
-                                                          ["name"], "Momentum") + 
-                                   f"<br>Momentum: %{{y:.2%}}<br>Annualized: %{{customdata:.1%}}<extra></extra>",
-                    ),
-                    row=idx + 1, col=1, secondary_y=False,
-                )
-
-        # Add threshold line
-        y1_threshold = target_return ** (window / 252) - 1
-        fig.add_hline(y=y1_threshold, line_dash="dash", line_color="lightgreen", 
-                     opacity=0.7, row=idx + 1, col=1)
-
-        # Plot renormalized price traces
-        for symbol in symbols:
-            if symbol in df.columns:
-                price_window = df[["Date", symbol]].tail(display_rows).copy()
-                if not price_window[symbol].isnull().all():
-                    first_valid = price_window[symbol].first_valid_index()
-                    if first_valid is not None:
-                        base = price_window.loc[first_valid, symbol]
-                        price_window["renorm"] = price_window[symbol] / base
-                    else:
-                        price_window["renorm"] = price_window[symbol]
-                else:
-                    price_window["renorm"] = price_window[symbol]
-                
-                fig.add_trace(
-                    go.Scatter(
-                        x=price_window["Date"], y=price_window["renorm"],
-                        name=f"{symbol} Renorm Price", mode="lines",
-                        line=dict(color=colors_dict.get(symbol, "blue"), dash="longdash"),
-                        opacity=0.7, legendgroup=symbol, showlegend=False,
-                        visible=True if symbol in top_3_symbols else "legendonly",
-                        hovertemplate=_create_hover_template(symbol, colors_dict, equity_config or {}, 
-                                                          ["name"], "Price") + 
-                                   f"<br>Price: %{{y:.2f}}<extra></extra>",
-                    ),
-                    row=idx + 1, col=1, secondary_y=True,
-                )
-
-        # Update axes
-        fig.update_xaxes(title_text="Date", showgrid=False, row=idx + 1, col=1)
-        fig.update_yaxes(title_text="Momentum", showgrid=False, secondary_y=False, row=idx + 1, col=1)
-        fig.update_yaxes(title_text="Price", showgrid=False, secondary_y=True, row=idx + 1, col=1)
-
-    fig.update_layout(
-        height=300 * n_windows, showlegend=True, plot_bgcolor="black", paper_bgcolor="black",
-        font=dict(color="white"), hovermode="closest", autosize=True,
-        margin=dict(l=50, r=50, t=60, b=50),
-        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="center", x=0.5,
-                   font=dict(color="white"), bgcolor="black"),
-    )
-
-    return {"figure": fig, "momentum_combined": momentum_combined, "momentum_data": momentum_data, "window_sizes": window_sizes}
-
-
 def create_momentum_ranking_display(
     df: pd.DataFrame,
     window_sizes: List[int] = [7, 30, 90, 180, 360],
@@ -242,6 +70,138 @@ def create_plotly_bar_chart(
     plotly_config["layout"].update(layout)
     fig.update_layout(plotly_config["layout"])
     return fig
+
+
+def create_combined_performance_momentum_plot(
+    df: pd.DataFrame,
+    symbols: List[str],
+    look_back_days: List[int],
+    colors_dict: Dict[str, str],
+    line_styles_dict: Dict[str, str],
+    equity_config: Dict[str, Dict],
+    target_return: float = 1.4,
+    transformation: Callable[[float], float] = lambda x: x,
+    momentum_ranking: pd.DataFrame = None,
+) -> Dict[str, any]:
+    """Create a combined plot showing performance and momentum in a single subplot with 2 columns and rows for windows."""
+    # Prepare data for both performance and momentum
+    df_norm = normalize_prices(df)
+    momentum_data, momentum_combined = compute_momentum(df_norm, look_back_days, target_return=target_return)
+    
+    # Sort symbols by momentum ranking if provided and get top 4 globally
+    top_4_symbols_global = []
+    if momentum_ranking is not None and "am" in momentum_ranking.index:
+        # Get momentum ranking values and sort symbols by them (descending order)
+        ranking_values = momentum_ranking.loc["am"]
+        sorted_symbols = ranking_values.sort_values(ascending=False).index.tolist()
+        # Keep only symbols that exist in our data
+        symbols = [s for s in sorted_symbols if s in symbols]
+        # Get top 4 symbols globally
+        top_4_symbols_global = symbols[:4]
+    
+    n_windows = len(look_back_days)
+    # Create subplot titles with performance and momentum for each row
+    subplot_titles = []
+    for i, days in enumerate(look_back_days):
+        subplot_titles.append(f"Performance ({days}d)")
+        # Only add momentum title if not the final row
+        if i < n_windows - 1:
+            subplot_titles.append(f"Momentum ({days}d)")
+        else:
+            subplot_titles.append("")  # Empty title for final row momentum plot
+    
+    fig = make_subplots(
+        rows=n_windows, cols=2,
+        subplot_titles=subplot_titles,
+        vertical_spacing=0.08, horizontal_spacing=0.1,
+        specs=[[{"secondary_y": False}, {"secondary_y": False}] for _ in range(n_windows)],
+    )
+    
+    for idx, days in enumerate(look_back_days):
+        # Performance plot (left column)
+        df_normalized = normalize_prices(df.iloc[-days:])[["Date"] + symbols]
+        
+        # Use global top 4 symbols for visibility
+        visible_symbols = set(top_4_symbols_global) if top_4_symbols_global else set(symbols[:4])
+        
+        # Add performance traces
+        for symbol in symbols:
+            keys = [key for key in ["name", "region", "industry", "n_holdings"] 
+                   if key in equity_config.get(symbol, {})]
+            size = 6 if df_normalized.shape[0] < 30 else 1
+            
+            fig.add_trace(
+                go.Scatter(
+                    x=df_normalized["Date"], y=df_normalized[symbol],
+                    name=symbol, mode="lines+markers",
+                    line=dict(color=colors_dict[symbol], dash="solid"),
+                    marker=dict(color=colors_dict[symbol], size=size),
+                    legendgroup=symbol, showlegend=(idx == 0),
+                    visible=True if symbol in visible_symbols else "legendonly",
+                    hovertemplate=_create_hover_template(symbol, colors_dict, equity_config, keys, "Normalized Price"),
+                ),
+                row=idx + 1, col=1, secondary_y=False,
+            )
+        
+        # Add horizontal line at y=1 for all performance plots (first column)
+        fig.add_hline(y=1, line_dash="solid", line_color="darkgray", 
+                     opacity=0.25, row=idx + 1, col=1)
+        
+        # Momentum plot (right column) - skip for the final row
+        if idx < n_windows - 1:  # Not the final row
+            momentum_df = momentum_data[days]
+            display_rows = min(days * 3, len(momentum_df))
+            momentum_display = momentum_df.tail(display_rows)
+            
+            # Use global top 4 symbols for momentum visibility
+            top_4_momentum_symbols = top_4_symbols_global if top_4_symbols_global else symbols[:4]
+            
+            # Plot momentum traces
+            for symbol in symbols:
+                if symbol in momentum_display.columns:
+                    annualized_momentum = (1 + momentum_display[symbol]) ** (252 / days) - 1
+                    fig.add_trace(
+                        go.Scatter(
+                            x=momentum_display["Date"], y=momentum_display[symbol],
+                            customdata=annualized_momentum, name=f"{symbol} Momentum", mode="lines+markers",
+                            line=dict(color=colors_dict.get(symbol, "blue"), dash="dash"),
+                            marker=dict(size=3), legendgroup=symbol, showlegend=False,
+                            visible=True if symbol in top_4_momentum_symbols else "legendonly",
+                            hovertemplate=_create_hover_template(symbol, colors_dict, equity_config or {}, 
+                                                              ["name"], "Momentum") + 
+                                       f"<br>Momentum: %{{y:.2%}}<br>Annualized: %{{customdata:.1%}}<extra></extra>",
+                        ),
+                        row=idx + 1, col=2, secondary_y=False,
+                    )
+            
+            # Add threshold line for momentum
+            y1_threshold = target_return ** (days / 252) - 1
+            fig.add_hline(y=y1_threshold, line_dash="dash", line_color="lightgreen", 
+                         opacity=0.7, row=idx + 1, col=2)
+        
+        # Update axes
+        fig.update_xaxes(title_text="Date", showgrid=False, row=idx + 1, col=1)
+        fig.update_yaxes(title_text="Normalized Price", showgrid=False, row=idx + 1, col=1)
+        
+        fig.update_xaxes(title_text="Date", showgrid=False, row=idx + 1, col=2)
+        fig.update_yaxes(title_text="Momentum", showgrid=False, row=idx + 1, col=2)
+    
+    fig.update_layout(
+        height=300 * n_windows, showlegend=True, plot_bgcolor="black", paper_bgcolor="black",
+        font=dict(color="white"), hovermode="closest", autosize=True,
+        margin=dict(l=50, r=50, t=60, b=50),
+        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="center", x=0.5,
+                   font=dict(color="white"), bgcolor="black"),
+    )
+    
+    return {
+        "figure": fig, 
+        "normalized_data": df_normalized, 
+        "momentum_combined": momentum_combined, 
+        "momentum_data": momentum_data,
+        "symbols": symbols, 
+        "look_back_days": look_back_days
+    }
 
 
 def create_plotly_choropleth(
