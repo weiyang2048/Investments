@@ -68,23 +68,3 @@ IDHQ:
   region: XUS
   color: rgba(0,255,0,1)
   line_style: dash
-# @ Physical Commodities
-IAUM:
-  name: iShares Gold Trust Micro ETF of Benef Interest
-  region: Global
-  industry: Commodity
-  color: gold
-  line_style: dash
-# @ Digital Commodities
-IBIT:
-  name: iShares Bitcoin Trust ETF
-  region: Global
-  industry: Commodity
-  color: rgba(255, 0, 0, 0.5)
-  line_style: dash
-ETHA:
-  name: iShares Ether Trust ETF
-  region: Global
-  industry: Commodity
-  color: rgba(255, 0, 0, 0.5)
-  line_style: dash

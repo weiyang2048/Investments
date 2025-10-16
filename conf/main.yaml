@@ -1,7 +1,7 @@
 lenses:
   main:
     Regions: ${union:[SPMO, IDMO,EEMO, CEE,  FLN, AFK, AIA, ASEA, IPAC, FEP], [IAUM,  SIVR, PPLT, IBIT, ETHA], [VNAM, EWY, EPU, EWK, NFTY, EPOL, EZA, EIS, ARGT]}
-    Sectors: ${union:[ARKW, ARKQ, ARKG], [QTUM, REMX], [BKCH, GOEX, SLVP, COPX, DMAT, HYDR, URA, LIT, AIQ, SHLD], ${get_keys:tickers.sectors}}
+    Sectors: ${union:[PYZ, PTH, PUI], [ARKW, ARKQ, ARKG], [QTUM, REMX], [BKCH, GOEX, SLVP, COPX, DMAT, HYDR, URA, LIT, AIQ, SHLD], ${get_keys:tickers.sectors}}
     Commodities: [IAUM, GOEX, SIVR, SLVP, PPLT, COPX, REMX, DMAT, HYDR, URA, LIT, IEO, DBA, BTC, ETH, BKCH ]
     Stocks: ${union:[AVGO, CAT], [ASM, ARGX], [OPEN, LCID]}
     r: [IAUM, VEU, GOOGL, SPMO, AIA]
