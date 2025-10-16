@@ -150,7 +150,7 @@ def create_combined_performance_momentum_plot(
         # Momentum plot (right column) - skip for the final row
         if idx < n_windows - 1:  # Not the final row
             momentum_df = momentum_data[days]
-            display_rows = min(days * 3, len(momentum_df))
+            display_rows = min(days, len(momentum_df))
             momentum_display = momentum_df.tail(display_rows)
             
             # Use global top 4 symbols for momentum visibility
