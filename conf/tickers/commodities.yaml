@@ -3,8 +3,8 @@ IAUM:
   name: iShares Gold Trust Micro ETF of Benef Interest
   color: gold
   line_style: solid
-SIVR:
-  name: abrdn Physical Silver Shares ETF
+SLV:
+  name: iShares Silver Trust
   color: silver
   line_style: solid
 PPLT:
