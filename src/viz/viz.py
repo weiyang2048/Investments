@@ -134,7 +134,7 @@ def create_combined_performance_momentum_plot(
                 go.Scatter(
                     x=df_normalized["Date"], y=df_normalized[symbol],
                     name=symbol, mode="lines+markers",
-                    line=dict(color=colors_dict[symbol], dash="solid"),
+                    line=dict(color=colors_dict[symbol], dash=line_styles_dict.get(symbol, "solid")),
                     marker=dict(color=colors_dict[symbol], size=size),
                     legendgroup=symbol, showlegend=(idx == 0),
                     visible=True if symbol in visible_symbols else "legendonly",
@@ -164,7 +164,7 @@ def create_combined_performance_momentum_plot(
                         go.Scatter(
                             x=momentum_display["Date"], y=momentum_display[symbol],
                             customdata=annualized_momentum, name=f"{symbol} Momentum", mode="lines+markers",
-                            line=dict(color=colors_dict.get(symbol, "blue"), dash="dash"),
+                            line=dict(color=colors_dict.get(symbol, "blue"), dash= "dashdot"),
                             marker=dict(size=3), legendgroup=symbol, showlegend=False,
                             visible=True if symbol in top_4_momentum_symbols else "legendonly",
                             hovertemplate=_create_hover_template(symbol, colors_dict, equity_config or {}, 

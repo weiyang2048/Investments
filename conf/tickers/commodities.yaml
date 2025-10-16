@@ -1,0 +1,41 @@
+# Physical Commodities
+IAUM:
+  name: iShares Gold Trust Micro ETF of Benef Interest
+  color: gold
+  line_style: solid
+SIVR:
+  name: abrdn Physical Silver Shares ETF
+  color: silver
+  line_style: solid
+PPLT:
+  name: abrdn Physical Platinum Shares ETF
+  color: gray
+  line_style: solid
+
+# Digital Commodities
+BTC:
+  name: Grayscale Bitcoin Mini Trust
+  color: goldenrod
+  line_style: dashdot
+ETH:
+  name: Grayscale Ethereum Mini Trust
+  color: cornsilk
+  line_style: dashdot
+
+# Miners
+GOEX:
+  name: Global X Gold Explorers ETF
+  color: gold
+  line_style: dash
+SLVP:
+  name: iShares MSCI Global Silver and Metals Miners ETF
+  color: silver
+  line_style: dash
+COPX:
+  name: Global X Copper Miners ETF
+  color: brown
+  line_style: dash
+BKCH:
+  name: Global X Blockchain ETF
+  color: magenta
+  line_style: dash

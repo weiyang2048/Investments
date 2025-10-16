@@ -21,6 +21,7 @@ defaults:
       - etfs
       - sectors
       - regions
+      - commodities
       - globalX
       - momentum
       - ark

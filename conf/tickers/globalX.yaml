@@ -1,15 +1,4 @@
 # ! Commodities
-GOEX:
-  name: Global X Gold Explorers ETF
-  color: gold
-SIL:
-  name: Global X Silver Miners ETF
-  color: silver
-COPX:
-  name: Global X Copper Miners ETF
-LIT:
-  name: Global X Lithium & Battery Tech ETF
-  color: lightyellow
 URA:
   name: Global X Uranium ETF
   color: yellowgreen
@@ -19,11 +8,11 @@ HYDR:
 DMAT:
   name: Global X Disruptive Materials ETF
   color: rosybrown
+LIT:
+  name: Global X Lithium & Battery Tech ETF
+  color: lightyellow
 RNRG:
   name: Global X Renewable Energy Producers ETF
-BKCH:
-  name: Global X Blockchain ETF
-  color: magenta
 
 # @ Sector or Industry
 CHPX:

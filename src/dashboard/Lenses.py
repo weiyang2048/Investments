@@ -70,14 +70,6 @@ def sidebar(config):
         help="Enter the factor to multiply the lookback days.",
         key="lookback_factor_input",
     )
-    st.sidebar.markdown("<br>", unsafe_allow_html=True)
-
-    show_combined_plot = st.sidebar.checkbox(
-        "Show Momentum Plot",
-        value=True,
-        key="show_combined_plot_input",
-    )
-
     st.sidebar.markdown("<hr>", unsafe_allow_html=True)
     st.sidebar.markdown("Correlation Denoising")
     marchenko_pastur = st.sidebar.checkbox(
@@ -85,18 +77,11 @@ def sidebar(config):
         value=True,
         key="marchenko_pastur_input",
     )
-    show_correlation_plot = st.sidebar.checkbox(
-        "Show Correlation Plot",
-        value=True,
-        key="show_correlation_plot_input",
-    )
     return (
         marchenko_pastur,
         initial_lookback_days,
         lookback_factor,
         lense_option,
-        show_combined_plot,
-        show_correlation_plot,
         custom_symbols,
     )
 
@@ -118,8 +103,6 @@ def _process_symbol_tab(
     symbol_type,
     look_back_days,
     equity_config,
-    show_combined_plot,
-    show_correlation_plot,
     marchenko_pastur,
     dfs,
     momentum_summaries,
@@ -144,45 +127,38 @@ def _process_symbol_tab(
     # Display momentum ranking table first
     display_dataframe(momentum_ranking, symbol_type, "am", vmin=0.1)
 
-    # Create combined plot if requested (after the table)
-    if show_combined_plot:
-        with st.spinner("Creating combined performance & momentum plot..."):
-            combined_result = create_combined_performance_momentum_plot(
-                df_pivot,
-                symbols,
-                look_back_days,
-                colors_dict,
-                line_styles_dict,
-                equity_config,
-                momentum_ranking=momentum_ranking,
-            )
-            combined_fig = combined_result["figure"]
-            momentum_combined = combined_result["momentum_combined"]
+    # Always create and display combined plot
+    with st.spinner("Creating combined performance & momentum plot..."):
+        combined_result = create_combined_performance_momentum_plot(
+            df_pivot,
+            symbols,
+            look_back_days,
+            colors_dict,
+            line_styles_dict,
+            equity_config,
+            momentum_ranking=momentum_ranking,
+        )
+        combined_fig = combined_result["figure"]
+        momentum_combined = combined_result["momentum_combined"]
 
-        # Display combined plot
-        st.plotly_chart(combined_fig, config={"displayModeBar": False})
-    else:
-        # Still compute momentum data for analysis but don't create plot
-        df_norm = normalize_prices(df_pivot)
-        with st.spinner("Computing momentum..."):
-            _, momentum_combined = compute_momentum(df_norm, look_back_days)
+    # Display combined plot
+    st.plotly_chart(combined_fig, config={"displayModeBar": False})
 
     # Store momentum data for summary (moved outside conditional)
     momentum_summaries[symbol_type] = momentum_combined
 
     # Display correlation section
     display_section_header("Correlation")
-    
+
     # Always compute and display correlation matrix
     with st.spinner("Computing correlation matrix..."):
         corr_matrix = pivoted_to_corr(df_pivot, plot=False, streamlit=True, marchenko_pastur=marchenko_pastur)
         corr_matrix = corr_matrix.round(0).astype(int)
         display_dataframe(corr_matrix, symbol_type, "Correlation Matrix")
-    
-    # Show correlation plot if requested (in addition to the table)
-    if show_correlation_plot:
-        with st.spinner("Computing correlation plot..."):
-            pivoted_to_corr(df_pivot, plot=True, streamlit=True, marchenko_pastur=marchenko_pastur)
+
+    # Always show correlation plot (in addition to the table)
+    with st.spinner("Computing correlation plot..."):
+        pivoted_to_corr(df_pivot, plot=True, streamlit=True, marchenko_pastur=marchenko_pastur)
 
     # Performance section removed as requested
 
@@ -218,8 +194,6 @@ def show_market_performance(
     marchenko_pastur: bool = True,
     initial_lookback_days: int = 5,
     lookback_factor: int = 3,
-    show_combined_plot: bool = True,
-    show_correlation_plot: bool = False,
     custom_symbols: list = None,
 ) -> None:
     """Function to show the market performance dashboard."""
@@ -257,8 +231,6 @@ def show_market_performance(
                 selected_symbol_type,
                 look_back_days,
                 equity_config,
-                show_combined_plot,
-                show_correlation_plot,
                 marchenko_pastur,
                 dfs,
                 momentum_summaries,
@@ -273,8 +245,6 @@ def show_market_performance(
             selected_symbol_type,
             look_back_days,
             equity_config,
-            show_combined_plot,
-            show_correlation_plot,
             marchenko_pastur,
             dfs,
             momentum_summaries,
@@ -303,8 +273,6 @@ if __name__ == "__main__":
         initial_lookback_days,
         lookback_factor,
         lense_option,
-        show_combined_plot,
-        show_correlation_plot,
         custom_symbols,
     ) = setup_page_and_sidebar(config["style_conf"], add_to_sidebar=lambda: sidebar(config))
 
@@ -324,7 +292,5 @@ if __name__ == "__main__":
         marchenko_pastur,
         initial_lookback_days,
         lookback_factor,
-        show_combined_plot,
-        show_correlation_plot,
         custom_symbols,
     )
