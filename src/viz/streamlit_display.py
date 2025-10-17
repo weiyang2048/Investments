@@ -2,7 +2,32 @@ import streamlit as st
 import pandas as pd
 from typing import Optional
 import numpy as np
+from functools import partial
 
+
+def highlight_row(row, row_name: str):
+    if row.name == row_name:
+        max_abs_value = np.max(abs(row))
+        row = row / max_abs_value
+        result = []
+        for value in row:
+            try:
+                x = abs(value) 
+            except Exception:
+                x = 0
+            if pd.isnull(value):
+                result.append('')
+                continue
+            if value <= 0:
+                color = f'background-color: rgba(0, 0, 255, {x:.2f})'
+            elif value > 0:
+                color = f'background-color: rgba(255, 0, 255, {x:.2f})'
+            else:
+                color = ''
+            result.append(color)
+        return result
+    else:
+        return [''] * len(row)
 
 def display_dataframe(
     df: pd.DataFrame,
@@ -11,11 +36,13 @@ def display_dataframe(
     centered: bool = True,
     hide_index: bool = False,
     cmap: str = "RdYlGn",
-    caption: Optional[str] = None,
     vmin: Optional[float] = None,
     **style_kwargs,
 ) -> None:
     """Display DataFrame with optional styling, centering, and vmin for colormap."""
+    df = df.copy()
+    if 'avg_a' in df.index:
+        df.loc['avg_a'] = df.loc['avg_a']
     if symbol_type and data_type:
         styled_df = (
             df.style.set_properties(**{"font-weight": "bold"})
@@ -24,10 +51,11 @@ def display_dataframe(
                 vmin=min(vmin, np.max(df)) if vmin else None,
                 vmax=np.max(df) if vmin else None
             )
-            .set_caption(caption or f"{symbol_type} - {data_type}")
+            .apply(partial(highlight_row, row_name="avg_a"), axis=1)
             .format("{:.2}", subset=[col for col in df.columns if df[col].dtype == "float64"])
             .format("{:.0f}", subset=[col for col in df.columns if df[col].dtype == "int64"])
         )
+
     else:
         styled_df = df
 

@@ -25,12 +25,14 @@ class Ticker:
             * eps_revisions: [STOCK] pd.DataFrame; columns : upLast7days	upLast30days	downLast30days	downLast7Days; index : period, 0q, +1q, 0y, +1y
             * eps_trend: columns current	7daysAgo	30daysAgo	60daysAgo	90daysAg; index period : 0q, +1q, 0y, +1y
     """
+
     def __init__(self, symbol: str):
         self.symbol = symbol
         self.ticker = yf.Ticker(symbol)
-    
+
     def get_daily_prices(self, period: str = "1mo") -> pd.DataFrame:
         return self.ticker.history(period=period)
+
 
 def get_daily_prices(symbol: str, period: str = "1mo") -> pd.DataFrame:
     """
@@ -119,6 +121,25 @@ def normalize_prices(df: pd.DataFrame, time_column: str = "Date") -> pd.DataFram
     return df
 
 
+def _compute_momentum_for_symbol(df: pd.DataFrame, symbol: str, window: int) -> pd.Series:
+    """
+    Compute momentum for a single symbol and window size.
+
+    Args:
+        df: DataFrame with price data
+        symbol: Symbol to compute momentum for
+        window: Window size in days
+
+    Returns:
+        Series with momentum values
+    """
+    if len(df[symbol]) < window:
+        return pd.Series(dtype=float)
+
+    momentum = df[symbol].rolling(window=window).apply(lambda x: x.iloc[-1] / x.iloc[0] - 1)
+    return momentum.dropna()
+
+
 def compute_momentum(
     df: pd.DataFrame, window_sizes: List[int] = [7, 30, 90, 180, 360], time_column: str = "Date", target_return: float = 1.3
 ) -> tuple[Dict[int, pd.DataFrame], pd.DataFrame]:
@@ -141,14 +162,14 @@ def compute_momentum(
     symbols = df.select_dtypes(include=[np.number]).columns
 
     for window in window_sizes:
-        # Compute momentum: (current_price / price_window_days_ago) - 1
+        # Compute momentum for all symbols at once
         momentum = df[symbols].rolling(window=window).apply(lambda x: x.iloc[-1] / x.iloc[0] - 1)
         momentum[time_column] = df[time_column]
         momentum = momentum.dropna()
         momentum_data[window] = momentum
 
         # Get the last window*3 rows for better analysis
-        display_rows = min(window * 3, len(momentum))
+        display_rows = min(window, len(momentum))
         momentum_display = momentum.tail(display_rows)
 
         # Calculate threshold: (1+y1)^(252/window) = target_return
@@ -163,7 +184,7 @@ def compute_momentum(
                 if len(momentum_display[symbol]) == 0:
                     window_counts[symbol] = 0
                     continue
-                last_momentum = momentum_display[symbol].iloc[-1] 
+                last_momentum = momentum_display[symbol].iloc[-1]
                 if last_momentum > y1_threshold:
                     window_counts[symbol] = 1
 
@@ -187,65 +208,86 @@ def compute_annualized_momentum_sum(df: pd.DataFrame, window_sizes: List[int] = 
         time_column: Name of the time column
 
     Returns:
-        DataFrame with symbols, individual window annualized momentum columns, 
-        weighted average momentum, and rank
+        DataFrame with symbols, individual window annualized momentum columns,
+        weighted average momentum, acceleration (moving average of momentum differences), and rank
     """
     symbols = df.select_dtypes(include=[np.number]).columns
     am = {}
     individual_momentum = {}
-    
+    individual_accelerations = {}
+
+    # Calculate acceleration for all window sizes except the last one
+    acceleration_windows = window_sizes[:-1]  # Exclude the last window
+
     for symbol in symbols:
         total_annualized_momentum = 0
         total_weight = 0
         symbol_momentum = {}
-        
-        for window in window_sizes:
-            # Check if data length is sufficient for the window
-            if len(df[symbol]) < window:
-                # If data is less than window, set momentum to null and weight to 0
-                symbol_momentum[f"m{window}"] = np.nan
-                # weight remains 0 (not added to total_weight)
-            else:
-                # Compute momentum: (current_price / price_window_days_ago) - 1
-                momentum = df[symbol].rolling(window=window).apply(lambda x: x.iloc[-1] / x.iloc[0] - 1)
-                momentum = momentum.dropna()
+        symbol_accelerations = {}
 
-                if len(momentum) > 0:
-                    # Get the last value for this window
-                    if len(momentum) == 0:
-                        symbol_momentum[f"m{window}"] = np.nan
-                        continue
-                    last_momentum = momentum.iloc[-1]
-                    # Annualize the momentum: (1 + momentum)^(252/window) - 1, cap at 2
-                    annualized_momentum = min((1 + last_momentum) ** (252 / window) - 1, 1)
-                    symbol_momentum[f"m{window}"] = np.round(annualized_momentum, 4)
+        for window in window_sizes:
+            # Use the shared momentum calculation function
+            momentum = _compute_momentum_for_symbol(df, symbol, window)
+
+            if len(momentum) > 0:
+                last_momentum = momentum.iloc[-1]
+                # Annualize the momentum: (1 + momentum)^(252/window) - 1, cap at 2
+                annualized_momentum = min((1 + last_momentum) ** (252 / window) - 1, 1)
+                symbol_momentum[f"m{window}"] = np.round(annualized_momentum, 4)
+
+                weight = 1 / np.log(window)
+                weighted_momentum = annualized_momentum * weight
+                total_weight += weight
+                total_annualized_momentum += weighted_momentum
+            else:
+                symbol_momentum[f"m{window}"] = np.nan
+
+            # Calculate acceleration for this window if it's not the last one
+            if window in acceleration_windows:
+                if len(momentum) >= 3:  # Need at least 3 values for meaningful moving average
+                    # Calculate momentum differences (A[i] - A[i-1])
+                    momentum_diffs = momentum.diff().dropna()
                     
-                    weight = 1 / np.log(window)
-                    weighted_momentum = annualized_momentum * weight
-                    total_weight += weight
-                    total_annualized_momentum += weighted_momentum
+                    # Use a smaller window for moving average
+                    ma_window = 2
+                    
+                    # Calculate moving average of momentum differences
+                    acceleration = momentum_diffs.rolling(window=ma_window).mean().iloc[-1]
+                    symbol_accelerations[f"a{window}"] = np.round(acceleration, 4)
                 else:
-                    symbol_momentum[f"m{window}"] = np.nan
+                    symbol_accelerations[f"a{window}"] = np.nan
 
         # Weighted average of annualized momentum by window size
         am[symbol] = total_annualized_momentum / total_weight if total_weight != 0 else 0
         individual_momentum[symbol] = symbol_momentum
+        individual_accelerations[symbol] = symbol_accelerations
 
-    # Create DataFrame with individual momentum columns
+    # Create DataFrame with individual momentum and acceleration columns
     result_data = []
     for symbol in symbols:
         row = {"Symbol": symbol, "am": np.round(am[symbol], 4)}
         row.update(individual_momentum[symbol])
+        row.update(individual_accelerations[symbol])
         result_data.append(row)
-    
+
     result_df = pd.DataFrame(result_data)
 
     # Sort by weighted average momentum in descending order and add rank
     result_df = result_df.sort_values("am", ascending=False).reset_index(drop=True)
     result_df["Rank"] = range(1, len(result_df) + 1)
 
-    # Reorder columns to put Rank and Symbol first, then individual windows, then weighted average
-    window_cols = [f"m{w}" for w in window_sizes]
-    result_df = result_df[["Rank", "Symbol"] + window_cols + ["am"]]
+    # Create column order: Rank, Symbol, then momentum-acceleration pairs, then weighted average
+    ordered_columns = ["Rank", "Symbol"]
+    
+    # Add momentum-acceleration pairs for each window (except last)
+    for window in window_sizes:
+        ordered_columns.append(f"m{window}")
+        if window in acceleration_windows:
+            ordered_columns.append(f"a{window}")
+    
+    # Add weighted average at the end
+    ordered_columns.append("am")
+    
+    result_df = result_df[ordered_columns]
 
     return result_df

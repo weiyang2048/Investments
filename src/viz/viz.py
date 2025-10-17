@@ -40,13 +40,31 @@ def create_momentum_ranking_display(
     df_norm = normalize_prices(df)
     ranking_df = compute_annualized_momentum_sum(df_norm, window_sizes)
     
-    # Dynamically create column names based on window sizes
-    momentum_columns = [f"m{window}" for window in window_sizes]
-    columns_to_keep = ["Symbol", "am"] + momentum_columns
+    # Get all columns except Rank and Symbol for transposition
+    columns_to_keep = [col for col in ranking_df.columns if col not in ["Rank", "Symbol"]]
     
-    # Keep only Symbol, am, and dynamic momentum columns, then transpose
-    ranking_df = ranking_df[columns_to_keep]
-    return ranking_df.set_index("Symbol").T.round(2)
+    # Keep all relevant columns and transpose
+    ranking_df = ranking_df[["Symbol"] + columns_to_keep]
+    transposed_df = ranking_df.set_index("Symbol").T.round(2)
+    
+    # Reorder rows: am first, then momentum rows, then acceleration rows, then average acceleration
+    momentum_rows = [f"m{window}" for window in window_sizes]
+    acceleration_rows = [f"a{window}" for window in window_sizes[:-1]]  # Exclude last window
+    
+    # Calculate average acceleration across all acceleration rows
+    if acceleration_rows:
+        # Get only the acceleration columns and calculate mean across rows
+        acceleration_data = transposed_df.loc[acceleration_rows]
+        avg_acceleration = acceleration_data.mean()
+        transposed_df.loc["avg_a"] = avg_acceleration
+    
+    # Create the desired row order: am first, then avg_a, then momentum rows (hide individual acceleration rows)
+    ordered_rows = ["am"] + ["avg_a"] + momentum_rows
+    
+    # Filter to only include rows that exist in the dataframe
+    existing_rows = [row for row in ordered_rows if row in transposed_df.index]
+    
+    return transposed_df.loc[existing_rows]
 
 
 def create_plotly_bar_chart(
@@ -97,7 +115,7 @@ def create_combined_performance_momentum_plot(
         # Keep only symbols that exist in our data
         symbols = [s for s in sorted_symbols if s in symbols]
         # Get top 4 symbols globally
-        top_4_symbols_global = symbols[:4]
+        top_4_symbols_global = symbols[:5]
     
     n_windows = len(look_back_days)
     # Create subplot titles with performance and momentum for each row
@@ -122,7 +140,7 @@ def create_combined_performance_momentum_plot(
         df_normalized = normalize_prices(df.iloc[-days:])[["Date"] + symbols]
         
         # Use global top 4 symbols for visibility
-        visible_symbols = set(top_4_symbols_global) if top_4_symbols_global else set(symbols[:4])
+        visible_symbols = set(top_4_symbols_global) if top_4_symbols_global else set(symbols[:5])
         
         # Add performance traces
         for symbol in symbols:
@@ -154,7 +172,7 @@ def create_combined_performance_momentum_plot(
             momentum_display = momentum_df.tail(display_rows)
             
             # Use global top 4 symbols for momentum visibility
-            top_4_momentum_symbols = top_4_symbols_global if top_4_symbols_global else symbols[:4]
+            top_4_momentum_symbols = top_4_symbols_global if top_4_symbols_global else symbols[:5]
             
             # Plot momentum traces
             for symbol in symbols:
