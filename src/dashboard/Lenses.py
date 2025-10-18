@@ -16,6 +16,7 @@ from src.viz.streamlit_display import (
     display_section_header,
 )
 from src.data import normalize_prices, compute_momentum
+pd.set_option('display.max_rows', None)
 
 # Window sizes are now computed dynamically from initial_lookback_days and lookback_factor
 

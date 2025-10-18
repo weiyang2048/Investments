@@ -51,19 +51,38 @@ def create_momentum_ranking_display(
     momentum_rows = [f"m{window}" for window in window_sizes]
     acceleration_rows = [f"a{window}" for window in window_sizes[:-1]]  # Exclude last window
     
-    # Calculate average acceleration across all acceleration rows
+    # Calculate weighted average acceleration across all acceleration rows
     if acceleration_rows:
-        # Get only the acceleration columns and calculate mean across rows
+        # Get only the acceleration columns
         acceleration_data = transposed_df.loc[acceleration_rows]
-        avg_acceleration = acceleration_data.mean()
-        transposed_df.loc["avg_a"] = avg_acceleration
+        
+        # Calculate weighted average using the same weights as momentum (1/log(window))
+        weighted_acceleration = {}
+        for symbol in acceleration_data.columns:
+            total_weighted_acceleration = 0
+            total_weight = 0
+            
+            for row_name in acceleration_rows:
+                window = int(row_name[1:])  # Extract window size from 'a7', 'a30', etc.
+                acceleration_value = acceleration_data.loc[row_name, symbol]
+                
+                if not pd.isna(acceleration_value):
+                    weight = 1 / np.log(window)
+                    total_weighted_acceleration += acceleration_value * weight
+                    total_weight += weight
+            
+            weighted_acceleration[symbol] = total_weighted_acceleration / total_weight if total_weight != 0 else 0
+        
+        # Add weighted average acceleration row
+        transposed_df.loc["a"] = weighted_acceleration
     
-    # Create the desired row order: am first, then avg_a, then momentum rows (hide individual acceleration rows)
-    ordered_rows = ["am"] + ["avg_a"] + momentum_rows
+    # Create the desired row order: m first, then a, then put-call ratio, then streak rows, then momentum rows (hide individual acceleration rows)
+    ordered_rows = ["m"] + ["a"] + ["pcr_m1"] + ["s0", "s1", "s2"] + momentum_rows
     
     # Filter to only include rows that exist in the dataframe
     existing_rows = [row for row in ordered_rows if row in transposed_df.index]
-    
+    integer_columns = ["s0", "s1", "s2"]
+    transposed_df.loc[integer_columns] = transposed_df.loc[integer_columns].astype(int)
     return transposed_df.loc[existing_rows]
 
 
@@ -108,9 +127,9 @@ def create_combined_performance_momentum_plot(
     
     # Sort symbols by momentum ranking if provided and get top 4 globally
     top_4_symbols_global = []
-    if momentum_ranking is not None and "am" in momentum_ranking.index:
+    if momentum_ranking is not None and "m" in momentum_ranking.index:
         # Get momentum ranking values and sort symbols by them (descending order)
-        ranking_values = momentum_ranking.loc["am"]
+        ranking_values = momentum_ranking.loc["m"]
         sorted_symbols = ranking_values.sort_values(ascending=False).index.tolist()
         # Keep only symbols that exist in our data
         symbols = [s for s in sorted_symbols if s in symbols]

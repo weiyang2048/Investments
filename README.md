@@ -5,6 +5,7 @@
 - [References](#references)
   - [yfinance](#yfinance)
   - [Streamlit](#streamlit)
+  - [CSS](#css)
 
 # [Equity Market Dashboard](https://github.com/weiyang2048/Investments)
 
@@ -29,3 +30,5 @@ inv-dash run
 * [yfinance documentation](https://ranaroussi.github.io/yfinance/)
 ## Streamlit
 * [Theme Customization](https://docs.streamlit.io/develop/concepts/configuration/theming-customize-colors-and-borders)
+## CSS
+* [CSS Gradient](https://cssgradient.io/)

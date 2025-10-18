@@ -5,29 +5,63 @@ import numpy as np
 from functools import partial
 
 
-def highlight_row(row, row_name: str):
-    if row.name == row_name:
-        max_abs_value = np.max(abs(row))
+def highlight_row(row):
+    max_abs_value = np.max(abs(row))
+    if "s" in row.name:
+        row = row / 5
+    elif "pcr_m1" in row.name:
+        row = row 
+    else:
         row = row / max_abs_value
-        result = []
+    
+    result = []
+    if row.name == "a":
         for value in row:
-            try:
-                x = abs(value) 
-            except Exception:
-                x = 0
             if pd.isnull(value):
-                result.append('')
+                result.append("")
                 continue
             if value <= 0:
-                color = f'background-color: rgba(0, 0, 255, {x:.2f})'
+                color = f"background-color: rgba(0, 0, 255, {abs(value):.2f})"
             elif value > 0:
-                color = f'background-color: rgba(255, 0, 255, {x:.2f})'
+                color = f"background-color: rgba(255, 0, 255, {abs(value):.2f})"
             else:
-                color = ''
+                color = ""
+            result.append(color)
+        return result
+    elif row.name in ["s0", "s1", "s2"]:
+        for value in row:
+            if pd.isnull(value):
+                result.append("")
+                continue
+            if value <= 0:
+                color = f"background-color: rgba(255, 50, 50, {abs(value):.2f}); border: 10px solid rgba(255, 125, 125, {abs(value):.2f})"
+            elif value > 0:
+                color = f"background-color: rgba(152, 250, 135, {abs(value):.2f}); border: 1px solid rgba(152, 250, 135, {abs(value):.2f})"
+            else:
+                color = ""
+            result.append(color)
+        return result
+    elif row.name == "pcr_m1":
+        for value in row:
+            if pd.isnull(value):
+                result.append("")
+                continue
+            # Normalize value between 0 and 1 for color intensity (assuming typical range 0-3)
+            if value > 1:
+                # Orange for bearish sentiment (more puts than calls)
+                color = f"background-color: rgba(255, 165, 0, {np.clip(value/2, 0, 1):.2f}); border: 1px solid rgba(255, 165, 0, {np.clip(value/2, 0, 1):.2f})"
+            elif value < 1:
+                # Seagreen for bullish sentiment (more calls than puts)
+                color = f"background-color: rgba(46, 139, 120, {np.clip(1-value, 0, 1):.2f}); border: 1px solid rgba(46, 139, 87, {np.clip(1-value/2, 0, 1):.2f})"
+            elif value == 1:
+                color = f"background-color: white; color: black"
+            else:
+                color = ""
             result.append(color)
         return result
     else:
-        return [''] * len(row)
+        return [""] * len(row)
+
 
 def display_dataframe(
     df: pd.DataFrame,
@@ -41,19 +75,15 @@ def display_dataframe(
 ) -> None:
     """Display DataFrame with optional styling, centering, and vmin for colormap."""
     df = df.copy()
-    if 'avg_a' in df.index:
-        df.loc['avg_a'] = df.loc['avg_a']
+    if "a" in df.index:
+        df.loc["a"] = df.loc["a"]
     if symbol_type and data_type:
         styled_df = (
             df.style.set_properties(**{"font-weight": "bold"})
-            .background_gradient(
-                cmap=cmap,
-                vmin=min(vmin, np.max(df)) if vmin else None,
-                vmax=np.max(df) if vmin else None
-            )
-            .apply(partial(highlight_row, row_name="avg_a"), axis=1)
+            .background_gradient(cmap=cmap, vmin=max(-1, min(vmin, np.max(df))) if vmin else None, vmax=min(1, np.max(df)) if vmin else None)
+            .apply(partial(highlight_row), axis=1)
             .format("{:.2}", subset=[col for col in df.columns if df[col].dtype == "float64"])
-            .format("{:.0f}", subset=[col for col in df.columns if df[col].dtype == "int64"])
+            .format("{:.0f}", subset=[col for col in df.columns if df[col].dtype == "int64" or df[col].dtype == "int32"])
         )
 
     else:
@@ -62,16 +92,16 @@ def display_dataframe(
     if centered:
         center_cols = st.columns([1, 6, 1])
         with center_cols[1]:
-            st.dataframe(styled_df, hide_index=hide_index, **style_kwargs)
+            st.dataframe(styled_df, hide_index=hide_index, height=35*len(df)+38, width='stretch', **style_kwargs)
     else:
-        st.dataframe(styled_df, hide_index=hide_index, **style_kwargs)
+        st.dataframe(styled_df, hide_index=hide_index, height=35*len(df)+38, width='stretch', **style_kwargs)
 
 
 def display_table_of_contents(sections: Optional[list] = None) -> None:
     """Display table of contents with sections."""
     st.markdown("---")
     st.markdown("<h2>Table of Contents</h2>", unsafe_allow_html=True)
-    
+
     cols = st.columns(min(len(sections), 3))
     for i, section in enumerate(sections):
         with cols[i % 3]:
