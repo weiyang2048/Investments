@@ -71,6 +71,7 @@ def display_dataframe(
     hide_index: bool = False,
     cmap: str = "RdYlGn",
     vmin: Optional[float] = None,
+    vmax: Optional[float] = None,
     **style_kwargs,
 ) -> None:
     """Display DataFrame with optional styling, centering, and vmin for colormap."""
@@ -80,9 +81,9 @@ def display_dataframe(
     if symbol_type and data_type:
         styled_df = (
             df.style.set_properties(**{"font-weight": "bold"})
-            .background_gradient(cmap=cmap, vmin=max(-1, min(vmin, np.max(df))) if vmin else None, vmax=min(1, np.max(df)) if vmin else None)
+            .background_gradient(cmap=cmap, vmin=vmin, vmax=vmax)
             .apply(partial(highlight_row), axis=1)
-            .format("{:.2}", subset=[col for col in df.columns if df[col].dtype == "float64"])
+            .format("{:.2f}", subset=[col for col in df.columns if df[col].dtype == "float64"])
             .format("{:.0f}", subset=[col for col in df.columns if df[col].dtype == "int64" or df[col].dtype == "int32"])
         )
 
@@ -99,7 +100,6 @@ def display_dataframe(
 
 def display_table_of_contents(sections: Optional[list] = None) -> None:
     """Display table of contents with sections."""
-    st.markdown("---")
     st.markdown("<h2>Table of Contents</h2>", unsafe_allow_html=True)
 
     cols = st.columns(min(len(sections), 3))

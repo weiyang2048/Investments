@@ -4,7 +4,7 @@ import streamlit as st
 
 import hydra
 import numpy as np
-from src.data import pivot_data
+from src.data import pivot_data, Basket
 from src.viz.viz import create_combined_performance_momentum_plot, create_momentum_ranking_display
 from src.configurations.style_picker import get_random_style
 from src.dashboard.create_page import setup_page_and_sidebar
@@ -16,9 +16,53 @@ from src.viz.streamlit_display import (
     display_section_header,
 )
 from src.data import normalize_prices, compute_momentum
-pd.set_option('display.max_rows', None)
+
+pd.set_option("display.max_rows", None)
 
 # Window sizes are now computed dynamically from initial_lookback_days and lookback_factor
+
+
+def display_fear_and_greed_info():
+    """Display fear and greed index information at the top of the dashboard."""
+    try:
+        fng_data = Basket().get_fear_and_greed()
+
+        # Create a container for the fear and greed display
+        with st.container():
+            col1, col2, col3 = st.columns([1, 2, 1])
+
+            with col2:
+                # Display the value with appropriate color coding
+                value = fng_data["value"]
+                description = fng_data["description"]
+                last_update = fng_data["last_update_est_str"]
+
+                # Color coding based on fear/greed level
+                if value <= 25:
+                    color = "🔴"  # Extreme Fear
+                elif value <= 45:
+                    color = "🟠"  # Fear
+                elif value <= 55:
+                    color = "🟡"  # Neutral
+                elif value <= 75:
+                    color = "🟢"  # Greed
+                else:
+                    color = "🔴"  # Extreme Greed
+
+                st.markdown(
+                    f"""
+                <div style="text-align:center;padding:10px;border-radius:10px;background-color:#f0f2f6;"> 
+                    <span style="margin:0;color:#262730;">{color} {value} {description}     <a href="https://www.cnn.com/markets/fear-and-greed" target="_blank" style="text-decoration:none;color:#2895f7;">
+                            🔗 
+                        </a></span><br> <span style="margin:0;color:#262730;">Last updated: {last_update}</span> 
+                    
+                </div>
+                """,
+                    unsafe_allow_html=True,
+                )
+
+    except Exception as e:
+        st.error(f"Error loading Fear & Greed Index: {e}")
 
 
 def parse_custom_symbols(symbols_text):
@@ -126,7 +170,7 @@ def _process_symbol_tab(
         momentum_ranking, _ = _create_and_sort_momentum_data(df_pivot, look_back_days)
 
     # Display momentum ranking table first
-    display_dataframe(momentum_ranking, symbol_type, "am", vmin=0.1)
+    display_dataframe(momentum_ranking, symbol_type, "am", vmin=0, vmax=1)
 
     # Always create and display combined plot
     with st.spinner("Creating combined performance & momentum plot..."):
@@ -198,6 +242,8 @@ def show_market_performance(
     custom_symbols: list = None,
 ) -> None:
     """Function to show the market performance dashboard."""
+    # Display Fear & Greed Index at the top
+
     # First selection: Symbol types (previously handled by tabs)
     symbol_types = [key for key in portfolio_config.keys()]
 
@@ -278,6 +324,9 @@ if __name__ == "__main__":
     ) = setup_page_and_sidebar(config["style_conf"], add_to_sidebar=lambda: sidebar(config))
 
     st.title(lense_option)
+
+    # Display Fear & Greed Index at the top
+    display_fear_and_greed_info()
 
     # Table of Contents
     display_table_of_contents(

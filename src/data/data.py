@@ -1,11 +1,30 @@
 from datetime import datetime, timedelta
 from typing import List, Dict
+import fear_and_greed
 import pandas as pd
 import yfinance as yf
 from loguru import logger
 from functools import lru_cache, cache
 import streamlit as st
 import numpy as np
+import fear_and_greed
+import pytz
+
+
+class Basket:
+    def __init__(self, symbols: List[str]=None):
+        pass
+
+    def get_fear_and_greed(self) -> dict:
+        """Get fear and greed index data and return as dictionary."""
+        fng_data = fear_and_greed.get()
+        est = pytz.timezone("US/Eastern")
+        last_update_est = fng_data.last_update.astimezone(est)
+        value = int(round(fng_data.value, 0))
+        description = fng_data.description
+        last_update_est_str = last_update_est.strftime("%H:%M:%S  %Y-%m-%d %Z")
+        self.fear_and_greed = {"value": value, "description": description, "last_update_est_str": last_update_est_str}
+        return self.fear_and_greed
 
 
 class Ticker:
@@ -32,6 +51,23 @@ class Ticker:
 
     def get_daily_prices(self, period: str = "1mo") -> pd.DataFrame:
         return self.ticker.history(period=period)
+
+
+@st.cache_data(ttl="1h")
+def get_fear_and_greed_data() -> dict:
+    """
+    Get fear and greed index data with caching for Streamlit.
+    
+    Returns:
+        dict: Dictionary containing value, description, and last_update_est_str
+    """
+    fng_data = fear_and_greed.get()
+    est = pytz.timezone("US/Eastern")
+    last_update_est = fng_data.last_update.astimezone(est)
+    value = fng_data.value
+    description = fng_data.description
+    last_update_est_str = last_update_est.strftime("%H:%M:%S  %Y-%m-%d %Z")
+    return {"value": value, "description": description, "last_update_est_str": last_update_est_str}
 
 
 def get_daily_prices(symbol: str, period: str = "1mo") -> pd.DataFrame:
@@ -144,31 +180,31 @@ def _compute_consecutive_streaks(df: pd.DataFrame, symbol: str) -> tuple[int, in
     """
     Compute consecutive positive/negative streaks for a symbol.
     Returns negative numbers for consecutive drops, positive for consecutive increases.
-    
+
     Args:
         df: DataFrame with price data
         symbol: Symbol to compute streaks for
-        
+
     Returns:
         Tuple of (last_streak_signed, previous_streak_signed, before_previous_streak_signed)
     """
     if len(df[symbol]) < 2:
         return 0, 0
-    
+
     # Calculate daily returns
     returns = df[symbol].pct_change().dropna()
-    
+
     if len(returns) < 2:
         return 0, 0
-    
+
     # Determine if returns are positive or negative
     signs = (returns > 0).astype(int)
-    
+
     # Find consecutive streaks
     streaks = []
     current_streak = 1
     current_sign = signs.iloc[0]
-    
+
     for i in range(1, len(signs)):
         if signs.iloc[i] == current_sign:
             current_streak += 1
@@ -176,10 +212,10 @@ def _compute_consecutive_streaks(df: pd.DataFrame, symbol: str) -> tuple[int, in
             streaks.append((current_streak, current_sign))
             current_streak = 1
             current_sign = signs.iloc[i]
-    
+
     # Add the last streak
     streaks.append((current_streak, current_sign))
-    
+
     if len(streaks) == 0:
         return 0, 0, 0
     elif len(streaks) == 1:
@@ -190,21 +226,21 @@ def _compute_consecutive_streaks(df: pd.DataFrame, symbol: str) -> tuple[int, in
         # Last streak and previous streak with signs
         last_streak_length, last_sign = streaks[-1]
         previous_streak_length, previous_sign = streaks[-2]
-        
+
         last_streak_signed = last_streak_length if last_sign == 1 else -last_streak_length
         previous_streak_signed = previous_streak_length if previous_sign == 1 else -previous_streak_length
-        
+
         return last_streak_signed, previous_streak_signed, 0
     else:
         # Last streak, previous streak, and before previous streak with signs
         last_streak_length, last_sign = streaks[-1]
         previous_streak_length, previous_sign = streaks[-2]
         before_previous_streak_length, before_previous_sign = streaks[-3]
-        
+
         last_streak_signed = last_streak_length if last_sign == 1 else -last_streak_length
         previous_streak_signed = previous_streak_length if previous_sign == 1 else -previous_streak_length
         before_previous_streak_signed = before_previous_streak_length if before_previous_sign == 1 else -before_previous_streak_length
-        
+
         return last_streak_signed, previous_streak_signed, before_previous_streak_signed
 
 
@@ -226,7 +262,11 @@ def get_pcr_m1(ticker_symbol: str) -> float:
         expiration_dates = ticker.options
         # in next month expiration dates
         next_month = (datetime.today().replace(day=1) + timedelta(days=32)).replace(day=1)
-        expiration_dates = [d for d in expiration_dates if datetime.strptime(d, "%Y-%m-%d").year == next_month.year and datetime.strptime(d, "%Y-%m-%d").month == next_month.month]
+        expiration_dates = [
+            d
+            for d in expiration_dates
+            if datetime.strptime(d, "%Y-%m-%d").year == next_month.year and datetime.strptime(d, "%Y-%m-%d").month == next_month.month
+        ]
         if not expiration_dates:
             logger.warning(f"No option expiration dates found for {ticker_symbol}.")
             return None
@@ -241,19 +281,19 @@ def get_pcr_m1(ticker_symbol: str) -> float:
             # Sum volume for all put options
             put_options = opt_chain.puts
             if not put_options.empty:
-                total_put_volume += put_options['volume'].sum()
+                total_put_volume += put_options["volume"].sum()
 
             # Sum volume for all call options
             call_options = opt_chain.calls
             if not call_options.empty:
-                total_call_volume += call_options['volume'].sum()
+                total_call_volume += call_options["volume"].sum()
 
         # Calculate the put-call ratio
         if total_call_volume > 0:
             pcr = total_put_volume / total_call_volume
             return pcr
         else:
-            return float('inf')  # Handles division by zero
+            return float("inf")  # Handles division by zero
 
     except Exception as e:
         logger.error(f"An error occurred calculating put-call ratio for {ticker_symbol}: {e}")
@@ -354,7 +394,10 @@ def compute_annualized_momentum_sum(df: pd.DataFrame, window_sizes: List[int] = 
             momentum = _compute_momentum_for_symbol(df, symbol, window)
 
             if len(momentum) > 0:
-                last_momentum = momentum.iloc[-1]
+                if len(momentum) == 1:
+                    last_momentum = momentum.iloc[-1]
+                else:
+                    last_momentum = momentum.iloc[-3:].sum() / 3
                 # Annualize the momentum: (1 + momentum)^(252/window) - 1, cap at 2
                 annualized_momentum = min((1 + last_momentum) ** (252 / window) - 1, 1)
                 symbol_momentum[f"m{window}"] = np.round(annualized_momentum, 4)
@@ -371,13 +414,10 @@ def compute_annualized_momentum_sum(df: pd.DataFrame, window_sizes: List[int] = 
                 if len(momentum) >= 3:  # Need at least 3 values for meaningful moving average
                     # Calculate momentum differences (A[i] - A[i-1])
                     momentum_diffs = momentum.diff().dropna()
-                    
-                    # Use a smaller window for moving average
                     ma_window = 3
-                    
-                    # Calculate moving average of momentum differences
                     acceleration = momentum_diffs.rolling(window=ma_window).mean().iloc[-1]
-                    symbol_accelerations[f"a{window}"] = np.round(acceleration, 4)
+                    acceleration = (1 + acceleration) ** (252 / window) - 1
+                    symbol_accelerations[f"a{window}"] = np.round(acceleration, 2)
                 else:
                     symbol_accelerations[f"a{window}"] = np.nan
 
@@ -400,12 +440,12 @@ def compute_annualized_momentum_sum(df: pd.DataFrame, window_sizes: List[int] = 
     result_data = []
     for symbol in symbols:
         row = {
-            "Symbol": symbol, 
+            "Symbol": symbol,
             "m": np.round(m[symbol], 4),
             "s0": s0_streaks[symbol],
             "s1": s_minus_1_streaks[symbol],
             "s2": s_minus_2_streaks[symbol],
-            "pcr_m1": pcr_m1s[symbol]
+            "pcr_m1": pcr_m1s[symbol],
         }
         row.update(individual_momentum[symbol])
         row.update(individual_accelerations[symbol])
@@ -419,16 +459,16 @@ def compute_annualized_momentum_sum(df: pd.DataFrame, window_sizes: List[int] = 
 
     # Create column order: Rank, Symbol, then momentum-acceleration pairs, then weighted average, then streaks
     ordered_columns = ["Rank", "Symbol"]
-    
+
     # Add momentum-acceleration pairs for each window (except last)
     for window in window_sizes:
         ordered_columns.append(f"m{window}")
         if window in acceleration_windows:
             ordered_columns.append(f"a{window}")
-    
+
     # Add weighted average, streaks, and put-call ratio at the end
     ordered_columns.extend(["m", "s0", "s1", "s2", "pcr_m1"])
-    
+
     result_df = result_df[ordered_columns]
 
     return result_df

@@ -7,6 +7,7 @@ from .data import (
     compute_momentum,
     compute_annualized_momentum_sum,
     Ticker,
+    Basket,
 )
 from .mstar import get_fund_snap
 
@@ -21,4 +22,5 @@ __all__ = [
     # * morningstar
     "get_fund_snap",
     "Ticker",
+    "Basket",
 ]

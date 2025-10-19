@@ -39,3 +39,4 @@ hydra-core
 omegaconf
 loguru
 pyhere
+fear-and-greed
