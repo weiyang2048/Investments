@@ -11,22 +11,6 @@ import fear_and_greed
 import pytz
 
 
-class Basket:
-    def __init__(self, symbols: List[str]=None):
-        pass
-
-    def get_fear_and_greed(self) -> dict:
-        """Get fear and greed index data and return as dictionary."""
-        fng_data = fear_and_greed.get()
-        est = pytz.timezone("US/Eastern")
-        last_update_est = fng_data.last_update.astimezone(est)
-        value = int(round(fng_data.value, 0))
-        description = fng_data.description
-        last_update_est_str = last_update_est.strftime("%H:%M:%S  %Y-%m-%d %Z")
-        self.fear_and_greed = {"value": value, "description": description, "last_update_est_str": last_update_est_str}
-        return self.fear_and_greed
-
-
 class Ticker:
     """
     attributes:

@@ -12,6 +12,7 @@ mstarpy
 yfinance
 robin_stocks
 yahooquery
+requests
 
 # * Visualization
 matplotlib

@@ -4,7 +4,8 @@ import streamlit as st
 
 import hydra
 import numpy as np
-from src.data import pivot_data, Basket
+from src.data import pivot_data
+from src.data.FearGreed import FearGreed
 from src.viz.viz import create_combined_performance_momentum_plot, create_momentum_ranking_display
 from src.configurations.style_picker import get_random_style
 from src.dashboard.create_page import setup_page_and_sidebar
@@ -24,45 +25,21 @@ pd.set_option("display.max_rows", None)
 
 def display_fear_and_greed_info():
     """Display fear and greed index information at the top of the dashboard."""
-    try:
-        fng_data = Basket().get_fear_and_greed()
-
-        # Create a container for the fear and greed display
-        with st.container():
-            col1, col2, col3 = st.columns([1, 2, 1])
-
-            with col2:
-                # Display the value with appropriate color coding
-                value = fng_data["value"]
-                description = fng_data["description"]
-                last_update = fng_data["last_update_est_str"]
-
-                # Color coding based on fear/greed level
-                if value <= 25:
-                    color = "🔴"  # Extreme Fear
-                elif value <= 45:
-                    color = "🟠"  # Fear
-                elif value <= 55:
-                    color = "🟡"  # Neutral
-                elif value <= 75:
-                    color = "🟢"  # Greed
-                else:
-                    color = "🔴"  # Extreme Greed
-
-                st.markdown(
-                    f"""
-                <div style="text-align:center;padding:10px;border-radius:10px;background-color:#f0f2f6;"> 
-                    <span style="margin:0;color:#262730;">{color} {value} {description}     <a href="https://www.cnn.com/markets/fear-and-greed" target="_blank" style="text-decoration:none;color:#2895f7;">
-                            🔗 
-                        </a></span><br> <span style="margin:0;color:#262730;">Last updated: {last_update}</span> 
-                    
-                </div>
-                """,
-                    unsafe_allow_html=True,
-                )
-
-    except Exception as e:
-        st.error(f"Error loading Fear & Greed Index: {e}")
+    fear_greed = FearGreed()
+    
+    # Create a container for both fear and greed displays side by side
+    with st.container():
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            # Display traditional Fear & Greed Index
+            traditional_html = fear_greed.get_fear_and_greed_html()
+            st.markdown(traditional_html, unsafe_allow_html=True)
+            
+        with col2:
+            # Display Crypto Fear & Greed Index
+            crypto_html = fear_greed.get_crypto_fear_and_greed_html()
+            st.markdown(crypto_html, unsafe_allow_html=True)
 
 
 def parse_custom_symbols(symbols_text):

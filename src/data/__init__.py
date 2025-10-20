@@ -7,8 +7,8 @@ from .data import (
     compute_momentum,
     compute_annualized_momentum_sum,
     Ticker,
-    Basket,
 )
+from .FearGreed import FearGreed
 from .mstar import get_fund_snap
 
 __all__ = [
@@ -22,5 +22,5 @@ __all__ = [
     # * morningstar
     "get_fund_snap",
     "Ticker",
-    "Basket",
+    "FearGreed",
 ]
