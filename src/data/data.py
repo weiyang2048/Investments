@@ -228,6 +228,104 @@ def _compute_consecutive_streaks(df: pd.DataFrame, symbol: str) -> tuple[int, in
         return last_streak_signed, previous_streak_signed, before_previous_streak_signed
 
 
+def _compute_average_consecutive_movements(df: pd.DataFrame, symbol: str) -> tuple[float, float]:
+    """
+    Compute average consecutive up and down movements for a symbol, ignoring 0 movements.
+    Uses the largest available window (all data) to calculate averages.
+    
+    Args:
+        df: DataFrame with price data
+        symbol: Symbol to compute streaks for
+        
+    Returns:
+        Tuple of (avg_consecutive_up, avg_consecutive_down)
+    """
+    if len(df[symbol]) < 2:
+        return 0.0, 0.0
+    
+    # Calculate daily returns
+    returns = df[symbol].pct_change().dropna()
+    
+    if len(returns) < 2:
+        return 0.0, 0.0
+    
+    # Filter out zero movements (returns == 0)
+    non_zero_returns = returns[returns != 0]
+    
+    if len(non_zero_returns) < 2:
+        return 0.0, 0.0
+    
+    # Determine if returns are positive or negative
+    signs = (non_zero_returns > 0).astype(int)
+    
+    # Find consecutive streaks
+    streaks = []
+    current_streak = 1
+    current_sign = signs.iloc[0]
+    
+    for i in range(1, len(signs)):
+        if signs.iloc[i] == current_sign:
+            current_streak += 1
+        else:
+            streaks.append((current_streak, current_sign))
+            current_streak = 1
+            current_sign = signs.iloc[i]
+    
+    # Add the last streak
+    streaks.append((current_streak, current_sign))
+    
+    if len(streaks) == 0:
+        return 0.0, 0.0
+    
+    # Separate up and down streaks
+    up_streaks = [length for length, sign in streaks if sign == 1]
+    down_streaks = [length for length, sign in streaks if sign == 0]
+    
+    # Calculate averages
+    avg_consecutive_up = np.mean(up_streaks) if up_streaks else 0.0
+    avg_consecutive_down = np.mean(down_streaks) if down_streaks else 0.0
+    
+    return avg_consecutive_up, avg_consecutive_down
+
+
+def _compute_average_percentage_movements(df: pd.DataFrame, symbol: str) -> tuple[float, float]:
+    """
+    Compute average up and down percentage movements for a symbol, ignoring 0 movements.
+    Uses the largest available window (all data) to calculate averages.
+    
+    Args:
+        df: DataFrame with price data
+        symbol: Symbol to compute percentage movements for
+        
+    Returns:
+        Tuple of (avg_up_percentage, avg_down_percentage)
+    """
+    if len(df[symbol]) < 2:
+        return 0.0, 0.0
+    
+    # Calculate daily returns
+    returns = df[symbol].pct_change().dropna()
+    
+    if len(returns) < 2:
+        return 0.0, 0.0
+    
+    # Filter out zero movements (returns == 0)
+    non_zero_returns = returns[returns != 0]
+    
+    if len(non_zero_returns) < 2:
+        return 0.0, 0.0
+    
+    # Separate positive and negative returns
+    up_returns = non_zero_returns[non_zero_returns > 0]
+    down_returns = non_zero_returns[non_zero_returns < 0]
+    
+    # Calculate averages (convert to percentage)
+    avg_up_percentage = np.mean(up_returns) * 100 if len(up_returns) > 0 else 0.0
+    avg_down_percentage = np.mean(down_returns) * 100 if len(down_returns) > 0 else 0.0
+    
+    return avg_up_percentage, avg_down_percentage
+
+
 def get_pcr_m1(ticker_symbol: str) -> float:
     """
     Calculates the volume-based put-call ratio for a given stock ticker.
@@ -363,6 +461,11 @@ def compute_annualized_momentum_sum(df: pd.DataFrame, window_sizes: List[int] = 
     s_minus_1_streaks = {}
     s_minus_2_streaks = {}
     pcr_m1s = {}
+    avg_s_plus = {}
+    avg_s_minus = {}
+    avg_plus_percent = {}
+    avg_minus_percent = {}
+    stride = {}
 
     # Calculate acceleration for all window sizes except the last one
     acceleration_windows = window_sizes[:-1]  # Exclude the last window
@@ -411,6 +514,29 @@ def compute_annualized_momentum_sum(df: pd.DataFrame, window_sizes: List[int] = 
         s_minus_1_streaks[symbol] = previous_streak
         s_minus_2_streaks[symbol] = before_previous_streak
 
+        # Calculate average consecutive movements
+        avg_up, avg_down = _compute_average_consecutive_movements(df, symbol)
+        avg_s_plus[symbol] = np.round(avg_up, 2)
+        avg_s_minus[symbol] = np.round(avg_down, 2)
+
+        # Calculate average percentage movements
+        avg_up_pct, avg_down_pct = _compute_average_percentage_movements(df, symbol)
+        avg_plus_percent[symbol] = np.round(avg_up_pct, 2)
+        avg_minus_percent[symbol] = np.round(avg_down_pct, 2)
+
+        # Calculate stride: (1+avg%+/100)**(avg_s+) * (1-avg%-/100)**(avg_s-)
+        avg_s_plus_val = avg_s_plus[symbol]
+        avg_s_minus_val = avg_s_minus[symbol]
+        sum_s = (avg_s_plus_val + avg_s_minus_val) / 4
+        avg_s_plus_val = avg_s_plus_val / sum_s
+        avg_s_minus_val = avg_s_minus_val / sum_s
+        avg_plus_pct_val = avg_plus_percent[symbol]
+        avg_minus_pct_val = avg_minus_percent[symbol]
+        
+        stride_value = ((1 + avg_plus_pct_val/100) ** avg_s_plus_val) * ((1 - abs(avg_minus_pct_val)/100) ** avg_s_minus_val)
+        
+        stride[symbol] = np.round((stride_value-1)*100, 2)
+
         # Calculate put-call ratio
         pcr = get_pcr_m1(symbol)
         pcr_m1s[symbol] = pcr if pcr is not None else np.nan
@@ -429,6 +555,11 @@ def compute_annualized_momentum_sum(df: pd.DataFrame, window_sizes: List[int] = 
             "s0": s0_streaks[symbol],
             "s1": s_minus_1_streaks[symbol],
             "s2": s_minus_2_streaks[symbol],
+            "avg_s+": avg_s_plus[symbol],
+            "avg_s-": avg_s_minus[symbol],
+            "avg%+": avg_plus_percent[symbol],
+            "avg%-": avg_minus_percent[symbol],
+            "stride": stride[symbol],
             "pcr_m1": pcr_m1s[symbol],
         }
         row.update(individual_momentum[symbol])
@@ -450,8 +581,8 @@ def compute_annualized_momentum_sum(df: pd.DataFrame, window_sizes: List[int] = 
         if window in acceleration_windows:
             ordered_columns.append(f"a{window}")
 
-    # Add weighted average, streaks, and put-call ratio at the end
-    ordered_columns.extend(["m", "s0", "s1", "s2", "pcr_m1"])
+    # Add weighted average, stride, streaks, average consecutive movements, average percentage movements, and put-call ratio at the end
+    ordered_columns.extend(["m", "stride", "s0", "s1", "s2", "avg_s+", "avg_s-", "avg%+", "avg%-", "pcr_m1"])
 
     result_df = result_df[ordered_columns]
 

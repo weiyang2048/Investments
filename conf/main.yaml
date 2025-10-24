@@ -1,11 +1,11 @@
 lenses:
   main:
     Regions: ${union:[SPMO, IDMO,EEMO, CEE,  FLN, AFK, AIA, ASEA, IPAC, FEP], [IAUM,  SLV, PPLT, IBIT, ETHA], [VNAM, EWY, EPU, EWS, EWK, NFTY, EPOL, EZA, EIS, ARGT, EWN, FCA]}
-    Sectors: ${union:[PYZ, PTH, PUI], [ARKW, ARKQ, ARKG], [QTUM, REMX], [BKCH, GOEX, SLVP, COPX, DMAT, HYDR, URA, LIT, AIQ, SHLD, EUFN, EUAD], ${get_keys:tickers.sectors}}
-    Commodities: [IAUM, GOEX, SLV, SLVP, PPLT, COPX, REMX, DMAT, HYDR, URA, LIT, IEO, DBA, BTC, ETH, BKCH ]
+    Sectors: ${union:[PYZ, PTH, PUI], [ARKW, ARKQ, ARKG], [QTUM, REMX], [BKCH, GOEX, SLVP, COPX, DMAT, HYDR, URA, LIT, AIQ, SHLD, EUFN, EUAD, AIPO], ${get_keys:tickers.sectors}}
+    Commodities: [GDLC, BTC, ETH, BKCH, IAUM, GOEX, SLV, SLVP, PPLT, COPX, REMX, DMAT, HYDR, URA, LIT, IEO, DBA]
     Stocks: ${union:[AVGO, CAT], [ASM, ARGX], [OPEN, LCID]}
-    r: [IAUM, VEU, GOOGL, SPMO, AIA]
-    f: ['YGLD', 'MAXI', 'SLV', 'BKCH', 'IAUM', 'SPMO', 'GOEX', 'SLVP', 'ARKQ', 'TRAMX', 'ARGX', 'ASML', 'AIQ', 'CAT', 'AVGO', 'XMMO', 'AIA', 'IEMG', 'JXI', 'IPAC', 'VXUS', 'AVDV',  'LCID', 'OPEN']
+    r: [IAUM, VEU, GOOGL, AIA]
+    f: ['YGLD', 'MAXI', 'SLV', 'BKCH', 'IAUM', 'SPMO', 'GOEX', 'SLVP', 'ARKQ', 'TRAMX', 'ARGX', 'ASML', 'AIQ', 'CAT', 'AVGO', 'AIA', 'IEMG', 'JXI', 'IPAC', 'VXUS', 'AVDV',  'LCID', 'OPEN']
   themes:
     regions: ${union:[SPMO, IDMO, FEM, AVUV, AVDV, AVES],${get_keys:tickers.regions}}
     income: [YGLD, MAXI, BPI, BCCC,  SCHD, SCHY,LVHI, LVHD, GPIQ, GPIX, JEPI, JEPQ, DIVO, IDVO, EFAS, SDEM]

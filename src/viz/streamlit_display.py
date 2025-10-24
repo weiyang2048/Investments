@@ -7,13 +7,11 @@ from functools import partial
 
 def highlight_row(row):
     max_abs_value = np.max(abs(row))
-    if "s" in row.name:
-        row = row / 5
-    elif "pcr_m1" in row.name:
-        row = row 
+    if "pcr_m1" in row.name:
+        row = row
     else:
         row = row / max_abs_value
-    
+
     result = []
     if row.name == "a":
         for value in row:
@@ -33,12 +31,7 @@ def highlight_row(row):
             if pd.isnull(value):
                 result.append("")
                 continue
-            if value <= 0:
-                color = f"background-color: rgba(255, 50, 50, {abs(value):.2f}); border: 10px solid rgba(255, 125, 125, {abs(value):.2f})"
-            elif value > 0:
-                color = f"background-color: rgba(152, 250, 135, {abs(value):.2f}); border: 1px solid rgba(152, 250, 135, {abs(value):.2f})"
-            else:
-                color = ""
+            color = f"background-color: white; color: rgba({abs(value)*255 if value < 0 else 0}, {value*255 if value > 0 else 0}, 0, {0.5+abs(value)/2:.2f});"
             result.append(color)
         return result
     elif row.name == "pcr_m1":
@@ -57,6 +50,24 @@ def highlight_row(row):
                 color = f"background-color: white; color: black"
             else:
                 color = ""
+            result.append(color)
+        return result
+    elif row.name in ["avg%+", "avg_s+", "avg_s-", "avg%-"]:
+        for value in row:
+            if pd.isnull(value):
+                result.append("")
+                continue
+            background_color = "white" if row.name in ["avg%+", "avg%-"] else "black"
+            text_color = f"rgb(0, {value*255}, 0)" if row.name in ["avg%+", "avg_s+"] else f"rgb({abs(value)*255}, 0, 0)"
+            color = f"background-color: {background_color}; color: {text_color}; font-weight: bold"
+            result.append(color)
+        return result
+    elif row.name == "stride":
+        for value in row:
+            if pd.isnull(value):
+                result.append("")
+                continue
+            color = f"background-color: rgb({abs(value)*255 if value < 0 else 0}, {value*255 if value > 0 else 0}, 0); color: white; font-weight: bold"
             result.append(color)
         return result
     else:
@@ -93,9 +104,9 @@ def display_dataframe(
     if centered:
         center_cols = st.columns([1, 6, 1])
         with center_cols[1]:
-            st.dataframe(styled_df, hide_index=hide_index, height=35*len(df)+38, width='stretch', **style_kwargs)
+            st.dataframe(styled_df, hide_index=hide_index, height=35 * len(df) + 38, width="stretch", **style_kwargs)
     else:
-        st.dataframe(styled_df, hide_index=hide_index, height=35*len(df)+38, width='stretch', **style_kwargs)
+        st.dataframe(styled_df, hide_index=hide_index, height=35 * len(df) + 38, width="stretch", **style_kwargs)
 
 
 def display_table_of_contents(sections: Optional[list] = None) -> None:

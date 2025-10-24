@@ -76,8 +76,8 @@ def create_momentum_ranking_display(
         # Add weighted average acceleration row
         transposed_df.loc["a"] = weighted_acceleration
     
-    # Create the desired row order: m first, then a, then put-call ratio, then streak rows, then momentum rows (hide individual acceleration rows)
-    ordered_rows = ["m"] + ["a"] + ["pcr_m1"] + ["s0", "s1", "s2"] + momentum_rows
+    # Create the desired row order: m first, then a, then put-call ratio, then stride, then streak rows, then average consecutive movements, then average percentage movements, then momentum rows (hide individual acceleration rows)
+    ordered_rows = ["m"] + ["a"] + ["pcr_m1"] + ["stride", "s0", "s1", "s2", "avg_s+", "avg_s-", "avg%+", "avg%-"] + momentum_rows
     
     # Filter to only include rows that exist in the dataframe
     existing_rows = [row for row in ordered_rows if row in transposed_df.index]
@@ -276,3 +276,116 @@ def create_plotly_choropleth(
     plotly_config["layout"].update(layout)
     fig.update_layout(plotly_config["layout"])
     return fig
+
+
+def create_price_ratio_plot(
+    df: pd.DataFrame,
+    symbol1: str,
+    symbol2: str,
+    colors_dict: Dict[str, str],
+    line_styles_dict: Dict[str, str],
+    equity_config: Dict[str, Dict],
+    look_back_days: List[int] = None,
+) -> go.Figure:
+    """
+    Create a price ratio plot for two symbols.
+    
+    Args:
+        df: DataFrame with price data (columns: Date, symbol1, symbol2, ...)
+        symbol1: First symbol (numerator)
+        symbol2: Second symbol (denominator)
+        colors_dict: Dictionary mapping symbols to colors
+        line_styles_dict: Dictionary mapping symbols to line styles
+        equity_config: Configuration dictionary for symbols
+        look_back_days: List of lookback periods to display (not used, kept for compatibility)
+        
+    Returns:
+        plotly.graph_objects.Figure: The ratio plot
+    """
+    # Use the maximum available data (all data)
+    df_period = df.copy()
+    
+    # Calculate the ratio
+    if symbol1 in df_period.columns and symbol2 in df_period.columns:
+        ratio = df_period[symbol1] / df_period[symbol2]
+        
+        # Create hover template
+        hover_template = f"<b>Date:</b>%{{x}}<br>"
+        hover_template += f"<b style='color: {colors_dict.get(symbol1, 'black')}'>{symbol1}:</b>%{{customdata[0]:.2f}}<br>"
+        hover_template += f"<b style='color: {colors_dict.get(symbol2, 'black')}'>{symbol2}:</b>%{{customdata[1]:.2f}}<br>"
+        hover_template += f"<b>Ratio ({symbol1}/{symbol2}):</b>%{{y:.4f}}<extra></extra>"
+        
+        # Create the figure with secondary y-axis
+        from plotly.subplots import make_subplots
+        fig = make_subplots(specs=[[{"secondary_y": True}]])
+        
+        # Add ratio line (left y-axis)
+        fig.add_trace(
+            go.Scatter(
+                x=df_period["Date"],
+                y=ratio,
+                name=f"Ratio {symbol1}/{symbol2}",
+                mode="lines+markers",
+                line=dict(color=colors_dict.get(symbol1, "blue"), width=3, dash="dash"),
+                marker=dict(size=5),
+                customdata=list(zip(df_period[symbol1], df_period[symbol2])),
+                hovertemplate=hover_template,
+            ),
+            secondary_y=False,
+        )
+        
+        # Add horizontal line at ratio = 1
+        fig.add_hline(
+            y=1, 
+            line_dash="dash", 
+            line_color="gray", 
+            opacity=0.5,
+            annotation_text="Ratio = 1"
+        )
+        
+        # Add individual price lines (right y-axis)
+        # Symbol 1 (numerator) - solid line
+        fig.add_trace(
+            go.Scatter(
+                x=df_period["Date"],
+                y=df_period[symbol1],
+                name=f"{symbol1} Price",
+                mode="lines",
+                line=dict(color=colors_dict.get(symbol1, "blue"), width=2),
+                opacity=0.8,
+            ),
+            secondary_y=True,
+        )
+        
+        # Symbol 2 (denominator) - solid line
+        fig.add_trace(
+            go.Scatter(
+                x=df_period["Date"],
+                y=df_period[symbol2],
+                name=f"{symbol2} Price",
+                mode="lines",
+                line=dict(color=colors_dict.get(symbol2, "red"), width=2),
+                opacity=0.8,
+            ),
+            secondary_y=True,
+        )
+        
+        # Update layout
+        fig.update_layout(
+            title=f"Price Ratio Analysis: {symbol1}/{symbol2}",
+            height=500,
+            showlegend=True,
+            legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
+            xaxis_title="Date",
+        )
+        
+        # Set y-axes titles
+        fig.update_yaxes(title_text="Ratio", secondary_y=False)
+        fig.update_yaxes(title_text="Price ($)", secondary_y=True)
+        
+        return fig
+    else:
+        # Return empty figure if symbols not found
+        return go.Figure().add_annotation(text="One or both symbols not found in data", 
+                                        xref="paper", yref="paper", x=0.5, y=0.5, 
+                                        showarrow=False, font_size=16)

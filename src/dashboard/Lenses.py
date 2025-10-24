@@ -6,7 +6,7 @@ import hydra
 import numpy as np
 from src.data import pivot_data
 from src.data.FearGreed import FearGreed
-from src.viz.viz import create_combined_performance_momentum_plot, create_momentum_ranking_display
+from src.viz.viz import create_combined_performance_momentum_plot, create_momentum_ranking_display, create_price_ratio_plot
 from src.configurations.style_picker import get_random_style
 from src.dashboard.create_page import setup_page_and_sidebar
 import pandas as pd
@@ -182,6 +182,21 @@ def _process_symbol_tab(
     with st.spinner("Computing correlation plot..."):
         pivoted_to_corr(df_pivot, plot=True, streamlit=True, marchenko_pastur=marchenko_pastur)
 
+    # Add ratio plot if exactly two symbols are provided
+    display_section_header("Price Ratio Analysis")
+    
+    with st.spinner("Creating price ratio plot..."):
+        ratio_fig = create_price_ratio_plot(
+            df_pivot,
+            symbols[0],
+            symbols[1],
+            colors_dict,
+            line_styles_dict,
+            equity_config,
+            look_back_days
+        )
+        st.plotly_chart(ratio_fig, config={"displayModeBar": False})
+
     # Performance section removed as requested
 
 
@@ -276,12 +291,10 @@ def show_market_performance(
         )
 
     # Bottom Table of Contents
-    display_table_of_contents(
-        sections=[
-            "Momentum",
-            "Correlation",
-        ]
-    )
+    sections = ["Momentum", "Correlation"]
+    sections.append("Price Ratio Analysis")
+    
+    display_table_of_contents(sections=sections)
 
 
 if __name__ == "__main__":
@@ -306,12 +319,12 @@ if __name__ == "__main__":
     display_fear_and_greed_info()
 
     # Table of Contents
-    display_table_of_contents(
-        sections=[
-            "Momentum",
-            "Correlation",
-        ]
-    )
+    sections = ["Momentum", "Correlation"]
+    # Check if we have custom symbols with exactly 2 symbols
+    if custom_symbols and len(custom_symbols) == 2:
+        sections.append("Price Ratio Analysis")
+    
+    display_table_of_contents(sections=sections)
 
     show_market_performance(
         config["tickers"],
