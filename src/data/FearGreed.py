@@ -25,35 +25,26 @@ class FearGreed:
             url = "https://api.alternative.me/fng/"
             params = {"limit": 1}
             response = requests.get(url, params=params)
-            
+
             if response.ok:
                 fng_api_data = response.json()
                 data_entry = fng_api_data["data"][0]
                 value = int(data_entry["value"])
                 classification = data_entry["value_classification"]
                 timestamp_utc = int(data_entry["timestamp"])
-                
+
                 # Convert timestamp to datetime in UTC, then to US/Eastern
                 dt_utc = datetime.datetime.fromtimestamp(timestamp_utc, tz=datetime.timezone.utc)
                 dt_est = dt_utc.astimezone(pytz.timezone("US/Eastern"))
                 last_update_est_str = dt_est.strftime("%H:%M:%S  %Y-%m-%d %Z")
-                
-                self.crypto_fear_and_greed = {
-                    "value": value, 
-                    "description": classification, 
-                    "last_update_est_str": last_update_est_str
-                }
+
+                self.crypto_fear_and_greed = {"value": value, "description": classification, "last_update_est_str": last_update_est_str}
                 return self.crypto_fear_and_greed
             else:
                 raise Exception(f"API request failed: {response.status_code}")
-                
+
         except Exception as e:
-            self.crypto_fear_and_greed = {
-                "value": None, 
-                "description": "Error", 
-                "last_update_est_str": "N/A",
-                "error": str(e)
-            }
+            self.crypto_fear_and_greed = {"value": None, "description": "Error", "last_update_est_str": "N/A", "error": str(e)}
             return self.crypto_fear_and_greed
 
     def get_fear_and_greed_html(self) -> str:
@@ -68,15 +59,15 @@ class FearGreed:
 
             # Convert value to 0-1 scale for gradient calculation
             normalized_value = value / 100.0
-            
+
             # Calculate gradient color from red (0) to green (1)
             # Red component decreases as value increases
             red = int(255 * (1 - normalized_value))
-            # Green component increases as value increases  
+            # Green component increases as value increases
             green = int(255 * normalized_value)
             # Blue component stays low for better contrast
             blue = 50
-            
+
             color_hex = f"#{red:02x}{green:02x}{blue:02x}"
 
             # Return HTML string
@@ -97,7 +88,7 @@ class FearGreed:
         """Get crypto fear and greed index HTML for display."""
         try:
             crypto_data = self.get_crypto_fear_and_greed()
-            
+
             if "error" in crypto_data:
                 return f'<div style="color:red;">Error loading Crypto Fear & Greed Index: {crypto_data["error"]}</div>'
 
@@ -108,15 +99,15 @@ class FearGreed:
 
             # Convert value to 0-1 scale for gradient calculation
             normalized_value = value / 100.0
-            
+
             # Calculate gradient color from red (0) to green (1)
             # Red component decreases as value increases
             red = int(255 * (1 - normalized_value))
-            # Green component increases as value increases  
+            # Green component increases as value increases
             green = int(255 * normalized_value)
             # Blue component stays low for better contrast
             blue = 50
-            
+
             color_hex = f"#{red:02x}{green:02x}{blue:02x}"
 
             # Return HTML string

@@ -19,9 +19,9 @@ def highlight_row(row):
                 result.append("")
                 continue
             if value <= 0:
-                color = f"background-color: rgba(0, 0, 255, {abs(value):.2f})"
+                color = f"background-color: rgba(0, 0, 255, {abs(value):.2f}); color: white; font-weight: bold;"
             elif value > 0:
-                color = f"background-color: rgba(255, 0, 255, {abs(value):.2f})"
+                color = f"background-color: rgba(255, 0, 255, {abs(value):.2f}); color: white; font-weight: bold;"
             else:
                 color = ""
             result.append(color)
@@ -87,8 +87,6 @@ def display_dataframe(
 ) -> None:
     """Display DataFrame with optional styling, centering, and vmin for colormap."""
     df = df.copy()
-    if "a" in df.index:
-        df.loc["a"] = df.loc["a"]
     if symbol_type and data_type:
         styled_df = (
             df.style.set_properties(**{"font-weight": "bold"})

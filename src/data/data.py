@@ -11,6 +11,14 @@ import fear_and_greed
 import pytz
 
 
+class Tickers:
+    def __init__(self, symbols: List[str]):
+        self.symbols = symbols
+        self.ticker = yf.Ticker(symbols)
+
+    def get_daily_prices(self, period: str = "1mo") -> pd.DataFrame:
+        return self.ticker.history(period=period)
+
 class Ticker:
     """
     attributes:
@@ -484,12 +492,12 @@ def compute_annualized_momentum_sum(df: pd.DataFrame, window_sizes: List[int] = 
                 if len(momentum) == 1:
                     last_momentum = momentum.iloc[-1]
                 else:
-                    last_momentum = momentum.iloc[-3:].sum() / 3
+                    last_momentum = momentum.iloc[-6:].sum() / 6
                 # Annualize the momentum: (1 + momentum)^(252/window) - 1, cap at 2
                 annualized_momentum = min((1 + last_momentum) ** (252 / window) - 1, 1)
                 symbol_momentum[f"m{window}"] = np.round(annualized_momentum, 4)
 
-                weight = 1 / np.log(window)
+                weight =1 #= 1 / np.log(window)
                 weighted_momentum = annualized_momentum * weight
                 total_weight += weight
                 total_annualized_momentum += weighted_momentum
@@ -588,4 +596,3 @@ def compute_annualized_momentum_sum(df: pd.DataFrame, window_sizes: List[int] = 
 
     return result_df
 
-    return result_df

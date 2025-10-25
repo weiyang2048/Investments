@@ -147,7 +147,7 @@ def _process_symbol_tab(
         momentum_ranking, _ = _create_and_sort_momentum_data(df_pivot, look_back_days)
 
     # Display momentum ranking table first
-    display_dataframe(momentum_ranking, symbol_type, "am", vmin=0, vmax=1)
+    display_dataframe(momentum_ranking, symbol_type, "am", vmin=-0.1, vmax=1)
 
     # Always create and display combined plot
     with st.spinner("Creating combined performance & momentum plot..."):
@@ -321,8 +321,6 @@ if __name__ == "__main__":
     # Table of Contents
     sections = ["Momentum", "Correlation"]
     # Check if we have custom symbols with exactly 2 symbols
-    if custom_symbols and len(custom_symbols) == 2:
-        sections.append("Price Ratio Analysis")
     
     display_table_of_contents(sections=sections)
 
