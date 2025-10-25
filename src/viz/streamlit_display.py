@@ -70,6 +70,25 @@ def highlight_row(row):
             color = f"background-color: rgb({abs(value)*255 if value < 0 else 0}, {value*255 if value > 0 else 0}, 0); color: white; font-weight: bold"
             result.append(color)
         return result
+    elif row.name.startswith("d") and row.name[1:].isdigit():  # Handle d6, d7, etc.
+        for value in row:
+            if pd.isnull(value):
+                result.append("")
+                continue
+            # Normalize value for color intensity (assuming typical range -10% to +10%)
+            intensity = min(abs(value) *10, 1)  # Cap at 1 for very large values
+            
+            if value > 0:
+                # Green gradient for positive changes
+                color = f"background-color: rgba(0, {int(100 + intensity * 155)}, 0, {0.3 + intensity * 0.7}); color: white; font-weight: bold; border: 1px solid rgba(0, {int(100 + intensity * 155)}, 0, 0.8)"
+            elif value < 0:
+                # Red gradient for negative changes
+                color = f"background-color: rgba({int(100 + intensity * 155)}, 0, 0, {0.3 + intensity * 0.7}); color: white; font-weight: bold; border: 1px solid rgba({int(100 + intensity * 155)}, 0, 0, 0.8)"
+            else:
+                # Neutral color for zero change
+                color = f"background-color: rgba(128, 128, 128, 0.3); color: white; font-weight: bold"
+            result.append(color)
+        return result
     else:
         return [""] * len(row)
 

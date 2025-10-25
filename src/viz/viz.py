@@ -49,7 +49,7 @@ def create_momentum_ranking_display(
     
     # Reorder rows: am first, then momentum rows, then acceleration rows, then average acceleration
     momentum_rows = [f"m{window}" for window in window_sizes]
-    acceleration_rows = [f"a{window}" for window in window_sizes[:-1]]  # Exclude last window
+    acceleration_rows = [f"a{window}" for window in window_sizes[1:-1]]  # Exclude last window
     
     # Calculate weighted average acceleration across all acceleration rows
     if acceleration_rows:
@@ -76,8 +76,9 @@ def create_momentum_ranking_display(
         # Add weighted average acceleration row
         transposed_df.loc["a"] = weighted_acceleration
     
-    # Create the desired row order: m first, then a, then put-call ratio, then stride, then streak rows, then average consecutive movements, then average percentage movements, then momentum rows (hide individual acceleration rows)
-    ordered_rows = ["m"] + ["a"] + ["pcr_m1"] + ["stride", "s0", "s1", "s2", "avg_s+", "avg_s-", "avg%+", "avg%-"] + momentum_rows
+    # Create the desired row order: m first, then d6, then a, then put-call ratio, then stride, then streak rows, then average consecutive movements, then average percentage movements, then momentum rows (hide individual acceleration rows)
+    pct_change_row = f"d{min(window_sizes)}"
+    ordered_rows = ["m"] + [pct_change_row] + ["a"] + ["pcr_m1"] + ["stride", "s0", "s1", "s2", "avg_s+", "avg_s-", "avg%+", "avg%-"] + momentum_rows
     
     # Filter to only include rows that exist in the dataframe
     existing_rows = [row for row in ordered_rows if row in transposed_df.index]

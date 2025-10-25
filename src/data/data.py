@@ -474,17 +474,18 @@ def compute_annualized_momentum_sum(df: pd.DataFrame, window_sizes: List[int] = 
     avg_plus_percent = {}
     avg_minus_percent = {}
     stride = {}
+    pct_change_smallest_window = {}
 
     # Calculate acceleration for all window sizes except the last one
     acceleration_windows = window_sizes[:-1]  # Exclude the last window
-
+    momentum_windows = window_sizes[1:]
     for symbol in symbols:
         total_annualized_momentum = 0
         total_weight = 0
         symbol_momentum = {}
         symbol_accelerations = {}
 
-        for window in window_sizes:
+        for window in momentum_windows:
             # Use the shared momentum calculation function
             momentum = _compute_momentum_for_symbol(df, symbol, window)
 
@@ -545,6 +546,14 @@ def compute_annualized_momentum_sum(df: pd.DataFrame, window_sizes: List[int] = 
         
         stride[symbol] = np.round((stride_value-1)*100, 2)
 
+        # Calculate %change for the smallest window size
+        smallest_window = min(window_sizes)
+        smallest_window_momentum = _compute_momentum_for_symbol(df, symbol, smallest_window)
+        if len(smallest_window_momentum) > 0:
+            pct_change_smallest_window[symbol] = np.round(smallest_window_momentum.iloc[-1], 2)
+        else:
+            pct_change_smallest_window[symbol] = np.nan
+
         # Calculate put-call ratio
         pcr = get_pcr_m1(symbol)
         pcr_m1s[symbol] = pcr if pcr is not None else np.nan
@@ -569,6 +578,7 @@ def compute_annualized_momentum_sum(df: pd.DataFrame, window_sizes: List[int] = 
             "avg%-": avg_minus_percent[symbol],
             "stride": stride[symbol],
             "pcr_m1": pcr_m1s[symbol],
+            f"d{min(window_sizes)}": pct_change_smallest_window[symbol],
         }
         row.update(individual_momentum[symbol])
         row.update(individual_accelerations[symbol])
@@ -584,13 +594,13 @@ def compute_annualized_momentum_sum(df: pd.DataFrame, window_sizes: List[int] = 
     ordered_columns = ["Rank", "Symbol"]
 
     # Add momentum-acceleration pairs for each window (except last)
-    for window in window_sizes:
+    for window in momentum_windows:
         ordered_columns.append(f"m{window}")
         if window in acceleration_windows:
             ordered_columns.append(f"a{window}")
 
-    # Add weighted average, stride, streaks, average consecutive movements, average percentage movements, and put-call ratio at the end
-    ordered_columns.extend(["m", "stride", "s0", "s1", "s2", "avg_s+", "avg_s-", "avg%+", "avg%-", "pcr_m1"])
+    # Add weighted average, stride, streaks, average consecutive movements, average percentage movements, %change, and put-call ratio at the end
+    ordered_columns.extend(["m", "stride", "s0", "s1", "s2", "avg_s+", "avg_s-", "avg%+", "avg%-", f"d{min(window_sizes)}", "pcr_m1"])
 
     result_df = result_df[ordered_columns]
 
