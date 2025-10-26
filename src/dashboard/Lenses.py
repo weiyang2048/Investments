@@ -27,19 +27,50 @@ def display_fear_and_greed_info():
     """Display fear and greed index information at the top of the dashboard."""
     fear_greed = FearGreed()
     
-    # Create a container for both fear and greed displays side by side
-    with st.container():
-        col1, col2 = st.columns(2)
-        
-        with col1:
-            # Display traditional Fear & Greed Index
-            traditional_html = fear_greed.get_fear_and_greed_html()
-            st.markdown(traditional_html, unsafe_allow_html=True)
-            
-        with col2:
-            # Display Crypto Fear & Greed Index
-            crypto_html = fear_greed.get_crypto_fear_and_greed_html()
-            st.markdown(crypto_html, unsafe_allow_html=True)
+    # Get both stock and crypto fear and greed data
+    traditional_data = fear_greed.get_fear_and_greed()
+    crypto_data = fear_greed.get_crypto_fear_and_greed()
+    
+    # Create a unified display with both metrics in one box
+    stock_value = traditional_data["value"]
+    stock_desc = traditional_data["description"]
+    stock_update = traditional_data["last_update_est_str"]
+    
+    crypto_value = crypto_data["value"]
+    crypto_desc = crypto_data["description"]
+    crypto_update = crypto_data["last_update_est_str"]
+    
+    # Calculate colors for both metrics
+    normalized_stock = stock_value / 100.0
+    red_stock = int(255 * (1 - normalized_stock))
+    green_stock = int(255 * normalized_stock)
+    color_hex_stock = f"#{red_stock:02x}{green_stock:02x}{50:02x}"
+    
+    if crypto_value is not None:
+        normalized_crypto = crypto_value / 100.0
+        red_crypto = int(255 * (1 - normalized_crypto))
+        green_crypto = int(255 * normalized_crypto)
+        color_hex_crypto = f"#{red_crypto:02x}{green_crypto:02x}{50:02x}"
+    else:
+        color_hex_crypto = "#808080"  # Gray for error
+        crypto_value = "N/A"
+        crypto_desc = "Error"
+    
+    # Return combined HTML string
+    combined_html = f"""
+    <div style="text-align:center;padding:15px;border-radius:10px;background-color:#f0f2f6;"> 
+        <div style="margin-bottom:10px;">
+            <a href="https://www.cnn.com/markets/fear-and-greed" target="_blank" style="color:{color_hex_stock};text-decoration:none;margin-left:5px;">{stock_value} {stock_desc} (S&P 500)</a>
+            |
+            <a href="https://feargreedmeter.com/" target="_blank" style="color:{color_hex_crypto};text-decoration:none;color:#2895f7;font-size:12px;">🗺️</a>
+            |
+            <a href="https://alternative.me/crypto/fear-and-greed-index/" target="_blank" style="color:{color_hex_crypto};text-decoration:none;margin-left:5px;">{crypto_value} {crypto_desc} (Crypto)</a>
+        </div>
+    </div>
+    """
+    cols = st.columns(3)
+    with cols[1]:
+        st.markdown(combined_html, unsafe_allow_html=True)
 
 
 def parse_custom_symbols(symbols_text):
