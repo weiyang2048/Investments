@@ -51,34 +51,11 @@ def create_momentum_ranking_display(
     momentum_rows = [f"m{window}" for window in window_sizes]
     acceleration_rows = [f"a{window}" for window in window_sizes[1:-1]]  # Exclude last window
     
-    # Calculate weighted average acceleration across all acceleration rows
-    if acceleration_rows:
-        # Get only the acceleration columns
-        acceleration_data = transposed_df.loc[acceleration_rows]
-        
-        # Calculate weighted average using the same weights as momentum (1/log(window))
-        weighted_acceleration = {}
-        for symbol in acceleration_data.columns:
-            total_weighted_acceleration = 0
-            total_weight = 0
-            
-            for row_name in acceleration_rows:
-                window = int(row_name[1:])  # Extract window size from 'a7', 'a30', etc.
-                acceleration_value = acceleration_data.loc[row_name, symbol]
-                
-                if not pd.isna(acceleration_value):
-                    weight = 1 / np.log(window)
-                    total_weighted_acceleration += acceleration_value * weight
-                    total_weight += weight
-            
-            weighted_acceleration[symbol] = total_weighted_acceleration / total_weight if total_weight != 0 else 0
-        
-        # Add weighted average acceleration row
-        transposed_df.loc["a"] = weighted_acceleration
+    # Acceleration data is already computed in compute_annualized_momentum_sum
     
-    # Create the desired row order: m first, then d6, then a, then put-call ratio, then stride, then streak rows, then average consecutive movements, then average percentage movements, then momentum rows (hide individual acceleration rows)
+    # Create the desired row order: m first, then a, then d6, then combined_score, then put-call ratio, then stride, then streak rows, then average consecutive movements, then average percentage movements, then momentum rows (hide individual acceleration rows)
     pct_change_row = f"d{min(window_sizes)}"
-    ordered_rows = ["m"] + [pct_change_row] + ["a"] + ["pcr_m1"] + ["stride", "s0", "s1", "s2", "avg_s+", "avg_s-", "avg%+", "avg%-"] + momentum_rows
+    ordered_rows = ["m"] + ["a"] + [pct_change_row] + ["combined_score"] + ["pcr_m1"] + ["stride", "s0", "s1", "s2", "avg_s+", "avg_s-", "avg%+", "avg%-"] + momentum_rows
     
     # Filter to only include rows that exist in the dataframe
     existing_rows = [row for row in ordered_rows if row in transposed_df.index]

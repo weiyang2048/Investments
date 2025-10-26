@@ -459,7 +459,18 @@ def compute_annualized_momentum_sum(df: pd.DataFrame, window_sizes: List[int] = 
 
     Returns:
         DataFrame with symbols, individual window annualized momentum columns,
-        weighted average momentum, acceleration (moving average of momentum differences), and rank
+        weighted average momentum (m), acceleration (a), and rank.
+        
+        Key metrics:
+        - m: Weighted average of annualized momentum across all window sizes
+        - a: Weighted average acceleration (rate of change of momentum) across window sizes
+        - combined_score: Sum of m + a, used for ranking
+        - d6: 6-day percentage change (smallest window size)
+        - stride: Compound growth factor based on average consecutive movements
+        - s0, s1, s2: Current, previous, and before-previous consecutive streaks
+        - avg_s+, avg_s-: Average consecutive up/down movements
+        - avg%+, avg%-: Average percentage up/down movements
+        - pcr_m1: Put-call ratio for next month expiration
     """
     symbols = df.select_dtypes(include=[np.number]).columns
     m = {}
@@ -475,7 +486,7 @@ def compute_annualized_momentum_sum(df: pd.DataFrame, window_sizes: List[int] = 
     avg_minus_percent = {}
     stride = {}
     pct_change_smallest_window = {}
-
+    a = {}
     # Calculate acceleration for all window sizes except the last one
     acceleration_windows = window_sizes[:-1]  # Exclude the last window
     momentum_windows = window_sizes[1:]
@@ -562,13 +573,16 @@ def compute_annualized_momentum_sum(df: pd.DataFrame, window_sizes: List[int] = 
         m[symbol] = total_annualized_momentum / total_weight if total_weight != 0 else 0
         individual_momentum[symbol] = symbol_momentum
         individual_accelerations[symbol] = symbol_accelerations
-
+        weights = [1 / np.log(window) for window in acceleration_windows if f"a{window}" in symbol_accelerations]
+        acceleration = sum([symbol_accelerations[f"{window}"] * weights[i] for i, window in enumerate(symbol_accelerations.keys())]) / sum(weights)
+        a[symbol] = acceleration
     # Create DataFrame with individual momentum and acceleration columns
     result_data = []
     for symbol in symbols:
         row = {
             "Symbol": symbol,
             "m": np.round(m[symbol], 4),
+            "a": np.round(a[symbol], 4),
             "s0": s0_streaks[symbol],
             "s1": s_minus_1_streaks[symbol],
             "s2": s_minus_2_streaks[symbol],
@@ -586,8 +600,11 @@ def compute_annualized_momentum_sum(df: pd.DataFrame, window_sizes: List[int] = 
 
     result_df = pd.DataFrame(result_data)
 
-    # Sort by weighted average momentum in descending order and add rank
-    result_df = result_df.sort_values("m", ascending=False).reset_index(drop=True)
+    # Calculate combined score (m + a) for ranking
+    result_df["combined_score"] = result_df["m"] + result_df.get("a", 0).fillna(0)
+    
+    # Sort by combined score in descending order and add rank
+    result_df = result_df.sort_values("combined_score", ascending=False).reset_index(drop=True)
     result_df["Rank"] = range(1, len(result_df) + 1)
 
     # Create column order: Rank, Symbol, then momentum-acceleration pairs, then weighted average, then streaks
@@ -599,8 +616,8 @@ def compute_annualized_momentum_sum(df: pd.DataFrame, window_sizes: List[int] = 
         if window in acceleration_windows:
             ordered_columns.append(f"a{window}")
 
-    # Add weighted average, stride, streaks, average consecutive movements, average percentage movements, %change, and put-call ratio at the end
-    ordered_columns.extend(["m", "stride", "s0", "s1", "s2", "avg_s+", "avg_s-", "avg%+", "avg%-", f"d{min(window_sizes)}", "pcr_m1"])
+    # Add weighted average, acceleration, combined score, stride, streaks, average consecutive movements, average percentage movements, %change, and put-call ratio at the end
+    ordered_columns.extend(["m", "a", "combined_score", "stride", "s0", "s1", "s2", "avg_s+", "avg_s-", "avg%+", "avg%-", f"d{min(window_sizes)}", "pcr_m1"])
 
     result_df = result_df[ordered_columns]
 

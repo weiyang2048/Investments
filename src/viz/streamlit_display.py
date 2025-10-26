@@ -99,13 +99,32 @@ def display_dataframe(
     data_type: Optional[str] = None,
     centered: bool = True,
     hide_index: bool = False,
+    hide_rows: Optional[list] = None,
     cmap: str = "RdYlGn",
     vmin: Optional[float] = None,
     vmax: Optional[float] = None,
     **style_kwargs,
 ) -> None:
-    """Display DataFrame with optional styling, centering, and vmin for colormap."""
+    """Display DataFrame with optional styling, centering, and vmin for colormap.
+    
+    Args:
+        df: DataFrame to display
+        symbol_type: Type of symbols (for styling)
+        data_type: Type of data (for styling)
+        centered: Whether to center the display
+        hide_index: Whether to hide the DataFrame index
+        hide_rows: List of row names to hide (optional, no rows hidden by default)
+        cmap: Colormap for background gradient
+        vmin: Minimum value for colormap
+        vmax: Maximum value for colormap
+        **style_kwargs: Additional styling arguments
+    """
     df = df.copy()
+    
+    # Hide specified rows if provided
+    if hide_rows:
+        df = df.drop(index=hide_rows, errors='ignore')
+    
     if symbol_type and data_type:
         styled_df = (
             df.style.set_properties(**{"font-weight": "bold"})

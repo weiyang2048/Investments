@@ -144,10 +144,10 @@ def _process_symbol_tab(
 
     # Create momentum ranking first (always needed for data analysis)
     with st.spinner("Computing momentum ranking..."):
-        momentum_ranking, _ = _create_and_sort_momentum_data(df_pivot, look_back_days)
+        momentum_ranking, _ = _create_and_sort_momentum_data(df_pivot, look_back_days, sort_column="combined_score")
 
     # Display momentum ranking table first
-    display_dataframe(momentum_ranking, symbol_type, "am", vmin=-0.1, vmax=1)
+    display_dataframe(momentum_ranking, symbol_type, "am", vmin=-0.1, vmax=1, hide_rows=["combined_score"])
 
     # Always create and display combined plot
     with st.spinner("Creating combined performance & momentum plot..."):
@@ -200,7 +200,7 @@ def _process_symbol_tab(
     # Performance section removed as requested
 
 
-def _create_and_sort_momentum_data(df_pivot, window_sizes, momentum_df=None):
+def _create_and_sort_momentum_data(df_pivot, window_sizes, momentum_df=None, sort_column="combined_score"):
     """Create momentum ranking and sort momentum dataframe by ranking values."""
     # Create momentum ranking
     momentum_ranking = create_momentum_ranking_display(
@@ -211,11 +211,11 @@ def _create_and_sort_momentum_data(df_pivot, window_sizes, momentum_df=None):
     # Sort momentum_df columns by momentum_ranking values if provided
     if momentum_df is not None:
         # Get the agg_momentum values from momentum_ranking (transposed format)
-        if "am" in momentum_ranking.index:
-            ranking_values = momentum_ranking.loc["am"]
+        if sort_column in momentum_ranking.index:
+            ranking_values = momentum_ranking.loc[sort_column]
         else:
             # If not transposed, get from the agg_momentum column
-            ranking_values = momentum_ranking.set_index("Symbol")["am"]
+            ranking_values = momentum_ranking.set_index("Symbol")[sort_column]
 
         # Sort columns by the momentum ranking values (descending order)
         sorted_columns = ranking_values.sort_values(ascending=False).index
