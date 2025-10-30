@@ -1,6 +1,6 @@
 lenses:
   main:
-    Regions: ${union:[SPMO, IDMO,EEMO, CEE,  FLN, AFK, AIA, ASEA, IPAC, FEP], [GLTR, IAUM,  SLV, PPLT, GSOL, IBIT, ETHA], [VNAM, EWY, EPU, EWS, EWK, NFTY, EPOL, EZA, EIS, ARGT, EWN, FCA]}
+    Regions: ${union:[SPMO, IDMO,EEMO, CEE,  FLN, AFK, AIA, ASEA, IPAC, FEP], [GLTR, GDLC], [VNAM, EWY, EPU, EWS, EWK, NFTY, EPOL, EZA, EIS, ARGT, EWN, FCA]}
     Sectors: ${union:[PYZ, PTH, PUI, PFI], [ARKX, ARKF,ARKW, ARKQ, ARKG], [QTUM,
      REMX, AIPO, EUFN, EUAD], [BKCH, GOEX, SLVP, COPX, DMAT, HYDR, URA, LIT, AIQ, BOTZ, SHLD], ${get_keys:tickers.sectors}}
     Commodities: [GDLC, BTC, ETH, BKCH, GLTR, IAUM, GOEX, SLV, SLVP, PPLT, COPX, REMX, DMAT, HYDR, URA, LIT, IEO, DBA]
