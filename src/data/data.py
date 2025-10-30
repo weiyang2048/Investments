@@ -465,6 +465,7 @@ def compute_annualized_momentum_sum(df: pd.DataFrame, window_sizes: List[int] = 
         - m: Weighted average of annualized momentum across all window sizes
         - a: Weighted average acceleration (rate of change of momentum) across window sizes
         - combined_score: Sum of m + a, used for ranking
+        - d0: Latest day-to-day percentage change
         - d6: 6-day percentage change (smallest window size)
         - stride: Compound growth factor based on average consecutive movements
         - s0, s1, s2: Current, previous, and before-previous consecutive streaks
@@ -486,6 +487,7 @@ def compute_annualized_momentum_sum(df: pd.DataFrame, window_sizes: List[int] = 
     avg_minus_percent = {}
     stride = {}
     pct_change_smallest_window = {}
+    d0_latest_change = {}
     a = {}
     # Calculate acceleration for all window sizes except the last one
     acceleration_windows = window_sizes[:-1]  # Exclude the last window
@@ -509,7 +511,7 @@ def compute_annualized_momentum_sum(df: pd.DataFrame, window_sizes: List[int] = 
                 annualized_momentum = min((1 + last_momentum) ** (252 / window) - 1, 1)
                 symbol_momentum[f"m{window}"] = np.round(annualized_momentum, 4)
 
-                weight =1 #= 1 / np.log(window)
+                weight = 1 / np.log(window)
                 weighted_momentum = annualized_momentum * weight
                 total_weight += weight
                 total_annualized_momentum += weighted_momentum
@@ -547,15 +549,13 @@ def compute_annualized_momentum_sum(df: pd.DataFrame, window_sizes: List[int] = 
         # Calculate stride: (1+avg%+/100)**(avg_s+) * (1-avg%-/100)**(avg_s-)
         avg_s_plus_val = avg_s_plus[symbol]
         avg_s_minus_val = avg_s_minus[symbol]
-        sum_s = (avg_s_plus_val + avg_s_minus_val) / 4
-        avg_s_plus_val = avg_s_plus_val / sum_s
-        avg_s_minus_val = avg_s_minus_val / sum_s
+        sum_s = avg_s_plus_val + avg_s_minus_val
         avg_plus_pct_val = avg_plus_percent[symbol]
         avg_minus_pct_val = avg_minus_percent[symbol]
         
-        stride_value = ((1 + avg_plus_pct_val/100) ** avg_s_plus_val) * ((1 - abs(avg_minus_pct_val)/100) ** avg_s_minus_val)
+        stride_value = ((1 + avg_plus_pct_val/100) ** avg_s_plus_val * (1 - abs(avg_minus_pct_val)/100) ** avg_s_minus_val) ** (252/sum_s)
         
-        stride[symbol] = np.round((stride_value-1)*100, 2)
+        stride[symbol] = np.round(stride_value-1, 2)
 
         # Calculate %change for the smallest window size
         smallest_window = min(window_sizes)
@@ -564,6 +564,13 @@ def compute_annualized_momentum_sum(df: pd.DataFrame, window_sizes: List[int] = 
             pct_change_smallest_window[symbol] = np.round(smallest_window_momentum.iloc[-1], 2)
         else:
             pct_change_smallest_window[symbol] = np.nan
+
+        # Calculate d0 (latest day-to-day change)
+        if len(df[symbol]) >= 2:
+            latest_change = (df[symbol].iloc[-1] / df[symbol].iloc[-2] - 1) 
+            d0_latest_change[symbol] = np.round(latest_change, 2)
+        else:
+            d0_latest_change[symbol] = np.nan
 
         # Calculate put-call ratio
         pcr = get_pcr_m1(symbol)
@@ -592,6 +599,7 @@ def compute_annualized_momentum_sum(df: pd.DataFrame, window_sizes: List[int] = 
             "avg%-": avg_minus_percent[symbol],
             "stride": stride[symbol],
             "pcr_m1": pcr_m1s[symbol],
+            "d0": d0_latest_change[symbol],
             f"d{min(window_sizes)}": pct_change_smallest_window[symbol],
         }
         row.update(individual_momentum[symbol])
@@ -617,7 +625,7 @@ def compute_annualized_momentum_sum(df: pd.DataFrame, window_sizes: List[int] = 
             ordered_columns.append(f"a{window}")
 
     # Add weighted average, acceleration, combined score, stride, streaks, average consecutive movements, average percentage movements, %change, and put-call ratio at the end
-    ordered_columns.extend(["m", "a", "combined_score", "stride", "s0", "s1", "s2", "avg_s+", "avg_s-", "avg%+", "avg%-", f"d{min(window_sizes)}", "pcr_m1"])
+    ordered_columns.extend(["m", "a", "combined_score", "stride", "s0", "s1", "s2", "avg_s+", "avg_s-", "avg%+", "avg%-", "d0", f"d{min(window_sizes)}", "pcr_m1"])
 
     result_df = result_df[ordered_columns]
 

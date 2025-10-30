@@ -60,11 +60,11 @@ def display_fear_and_greed_info():
     combined_html = f"""
     <div style="text-align:center;padding:15px;border-radius:10px;background-color:#f0f2f6;"> 
         <div style="margin-bottom:10px;">
-            <a href="https://www.cnn.com/markets/fear-and-greed" target="_blank" style="color:{color_hex_stock};text-decoration:none;margin-left:5px;">{stock_value} {stock_desc} (S&P 500)</a>
+            <a href="https://www.cnn.com/markets/fear-and-greed" target="_blank" style="color:{color_hex_stock};text-decoration:none;margin-left:5px; font-weight: bold;">{stock_value} {stock_desc} (S&P 500)</a>
             |
             <a href="https://feargreedmeter.com/" target="_blank" style="color:{color_hex_crypto};text-decoration:none;color:#2895f7;font-size:12px;">🗺️</a>
             |
-            <a href="https://alternative.me/crypto/fear-and-greed-index/" target="_blank" style="color:{color_hex_crypto};text-decoration:none;margin-left:5px;">{crypto_value} {crypto_desc} (Crypto)</a>
+            <a href="https://alternative.me/crypto/fear-and-greed-index/" target="_blank" style="color:{color_hex_crypto};text-decoration:none;margin-left:5px; font-weight: bold;">{crypto_value} {crypto_desc} (Crypto)</a>
         </div>
     </div>
     """
@@ -289,7 +289,7 @@ def show_market_performance(
         )
 
     # Generate look_back_days list based on user input
-    look_back_days = [int(initial_lookback_days * (lookback_factor**i)) for i in range(6)]
+    look_back_days = [int(initial_lookback_days * (lookback_factor**i)) for i in range(5)]
     momentum_summaries = dict()
     dfs = dict()
 
