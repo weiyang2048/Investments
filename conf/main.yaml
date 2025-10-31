@@ -4,12 +4,12 @@ lenses:
     Sectors: ${union:[PYZ, PTH, PUI, PFI], [ARKX, ARKF,ARKW, ARKQ, ARKG], [QTUM,
      REMX, AIPO, EUFN, EUAD], [BKCH, GOEX, SLVP, COPX, DMAT, HYDR, URA, LIT, AIQ, BOTZ, SHLD], ${get_keys:tickers.sectors}}
     Commodities: [GDLC, BTC, ETH, BKCH, GLTR, IAUM, GOEX, SLV, SLVP, PPLT, COPX, REMX, DMAT, HYDR, URA, LIT, IEO, DBA]
-    Stocks: ${union:[AVGO, CAT], [ASML, ARGX], [OPEN, LCID, LITS], [LAC, OKLO, MP, PLUG, RGTI]}
+    Stocks: ${union:[AVGO, CAT,GE, GOOGL], [ASML, ARGX, TCEHY, BBVA], [OPEN, LCID, LITS], [LAC, OKLO, MP, PLUG, RGTI]}
     r: [ VEU, GOOGL, AIA]
     f: ['YGLD', 'MAXI', 'SLV', 'BKCH', 'IAUM', 'SPMO', 'GOEX', 'SLVP', 'ARKQ', 'TRAMX', 'ARGX', 'ASML', 'AIQ', 'CAT', 'AVGO', 'AIA', 'IEMG', 'JXI', 'IPAC', 'VXUS', 'AVDV',  'LCID', 'OPEN']
   themes:
     regions: ${union:[SPMO, IDMO, FEM, AVUV, AVDV, AVES],${get_keys:tickers.regions}}
-    income: [YGLD, MAXI, BPI, BCCC,  SCHD, SCHY,LVHI, LVHD, GPIQ, GPIX, JEPI, JEPQ, DIVO, IDVO, EFAS, SDEM]
+    income: [YGLD, MAXI, SCY, BPI, BCCC,  SCHD, SCHY,LVHI, LVHD, GPIQ, GPIX, JEPI, JEPQ, DIVO, IDVO, EFAS, SDEM]
     sp50: ${get_keys:tickers.stocks.sp50}
     adr50: ${get_keys:tickers.stocks.adr50}
     ARK: ${get_keys:tickers.ark}
