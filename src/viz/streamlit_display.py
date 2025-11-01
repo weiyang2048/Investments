@@ -179,13 +179,56 @@ def display_dataframe(
 
     else:
         styled_df = df
-
+    
+    # Display main table
     if centered:
         center_cols = st.columns([1, 6, 1])
         with center_cols[1]:
             st.dataframe(styled_df, hide_index=hide_index, height=35 * len(df) + 38, width="stretch", **style_kwargs)
     else:
         st.dataframe(styled_df, hide_index=hide_index, height=35 * len(df) + 38, width="stretch", **style_kwargs)
+    
+    # Create subtable with only marked symbols (those with suffixes) - after main table
+    # Get all possible suffixes from yaml_suffix_map
+    all_suffixes = list(yaml_suffix_map.values())
+    
+    # Find columns with suffixes (marked symbols)
+    # Check if column ends with any suffix, handling multiple suffixes
+    marked_columns = []
+    for col in df.columns:
+        for suffix in all_suffixes:
+            if col.endswith(suffix):
+                marked_columns.append(col)
+                break
+    
+    if marked_columns:
+        # Create subtable with only marked symbols
+        marked_df = df[marked_columns].copy()
+        
+        # Display in expander
+        with st.expander("📌 Marked Symbols Only", expanded=False):
+            if symbol_type and data_type:
+                marked_styled_df = (
+                    marked_df.style.set_properties(**{"font-weight": "bold"})
+                    .background_gradient(cmap=cmap, vmin=vmin, vmax=vmax)
+                    .apply(partial(highlight_row), axis=1)
+                    .format("{:.2f}", subset=[col for col in marked_df.columns if marked_df[col].dtype == "float64"])
+                    .format("{:.0f}", subset=[col for col in marked_df.columns if marked_df[col].dtype == "int64" or marked_df[col].dtype == "int32"])
+                )
+            else:
+                marked_styled_df = marked_df
+            
+            # Show legend for suffixes
+            suffix_legend = ", ".join([f"{suffix} = {yaml_file.replace('.yaml', '')}" for yaml_file, suffix in yaml_suffix_map.items()])
+            st.caption(f"Symbols marked with: {suffix_legend}")
+            
+            # Display the marked symbols table
+            if centered:
+                marked_center_cols = st.columns([1, 6, 1])
+                with marked_center_cols[1]:
+                    st.dataframe(marked_styled_df, hide_index=hide_index, height=35 * len(marked_df) + 38, width="stretch", **style_kwargs)
+            else:
+                st.dataframe(marked_styled_df, hide_index=hide_index, height=35 * len(marked_df) + 38, width="stretch", **style_kwargs)
 
 
 def display_table_of_contents(sections: Optional[list] = None) -> None:
