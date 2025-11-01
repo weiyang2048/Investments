@@ -285,6 +285,19 @@ def create_price_ratio_plot(
     # Filter out denominator_symbol from numerator_symbols if present
     numerator_symbols = [s for s in numerator_symbols if s != denominator_symbol]
     
+    # Sort numerator symbols by momentum ranking (if available)
+    sorted_numerator_symbols = numerator_symbols.copy()
+    if momentum_ranking is not None and "combined_score" in momentum_ranking.index:
+        # Get combined_score row (symbols are columns)
+        combined_scores = momentum_ranking.loc["combined_score"]
+        # Filter to only symbols that exist in numerator_symbols
+        available_scores = combined_scores[combined_scores.index.isin(numerator_symbols)]
+        # Sort by combined_score descending
+        sorted_by_momentum = available_scores.sort_values(ascending=False).index.tolist()
+        # Keep any symbols not in momentum_ranking at the end
+        symbols_not_in_ranking = [s for s in numerator_symbols if s not in sorted_by_momentum]
+        sorted_numerator_symbols = sorted_by_momentum + symbols_not_in_ranking
+    
     # Determine top N symbols by momentum for visibility control
     top_symbols = set()
     if momentum_ranking is not None and "combined_score" in momentum_ranking.index:
@@ -340,8 +353,40 @@ def create_price_ratio_plot(
         df_window = df.tail(days).copy()
         df_window_norm = normalize_prices(df_window)
         
-        # Add traces for ALL ratios in this window
-        for numerator_symbol in numerator_symbols:
+        # Add AVG trace first: average of all numerator symbols (except denominator)
+        valid_numerator_symbols = [s for s in numerator_symbols if s in df_window_norm.columns]
+        if valid_numerator_symbols and denominator_symbol in df_window_norm.columns:
+            # Compute average of normalized prices for all numerators
+            avg_numerator_norm = df_window_norm[valid_numerator_symbols].mean(axis=1)
+            # Compute average ratio
+            avg_ratio = avg_numerator_norm / df_window_norm[denominator_symbol]
+            
+            # Create hover template for AVG
+            hover_template_avg = f"<b style='color: gold'>Symbol:</b> AVG<br>"
+            hover_template_avg += f"<b style='color: gold'>Date:</b>%{{x}}<br>"
+            hover_template_avg += f"<b>Average of {len(valid_numerator_symbols)} symbols</b><br>"
+            hover_template_avg += f"<b>Denominator ({denominator_symbol}):</b>%{{customdata[1]:.2f}}<br>"
+            hover_template_avg += f"<b>Average Ratio:</b>%{{y:.4f}}<extra></extra>"
+            
+            # Add AVG trace (always visible) - added first to appear first in legend
+            fig.add_trace(
+                go.Scatter(
+                    x=df_window_norm["Date"],
+                    y=avg_ratio,
+                    name="AVG",  # Show as AVG in legend
+                    mode="lines",
+                    line=dict(color="gold", width=2, dash="dash"),
+                    customdata=list(zip(avg_numerator_norm, df_window_norm[denominator_symbol])),
+                    hovertemplate=hover_template_avg,
+                    visible=True,  # Always visible
+                    showlegend=(subplot_idx == 0),  # Only show legend for first subplot
+                    legendgroup="AVG",
+                ),
+                row=row, col=col,
+            )
+        
+        # Add traces for ALL ratios in this window (sorted by momentum, AVG already added first)
+        for numerator_symbol in sorted_numerator_symbols:
             if numerator_symbol not in df_window_norm.columns:
                 continue
             

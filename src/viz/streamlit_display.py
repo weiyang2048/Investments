@@ -127,20 +127,46 @@ def display_dataframe(
     if hide_rows:
         df = df.drop(index=hide_rows, errors='ignore')
     
-    # Load f.yaml to get list of tickers and append * to matching column names
-    f_yaml_tickers = set()
+    # Load yaml files to get list of tickers and append suffixes to matching column names
+    # Load yaml_suffix_map from main.yaml config
+    yaml_suffix_map = {}
     try:
-        f_yaml_path = here("conf/tickers/f.yaml")
-        with open(f_yaml_path, "r") as f:
-            f_yaml_data = yaml.safe_load(f)
-            f_yaml_tickers = set(f_yaml_data.keys()) if f_yaml_data else set()
+        main_yaml_path = here("conf/main.yaml")
+        with open(main_yaml_path, "r") as f:
+            main_yaml_data = yaml.safe_load(f)
+            yaml_suffix_map = main_yaml_data.get("yaml_suffix_map", {})
     except Exception:
-        # If file doesn't exist or can't be loaded, continue without modification
-        pass
+        # If config doesn't exist or can't be loaded, use default mapping
+        yaml_suffix_map = {
+            "r.yaml": ")",
+            "f.yaml": "*",
+        }
     
-    # Rename columns to append * for tickers in f.yaml
-    if f_yaml_tickers:
-        df.columns = [f"{col}*" if col in f_yaml_tickers else col for col in df.columns]
+    # Dictionary to store ticker sets for each yaml file
+    yaml_ticker_sets = {}
+    
+    # Load all yaml files and collect their tickers
+    for yaml_file, suffix in yaml_suffix_map.items():
+        ticker_set = set()
+        try:
+            yaml_path = here(f"conf/tickers/{yaml_file}")
+            with open(yaml_path, "r") as f:
+                yaml_data = yaml.safe_load(f)
+                ticker_set = set(yaml_data.keys()) if yaml_data else set()
+        except Exception:
+            # If file doesn't exist or can't be loaded, continue without modification
+            pass
+        yaml_ticker_sets[suffix] = ticker_set
+    
+    # Rename columns to append suffixes for tickers found in yaml files
+    def get_column_suffix(column_name):
+        suffixes = []
+        for suffix, ticker_set in yaml_ticker_sets.items():
+            if ticker_set and column_name in ticker_set:
+                suffixes.append(suffix)
+        return "".join(suffixes)
+    
+    df.columns = [f"{col}{get_column_suffix(col)}" if get_column_suffix(col) else col for col in df.columns]
     
     if symbol_type and data_type:
         styled_df = (

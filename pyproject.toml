@@ -19,6 +19,7 @@ dependencies = ["click>=8.0.0", "streamlit>=1.0.0", "pandas>=1.2.0"]
 
 [project.scripts]
 inv-dash = "cli.dashboard:cli"
+inv-port = "cli.portfolio:cli"
 
 [project.urls]
 Homepage = "https://github.com/weiyang2048/Investments"

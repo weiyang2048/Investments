@@ -8,3 +8,5 @@ notebooks/
 uv.lock
 .devcontainer/
 outputs/
+conf/account_mapping.json
+Portfolio_Positions.csv

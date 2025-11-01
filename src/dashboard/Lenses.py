@@ -67,7 +67,7 @@ def display_fear_and_greed_info():
             <a href="https://alternative.me/crypto/fear-and-greed-index/" target="_blank" style="color:{color_hex_crypto};text-decoration:none;margin-left:5px; font-weight: bold;">{crypto_value} {crypto_desc} (Crypto)</a>
         </div>
         <div>
-            <span style="color:black;text-decoration:none;">YF Rank:</span> <a href="https://finance.yahoo.com/markets/stocks/most-active/" target="_blank" style="color:#2895f7;text-decoration:none;">Stock</a> | <a href="https://finance.yahoo.com/markets/etfs/top-performing/?start=0&count=25" target="_blank" style="color:#2895f7;text-decoration:none;">ETF</a> 
+             <a href="https://finance.yahoo.com/markets/stocks/most-active/" target="_blank" style="color:#2895f7;text-decoration:none;">yStock</a> | <a href="https://finance.yahoo.com/markets/etfs/top-performing/?start=0&count=25" target="_blank" style="color:#2895f7;text-decoration:none;">yETF</a> | <a href="https://stockanalysis.com/stocks/compare/chpy-vs-nvdy-vs-gooy-vs-googl-vs-soxy-vs-gpty-vs-ygld-vs-maxi-vs-lfgy/" target="_blank" style="color:#2895f7;text-decoration:none;">Compare</a>
         </div>
     </div>
     """
@@ -203,19 +203,6 @@ def _process_symbol_tab(
 
     st.plotly_chart(combined_fig, config={"displayModeBar": False})
 
-
-    # Display correlation section
-    display_section_header("Correlation")
-
-    # Show correlation plot (clustermap) first and compute correlation matrix
-    with st.spinner("Computing correlation plot..."):
-        corr_matrix = pivoted_to_corr(df=df_pivot, plot=True, streamlit=True, marchenko_pastur=marchenko_pastur)
-    
-    # Display correlation matrix in a collapsible expander (collapsed by default)
-    with st.expander("Correlation Matrix", expanded=False):
-        corr_matrix = corr_matrix.round(0).astype(int)
-        display_dataframe(corr_matrix, symbol_type, "Correlation Matrix")
-
     # Add ratio plot - first symbol is denominator, others are numerators
     if len(symbols) >= 2:
         display_section_header("Ratio")
@@ -235,6 +222,18 @@ def _process_symbol_tab(
                 top_n=5
             )
             st.plotly_chart(ratio_fig, config={"displayModeBar": False})
+
+    # Display correlation section
+    display_section_header("Correlation")
+
+    # Show correlation plot (clustermap) first and compute correlation matrix
+    with st.spinner("Computing correlation plot..."):
+        corr_matrix = pivoted_to_corr(df=df_pivot, plot=True, streamlit=True, marchenko_pastur=marchenko_pastur)
+    
+    # Display correlation matrix in a collapsible expander (collapsed by default)
+    with st.expander("Correlation Matrix", expanded=False):
+        corr_matrix = corr_matrix.round(0).astype(int)
+        display_dataframe(corr_matrix, symbol_type, "Correlation Matrix")
 
     # Performance section removed as requested
 
@@ -330,8 +329,7 @@ def show_market_performance(
         )
 
     # Bottom Table of Contents
-    sections = ["Momentum", "Correlation"]
-    sections.append("Ratio")
+    sections = ["Momentum", "Ratio", "Correlation"]
     
     display_table_of_contents(sections=sections)
 
@@ -358,9 +356,7 @@ if __name__ == "__main__":
     display_fear_and_greed_info()
 
     # Table of Contents
-    sections = ["Momentum", "Correlation"]
-    sections.append("Ratio")
-    # Check if we have custom symbols with exactly 2 symbols
+    sections = ["Momentum", "Ratio", "Correlation"]
     
     display_table_of_contents(sections=sections)
 

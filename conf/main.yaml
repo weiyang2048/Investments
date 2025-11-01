@@ -3,8 +3,8 @@ lenses:
     Regions: ${union:${get_keys:tickers.regions},  [GLTR, GDLC]}
     Sectors: ${union:${get_keys:tickers.sectors}, [PYZ, PTH, PTF, PRN, PDP, PUI, PFI], [ARKX, ARKF,ARKW, ARKQ, ARKG], [QTUM,XSD,
      REMX, AIPO, EUFN, EUAD, ILIT], [BKCH, GOEX, SLVP, COPX, DMAT, HYDR, URA, LIT, AIQ, BOTZ, CHPX,SHLD]}
-    Commodities: [GDLC, BTC, ETH, GSOL, BKCH, GLTR, IAUM, GOEX, SLV, SLVP, PPLT, COPX, REMX, DMAT, HYDR, URA, ILIT, LIT, IEO, DBA]
-    income: ${union:${get_keys:tickers.ymax},[YGLD, MAXI,  BPI, BCCC,  SCHD, SCHY,LVHI, LVHD, GPIQ, GPIX, JEPI, JEPQ, DIVO, IDVO, EFAS, SDEM]}
+    Commodities: [ GLTR, IAUM, GOEX, SLV, SLVP, PPLT, GDLC, BTC, ETH, GSOL, BKCH,COPX, REMX, DMAT, HYDR, URA, ILIT, LIT, IEO, DBA]
+    income: ${union:[GPIQ, GPIX,  JEPQ, JEPI,  DIVO, IDVO, SCHD, SCHY,LVHD,LVHI ], ${get_keys:tickers.ymax},[YGLD, MAXI,  BPI, BCCC,   EFAS, SDEM]}
     Stocks: ${union:[AVGO, CAT,GE, GOOGL], [ASML, ARGX, TCEHY, BBVA], [OPEN, LCID, LITS], [LAC, OKLO, MP, PLUG, RGTI]}
     r: [ VEU, GOOGL, AIA]
     f: ${get_keys:tickers.f}
@@ -17,6 +17,13 @@ lenses:
     ARK: ${get_keys:tickers.ark}
     invescoMomentum: ${get_keys:tickers.momentum}
     globalX: ${get_keys:tickers.globalX}
+
+yaml_suffix_map:
+  f.yaml: "*"
+  s.yaml: "~"
+  r.yaml: "^"
+  # Future additions can be added here, e.g.:
+  # "3.yaml": "3"
 
 defaults:
   - style_conf: [shared_configs, color_line_styles]
