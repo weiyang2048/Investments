@@ -1,3 +1,27 @@
+
+SPMO:
+  name: Invesco S&P 500 Momentum ETF
+  color: rgba(100,100,200,1)
+  line_style: solid
+IDMO:
+  name: Invesco S&P International Developed Momentum ETF
+  color: rgba(155,155,55,1)
+  line_style: solid
+EEMO:
+  name: Invesco S&P Emerging Markets Momentum ETF
+  region: Emerging Markets
+  color: rgba(255,0,100,1)
+AVUV:
+  name: Avantis U.S. Small Cap Value ETF
+  color: rgba(173,216,230,0.5)
+AVDV:
+  name: Avantis International Small Cap Value ETF
+  color: rgba(50,255,100,0.5)
+  line_style: dash
+AVES:
+  name: Avantis Emerging Markets Value ETF
+  color: rgba(255,127,80,0.5) # coral
+  line_style: dash
 # @@ Regions
 CEE:
   name: Central and Eastern Europe Fund

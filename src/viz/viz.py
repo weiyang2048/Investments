@@ -201,8 +201,8 @@ def create_combined_performance_momentum_plot(
     fig.update_layout(
         height=300 * n_windows, showlegend=True, plot_bgcolor="black", paper_bgcolor="black",
         font=dict(color="white"), hovermode="closest", autosize=True,
-        margin=dict(l=50, r=50, t=60, b=50),
-        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="center", x=0.5,
+        margin=dict(l=50, r=150, t=60, b=50),  # Increased right margin for legend
+        legend=dict(orientation="v", yanchor="top", y=1, xanchor="left", x=1.02,
                    font=dict(color="white"), bgcolor="black"),
     )
     
@@ -255,112 +255,151 @@ def create_plotly_choropleth(
 
 def create_price_ratio_plot(
     df: pd.DataFrame,
-    symbol1: str,
-    symbol2: str,
+    denominator_symbol: str,
+    numerator_symbols: List[str],
     colors_dict: Dict[str, str],
     line_styles_dict: Dict[str, str],
     equity_config: Dict[str, Dict],
     look_back_days: List[int] = None,
+    momentum_ranking: pd.DataFrame = None,
+    top_n: int = 5,
 ) -> go.Figure:
     """
-    Create a price ratio plot for two symbols.
+    Create price ratio plots organized by window size. Each row represents a different lookback period.
+    First symbol is denominator, other symbols are numerators.
     
     Args:
-        df: DataFrame with price data (columns: Date, symbol1, symbol2, ...)
-        symbol1: First symbol (numerator)
-        symbol2: Second symbol (denominator)
+        df: DataFrame with price data (columns: Date, symbols...)
+        denominator_symbol: Symbol to use as denominator (first symbol)
+        numerator_symbols: List of symbols to use as numerators (other symbols)
         colors_dict: Dictionary mapping symbols to colors
         line_styles_dict: Dictionary mapping symbols to line styles
         equity_config: Configuration dictionary for symbols
-        look_back_days: List of lookback periods to display (not used, kept for compatibility)
+        look_back_days: List of lookback periods in days (each becomes a row)
+        momentum_ranking: DataFrame with momentum rankings (transposed, columns=symbols, rows=metrics including 'combined_score')
+        top_n: Number of top symbols to display by momentum (default: 5)
         
     Returns:
-        plotly.graph_objects.Figure: The ratio plot
+        plotly.graph_objects.Figure: The ratio plot with rows for different window sizes
     """
-    # Use the maximum available data (all data)
-    df_period = df.copy()
+    # Filter out denominator_symbol from numerator_symbols if present
+    numerator_symbols = [s for s in numerator_symbols if s != denominator_symbol]
     
-    # Calculate the ratio
-    if symbol1 in df_period.columns and symbol2 in df_period.columns:
-        ratio = df_period[symbol1] / df_period[symbol2]
-        
-        # Create hover template
-        hover_template = f"<b>Date:</b>%{{x}}<br>"
-        hover_template += f"<b style='color: {colors_dict.get(symbol1, 'black')}'>{symbol1}:</b>%{{customdata[0]:.2f}}<br>"
-        hover_template += f"<b style='color: {colors_dict.get(symbol2, 'black')}'>{symbol2}:</b>%{{customdata[1]:.2f}}<br>"
-        hover_template += f"<b>Ratio ({symbol1}/{symbol2}):</b>%{{y:.4f}}<extra></extra>"
-        
-        # Create the figure with secondary y-axis
-        from plotly.subplots import make_subplots
-        fig = make_subplots(specs=[[{"secondary_y": True}]])
-        
-        # Add ratio line (left y-axis)
-        fig.add_trace(
-            go.Scatter(
-                x=df_period["Date"],
-                y=ratio,
-                name=f"Ratio {symbol1}/{symbol2}",
-                mode="lines+markers",
-                line=dict(color=colors_dict.get(symbol1, "blue"), width=3, dash="dash"),
-                marker=dict(size=5),
-                customdata=list(zip(df_period[symbol1], df_period[symbol2])),
-                hovertemplate=hover_template,
-            ),
-            secondary_y=False,
+    # Determine top N symbols by momentum for visibility control
+    top_symbols = set()
+    if momentum_ranking is not None and "combined_score" in momentum_ranking.index:
+        # Get combined_score row (symbols are columns)
+        combined_scores = momentum_ranking.loc["combined_score"]
+        # Filter to only symbols that exist in numerator_symbols
+        available_scores = combined_scores[combined_scores.index.isin(numerator_symbols)]
+        # Sort by combined_score descending and take top N
+        top_symbols = set(available_scores.sort_values(ascending=False).head(top_n).index.tolist())
+    
+    if not numerator_symbols:
+        return go.Figure().add_annotation(
+            text="No numerator symbols provided", 
+            xref="paper", yref="paper", x=0.5, y=0.5,
+            showarrow=False, font=dict(size=16)
         )
+    
+    # Check if denominator symbol exists
+    if denominator_symbol not in df.columns:
+        return go.Figure().add_annotation(
+            text=f"Denominator symbol {denominator_symbol} not found in data", 
+            xref="paper", yref="paper", x=0.5, y=0.5,
+            showarrow=False, font=dict(size=16)
+        )
+    
+    # Default to all data if look_back_days not provided
+    if look_back_days is None or len(look_back_days) == 0:
+        look_back_days = [len(df)]
+    
+    n_subplots = len(look_back_days)
+    n_cols = 2  # Fixed 2 columns
+    n_rows = (n_subplots + n_cols - 1) // n_cols  # Calculate rows needed
+    
+    # Create subplots with 2 columns
+    subplot_titles = [f"{days}d" for days in look_back_days]
+    
+    # Calculate vertical spacing dynamically
+    vertical_spacing = min(0.12, 0.9 / max(n_rows - 1, 1))
+    
+    fig = make_subplots(
+        rows=n_rows, cols=n_cols,
+        subplot_titles=subplot_titles,
+        vertical_spacing=vertical_spacing,
+        horizontal_spacing=0.1,
+    )
+    
+    # Add traces for each window size (each subplot)
+    for subplot_idx, days in enumerate(look_back_days):
+        row = (subplot_idx // n_cols) + 1
+        col = (subplot_idx % n_cols) + 1
         
-        # Add horizontal line at ratio = 1
+        # Get data for this window (last N days) and normalize prices within this window
+        df_window = df.tail(days).copy()
+        df_window_norm = normalize_prices(df_window)
+        
+        # Add traces for ALL ratios in this window
+        for numerator_symbol in numerator_symbols:
+            if numerator_symbol not in df_window_norm.columns:
+                continue
+            
+            # Calculate the ratio from normalized prices (both start at 1.0 in this window)
+            ratio = df_window_norm[numerator_symbol] / df_window_norm[denominator_symbol]
+            
+            # Create hover template for ratio
+            keys = [key for key in ["name", "region", "industry", "n_holdings"] 
+                    if key in equity_config.get(numerator_symbol, {})]
+            hover_template_ratio = _create_hover_template(numerator_symbol, colors_dict, equity_config, keys, "Ratio")
+            hover_template_ratio += f"<b>Denominator ({denominator_symbol}):</b>%{{customdata[1]:.2f}}<br>"
+            hover_template_ratio += f"<b>Ratio ({numerator_symbol}/{denominator_symbol}):</b>%{{y:.4f}}<extra></extra>"
+            
+            # Determine visibility: top N by momentum are visible, others are legendonly
+            is_visible = numerator_symbol in top_symbols if top_symbols else True
+            visible = True if is_visible else "legendonly"
+            
+            # Add ratio line
+            fig.add_trace(
+                go.Scatter(
+                    x=df_window_norm["Date"],
+                    y=ratio,
+                    name=numerator_symbol,  # Only show numerator symbol in legend (denominator is implicit)
+                    mode="lines",
+                    line=dict(color=colors_dict.get(numerator_symbol, "blue"), width=3),
+                    customdata=list(zip(df_window_norm[numerator_symbol], df_window_norm[denominator_symbol])),
+                    hovertemplate=hover_template_ratio,
+                    visible=visible,
+                    showlegend=(subplot_idx == 0),  # Only show legend for first subplot
+                    legendgroup=numerator_symbol,
+                ),
+                row=row, col=col,
+            )
+        
+        # Add horizontal line at ratio = 1 for this subplot
         fig.add_hline(
             y=1, 
             line_dash="dash", 
-            line_color="gray", 
+            line_color="crimson", 
             opacity=0.5,
-            annotation_text="Ratio = 1"
+            row=row, col=col,
         )
-        
-        # Add individual price lines (right y-axis)
-        # Symbol 1 (numerator) - solid line
-        fig.add_trace(
-            go.Scatter(
-                x=df_period["Date"],
-                y=df_period[symbol1],
-                name=f"{symbol1} Price",
-                mode="lines",
-                line=dict(color=colors_dict.get(symbol1, "blue"), width=2),
-                opacity=0.8,
-            ),
-            secondary_y=True,
-        )
-        
-        # Symbol 2 (denominator) - solid line
-        fig.add_trace(
-            go.Scatter(
-                x=df_period["Date"],
-                y=df_period[symbol2],
-                name=f"{symbol2} Price",
-                mode="lines",
-                line=dict(color=colors_dict.get(symbol2, "red"), width=2),
-                opacity=0.8,
-            ),
-            secondary_y=True,
-        )
-        
-        # Update layout
-        fig.update_layout(
-            title=f"Price Ratio Analysis: {symbol1}/{symbol2}",
-            height=500,
-            showlegend=True,
-            legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
-            xaxis_title="Date",
-        )
-        
-        # Set y-axes titles
-        fig.update_yaxes(title_text="Ratio", secondary_y=False)
-        fig.update_yaxes(title_text="Price ($)", secondary_y=True)
-        
-        return fig
-    else:
-        # Return empty figure if symbols not found
-        return go.Figure().add_annotation(text="One or both symbols not found in data", 
-                                        xref="paper", yref="paper", x=0.5, y=0.5, 
-                                        showarrow=False, font_size=16)
+    
+    # Update layout
+    fig.update_layout(
+        title=f"Price Ratio Analysis: */{denominator_symbol} (by window size)",
+        height=500 * n_rows,  # Adjust height based on number of rows
+        showlegend=True,
+        legend=dict(orientation="v", yanchor="top", y=1, xanchor="left", x=1.02),
+    )
+    
+    # Set axes titles
+    for subplot_idx in range(n_subplots):
+        row = (subplot_idx // n_cols) + 1
+        col = (subplot_idx % n_cols) + 1
+        fig.update_yaxes(title_text="Ratio", row=row, col=col)
+        # Set x-axis title only for bottom row subplots
+        if row == n_rows:
+            fig.update_xaxes(title_text="Date", row=row, col=col)
+    
+    return fig

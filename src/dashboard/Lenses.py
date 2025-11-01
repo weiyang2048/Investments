@@ -207,31 +207,34 @@ def _process_symbol_tab(
     # Display correlation section
     display_section_header("Correlation")
 
-    # Always compute and display correlation matrix
-    with st.spinner("Computing correlation matrix..."):
-        corr_matrix = pivoted_to_corr(df_pivot, plot=False, streamlit=True, marchenko_pastur=marchenko_pastur)
+    # Show correlation plot (clustermap) first and compute correlation matrix
+    with st.spinner("Computing correlation plot..."):
+        corr_matrix = pivoted_to_corr(df=df_pivot, plot=True, streamlit=True, marchenko_pastur=marchenko_pastur)
+    
+    # Display correlation matrix in a collapsible expander (collapsed by default)
+    with st.expander("Correlation Matrix", expanded=False):
         corr_matrix = corr_matrix.round(0).astype(int)
         display_dataframe(corr_matrix, symbol_type, "Correlation Matrix")
 
-    # Show correlation plot (clustermap) only if less than 100 symbols
-    # Calculate number of symbols (excluding Date column)
-    with st.spinner("Computing correlation plot..."):
-        pivoted_to_corr(df=df_pivot, plot=True, streamlit=True, corr_matrix=corr_matrix)
-
-    # Add ratio plot if exactly two symbols are provided
-    display_section_header("Price Ratio Analysis")
-    
-    with st.spinner("Creating price ratio plot..."):
-        ratio_fig = create_price_ratio_plot(
-            df_pivot,
-            symbols[0],
-            symbols[1],
-            colors_dict,
-            line_styles_dict,
-            equity_config,
-            look_back_days
-        )
-        st.plotly_chart(ratio_fig, config={"displayModeBar": False})
+    # Add ratio plot - first symbol is denominator, others are numerators
+    if len(symbols) >= 2:
+        display_section_header("Ratio")
+        
+        with st.spinner("Creating price ratio plot..."):
+            denominator_symbol = symbols[0]
+            numerator_symbols = symbols[1:]  # All other symbols are numerators
+            ratio_fig = create_price_ratio_plot(
+                df_pivot,
+                denominator_symbol,
+                numerator_symbols,
+                colors_dict,
+                line_styles_dict,
+                equity_config,
+                look_back_days,
+                momentum_ranking=momentum_ranking,
+                top_n=5
+            )
+            st.plotly_chart(ratio_fig, config={"displayModeBar": False})
 
     # Performance section removed as requested
 
@@ -328,7 +331,7 @@ def show_market_performance(
 
     # Bottom Table of Contents
     sections = ["Momentum", "Correlation"]
-    sections.append("Price Ratio Analysis")
+    sections.append("Ratio")
     
     display_table_of_contents(sections=sections)
 
@@ -356,6 +359,7 @@ if __name__ == "__main__":
 
     # Table of Contents
     sections = ["Momentum", "Correlation"]
+    sections.append("Ratio")
     # Check if we have custom symbols with exactly 2 symbols
     
     display_table_of_contents(sections=sections)

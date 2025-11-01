@@ -10,10 +10,7 @@ WTV:
   name: WisdomTree US Value Fund of Benef Interest
   region: US
   color: pink
-AVUV:
-  name: Avantis U.S. Small Cap Value ETF
-  region: US
-  color: lightblue
+
 FEM:
   name: First Trust Emerging Markets AlphaDEX Fund
   region: Emerging Markets
@@ -51,11 +48,7 @@ VXUS:
   region: XUS
   color: seagreen
 # ! Value
-AVDV:
-  name: Avantis International Small Cap Value ETF
-  region: XUS
-  color: rgba(50,255,100,0.5)
-  line_style: dash
+
 DOL:
   name: WisdomTree International LargeCap Dividend Fund
   region: XUS

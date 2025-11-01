@@ -130,7 +130,7 @@ def display_dataframe(
     # Load f.yaml to get list of tickers and append * to matching column names
     f_yaml_tickers = set()
     try:
-        f_yaml_path = here("conf/tickers/ports/f.yaml")
+        f_yaml_path = here("conf/tickers/f.yaml")
         with open(f_yaml_path, "r") as f:
             f_yaml_data = yaml.safe_load(f)
             f_yaml_tickers = set(f_yaml_data.keys()) if f_yaml_data else set()

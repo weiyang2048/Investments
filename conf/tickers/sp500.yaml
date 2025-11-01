@@ -1,0 +1,1508 @@
+A:
+  name: Agilent Technologies, Inc.
+
+AAL:
+  name: American Airlines Group Inc.
+
+AAPL:
+  name: Apple Inc.
+
+ABBV:
+  name: AbbVie Inc.
+
+ABNB:
+  name: Airbnb, Inc.
+
+ABT:
+  name: Abbott Laboratories
+
+ACGL:
+  name: Arch Capital Group Ltd.
+
+ACN:
+  name: Accenture plc
+
+ADBE:
+  name: Adobe Inc.
+
+ADI:
+  name: Analog Devices, Inc.
+
+ADM:
+  name: Archer-Daniels-Midland Company
+
+ADP:
+  name: Automatic Data Processing, Inc.
+
+ADSK:
+  name: Autodesk, Inc.
+
+AEE:
+  name: Ameren Corporation
+
+AEP:
+  name: American Electric Power Company, Inc.
+
+AES:
+  name: The AES Corporation
+
+AFL:
+  name: Aflac Incorporated
+
+AIG:
+  name: American International Group, Inc.
+
+AIZ:
+  name: Assurant, Inc.
+
+AJG:
+  name: Arthur J. Gallagher & Co.
+
+AKAM:
+  name: Akamai Technologies, Inc.
+
+ALB:
+  name: Albemarle Corporation
+
+ALGN:
+  name: Align Technology, Inc.
+
+ALL:
+  name: The Allstate Corporation
+
+ALLE:
+  name: Allegion plc
+
+AMAT:
+  name: Applied Materials, Inc.
+
+AMCR:
+  name: Amcor plc
+
+AMD:
+  name: Advanced Micro Devices, Inc.
+
+AME:
+  name: AMETEK, Inc.
+
+AMGN:
+  name: Amgen Inc.
+
+AMP:
+  name: Ameriprise Financial, Inc.
+
+AMT:
+  name: American Tower Corporation
+
+AMZN:
+  name: Amazon.com, Inc.
+
+ANET:
+  name: Arista Networks, Inc.
+
+ANSS:
+  name: ANSYS, Inc.
+
+AON:
+  name: Aon plc
+
+AOS:
+  name: A. O. Smith Corporation
+
+APA:
+  name: APA Corporation
+
+APD:
+  name: Air Products and Chemicals, Inc.
+
+APH:
+  name: Amphenol Corporation
+
+APTV:
+  name: Aptiv PLC
+
+ARE:
+  name: Alexandria Real Estate Equities, Inc.
+
+ATO:
+  name: Atmos Energy Corporation
+
+AVB:
+  name: AvalonBay Communities, Inc.
+
+AVGO:
+  name: Broadcom Inc.
+
+AVY:
+  name: Avery Dennison Corporation
+
+AWK:
+  name: American Water Works Company, Inc.
+
+AXON:
+  name: Axon Enterprise, Inc.
+
+AXP:
+  name: American Express Company
+
+AZO:
+  name: AutoZone, Inc.
+
+BA:
+  name: The Boeing Company
+
+BAC:
+  name: Bank of America Corporation
+
+BALL:
+  name: Ball Corporation
+
+BAX:
+  name: Baxter International Inc.
+
+BBWI:
+  name: Bath & Body Works, Inc.
+
+BBY:
+  name: Best Buy Co., Inc.
+
+BDX:
+  name: Becton, Dickinson and Company
+
+BEN:
+  name: Franklin Resources, Inc.
+
+BG:
+  name: Bunge Global SA
+
+BIIB:
+  name: Biogen Inc.
+
+BIO:
+  name: Bio-Rad Laboratories, Inc.
+
+BK:
+  name: The Bank of New York Mellon Corporation
+
+BKNG:
+  name: Booking Holdings Inc.
+
+BKR:
+  name: Baker Hughes Company
+
+BLDR:
+  name: Builders FirstSource, Inc.
+
+BLK:
+  name: BlackRock, Inc.
+
+BMY:
+  name: Bristol-Myers Squibb Company
+
+BR:
+  name: Broadridge Financial Solutions, Inc.
+
+BRK.B:
+  name: Berkshire Hathaway Inc.
+
+BRO:
+  name: Brown & Brown, Inc.
+
+BSX:
+  name: Boston Scientific Corporation
+
+BWA:
+  name: BorgWarner Inc.
+
+BX:
+  name: Blackstone Inc.
+
+BXP:
+  name: BXP, Inc.
+
+C:
+  name: Citigroup Inc.
+
+CAG:
+  name: Conagra Brands, Inc.
+
+CAH:
+  name: Cardinal Health, Inc.
+
+CARR:
+  name: Carrier Global Corporation
+
+CAT:
+  name: Caterpillar Inc.
+
+CB:
+  name: Chubb Limited
+
+CBOE:
+  name: Cboe Global Markets, Inc.
+
+CBRE:
+  name: CBRE Group, Inc.
+
+CCI:
+  name: Crown Castle Inc.
+
+CCL:
+  name: Carnival Corporation & plc
+
+CDNS:
+  name: Cadence Design Systems, Inc.
+
+CDW:
+  name: CDW Corporation
+
+CE:
+  name: Celanese Corporation
+
+CEG:
+  name: Constellation Energy Corporation
+
+CF:
+  name: CF Industries Holdings, Inc.
+
+CFG:
+  name: Citizens Financial Group, Inc.
+
+CHD:
+  name: Church & Dwight Co., Inc.
+
+CHRW:
+  name: C.H. Robinson Worldwide, Inc.
+
+CHTR:
+  name: Charter Communications, Inc.
+
+CI:
+  name: Cigna Group
+
+CINF:
+  name: Cincinnati Financial Corporation
+
+CL:
+  name: Colgate-Palmolive Company
+
+CLX:
+  name: The Clorox Company
+
+CMCSA:
+  name: Comcast Corporation
+
+CME:
+  name: CME Group Inc.
+
+CMG:
+  name: Chipotle Mexican Grill, Inc.
+
+CMI:
+  name: Cummins Inc.
+
+CMS:
+  name: CMS Energy Corporation
+
+CNC:
+  name: Centene Corporation
+
+CNP:
+  name: CenterPoint Energy, Inc.
+
+COF:
+  name: Capital One Financial Corporation
+
+COO:
+  name: The Cooper Companies, Inc.
+
+COP:
+  name: ConocoPhillips
+
+COR:
+  name: Cencora, Inc.
+
+COST:
+  name: Costco Wholesale Corporation
+
+CPAY:
+  name: Corpay, Inc.
+
+CPB:
+  name: Campbell Soup Company
+
+CPRT:
+  name: Copart, Inc.
+
+CPT:
+  name: Camden Property Trust
+
+CRL:
+  name: Charles River Laboratories International, Inc.
+
+CRM:
+  name: Salesforce, Inc.
+
+CSCO:
+  name: Cisco Systems, Inc.
+
+CSGP:
+  name: CoStar Group, Inc.
+
+CSX:
+  name: CSX Corporation
+
+CTAS:
+  name: Cintas Corporation
+
+CTLT:
+  name: Catalent, Inc.
+
+CTRA:
+  name: Coterra Energy Inc.
+
+CTSH:
+  name: Cognizant Technology Solutions Corporation
+
+CTVA:
+  name: Corteva, Inc.
+
+CVS:
+  name: CVS Health Corporation
+
+CVX:
+  name: Chevron Corporation
+
+CZR:
+  name: Caesars Entertainment, Inc.
+
+D:
+  name: Dominion Energy, Inc.
+
+DAL:
+  name: Delta Air Lines, Inc.
+
+DAY:
+  name: Dayforce Inc.
+
+DD:
+  name: DuPont de Nemours, Inc.
+
+DE:
+  name: Deere & Company
+
+DECK:
+  name: Deckers Outdoor Corporation
+
+DELL:
+  name: Dell Technologies Inc.
+
+DFS:
+  name: Discover Financial Services
+
+DG:
+  name: Dollar General Corporation
+
+DGX:
+  name: Quest Diagnostics Incorporated
+
+DHI:
+  name: D.R. Horton, Inc.
+
+DHR:
+  name: Danaher Corporation
+
+DIS:
+  name: The Walt Disney Company
+
+DLR:
+  name: Digital Realty Trust, Inc.
+
+DLTR:
+  name: Dollar Tree, Inc.
+
+DOC:
+  name: Healthpeak Properties, Inc.
+
+DOV:
+  name: Dover Corporation
+
+DOW:
+  name: Dow Inc.
+
+DPZ:
+  name: Domino's Pizza, Inc.
+
+DRI:
+  name: Darden Restaurants, Inc.
+
+DTE:
+  name: DTE Energy Company
+
+DUK:
+  name: Duke Energy Corporation
+
+DVA:
+  name: DaVita Inc.
+
+DVN:
+  name: Devon Energy Corporation
+
+DXCM:
+  name: DexCom, Inc.
+
+EA:
+  name: Electronic Arts Inc.
+
+EBAY:
+  name: eBay Inc.
+
+ECL:
+  name: Ecolab Inc.
+
+ED:
+  name: Consolidated Edison, Inc.
+
+EFX:
+  name: Equifax Inc.
+
+EG:
+  name: Everest Group, Ltd.
+
+EIX:
+  name: Edison International
+
+EL:
+  name: The Estée Lauder Companies Inc.
+
+ELV:
+  name: Elevance Health, Inc.
+
+EME:
+  name: EMCOR Group, Inc.
+
+EMR:
+  name: Emerson Electric Co.
+
+EOG:
+  name: EOG Resources, Inc.
+
+EPAM:
+  name: EPAM Systems, Inc.
+
+EQIX:
+  name: Equinix, Inc.
+
+EQR:
+  name: Equity Residential
+
+EQT:
+  name: EQT Corporation
+
+ERIE:
+  name: Erie Indemnity Company
+
+ES:
+  name: Eversource Energy
+
+ESS:
+  name: Essex Property Trust, Inc.
+
+ETN:
+  name: Eaton Corporation plc
+
+ETR:
+  name: Entergy Corporation
+
+ETSY:
+  name: Etsy, Inc.
+
+EVRG:
+  name: Evergy, Inc.
+
+EW:
+  name: Edwards Lifesciences Corporation
+
+EXC:
+  name: Exelon Corporation
+
+EXPD:
+  name: Expeditors International of Washington, Inc.
+
+EXPE:
+  name: Expedia Group, Inc.
+
+EXR:
+  name: Extra Space Storage Inc.
+
+F:
+  name: Ford Motor Company
+
+FANG:
+  name: Diamondback Energy, Inc.
+
+FAST:
+  name: Fastenal Company
+
+FCX:
+  name: Freeport-McMoRan Inc.
+
+FDS:
+  name: FactSet Research Systems Inc.
+
+FDX:
+  name: FedEx Corporation
+
+FE:
+  name: FirstEnergy Corp.
+
+FFIV:
+  name: F5, Inc.
+
+FI:
+  name: Fiserv, Inc.
+
+FICO:
+  name: Fair Isaac Corporation
+
+FIS:
+  name: Fidelity National Information Services, Inc.
+
+FITB:
+  name: Fifth Third Bancorp
+
+FMC:
+  name: FMC Corporation
+
+FOX:
+  name: Fox Corporation
+
+FOXA:
+  name: Fox Corporation
+
+FRT:
+  name: Federal Realty Investment Trust
+
+FSLR:
+  name: First Solar, Inc.
+
+FTNT:
+  name: Fortinet, Inc.
+
+FTV:
+  name: Fortive Corporation
+
+GD:
+  name: General Dynamics Corporation
+
+GDDY:
+  name: GoDaddy Inc.
+
+GE:
+  name: General Electric Company
+
+GEHC:
+  name: GE HealthCare Technologies Inc.
+
+GEN:
+  name: Gen Digital Inc.
+
+GEV:
+  name: GE Vernova Inc.
+
+GILD:
+  name: Gilead Sciences, Inc.
+
+GIS:
+  name: General Mills, Inc.
+
+GL:
+  name: Globe Life Inc.
+
+GLW:
+  name: Corning Incorporated
+
+GM:
+  name: General Motors Company
+
+GNRC:
+  name: Generac Holdings Inc.
+
+GOOG:
+  name: Alphabet Inc.
+
+GOOGL:
+  name: Alphabet Inc.
+
+GPC:
+  name: Genuine Parts Company
+
+GPN:
+  name: Global Payments Inc.
+
+GRMN:
+  name: Garmin Ltd.
+
+GS:
+  name: The Goldman Sachs Group, Inc.
+
+GWW:
+  name: W.W. Grainger, Inc.
+
+HAL:
+  name: Halliburton Company
+
+HAS:
+  name: Hasbro, Inc.
+
+HBAN:
+  name: Huntington Bancshares Incorporated
+
+HCA:
+  name: HCA Healthcare, Inc.
+
+HD:
+  name: The Home Depot, Inc.
+
+HES:
+  name: Hess Corporation
+
+HIG:
+  name: The Hartford Financial Services Group, Inc.
+
+HII:
+  name: Huntington Ingalls Industries, Inc.
+
+HLT:
+  name: Hilton Worldwide Holdings Inc.
+
+HOLX:
+  name: Hologic, Inc.
+
+HON:
+  name: Honeywell International Inc.
+
+HPE:
+  name: Hewlett Packard Enterprise Company
+
+HPQ:
+  name: HP Inc.
+
+HRL:
+  name: Hormel Foods Corporation
+
+HSIC:
+  name: Henry Schein, Inc.
+
+HST:
+  name: Host Hotels & Resorts, Inc.
+
+HSY:
+  name: The Hershey Company
+
+HUBB:
+  name: Hubbell Incorporated
+
+HUM:
+  name: Humana Inc.
+
+HWM:
+  name: Howmet Aerospace Inc.
+
+IBM:
+  name: International Business Machines Corporation
+
+ICE:
+  name: Intercontinental Exchange, Inc.
+
+IDXX:
+  name: IDEXX Laboratories, Inc.
+
+IEX:
+  name: IDEX Corporation
+
+IFF:
+  name: International Flavors & Fragrances Inc.
+
+INCY:
+  name: Incyte Corporation
+
+INTC:
+  name: Intel Corporation
+
+INTU:
+  name: Intuit Inc.
+
+INVH:
+  name: Invitation Homes Inc.
+
+IP:
+  name: International Paper Company
+
+IPG:
+  name: The Interpublic Group of Companies, Inc.
+
+IQV:
+  name: IQVIA Holdings Inc.
+
+IR:
+  name: Ingersoll Rand Inc.
+
+IRM:
+  name: Iron Mountain Incorporated
+
+ISRG:
+  name: Intuitive Surgical, Inc.
+
+IT:
+  name: Gartner, Inc.
+
+ITW:
+  name: Illinois Tool Works Inc.
+
+IVZ:
+  name: Invesco Ltd.
+
+J:
+  name: Jacobs Solutions Inc.
+
+JBHT:
+  name: J.B. Hunt Transport Services, Inc.
+
+JBL:
+  name: Jabil Inc.
+
+JCI:
+  name: Johnson Controls International plc
+
+JKHY:
+  name: Jack Henry & Associates, Inc.
+
+JNJ:
+  name: Johnson & Johnson
+
+JNPR:
+  name: Juniper Networks, Inc.
+
+JPM:
+  name: JPMorgan Chase & Co.
+
+K:
+  name: Kellanova
+
+KDP:
+  name: Keurig Dr Pepper Inc.
+
+KEY:
+  name: KeyCorp
+
+KEYS:
+  name: Keysight Technologies, Inc.
+
+KHC:
+  name: The Kraft Heinz Company
+
+KIM:
+  name: Kimco Realty Corporation
+
+KKR:
+  name: KKR & Co. Inc.
+
+KLAC:
+  name: KLA Corporation
+
+KMB:
+  name: Kimberly-Clark Corporation
+
+KMI:
+  name: Kinder Morgan, Inc.
+
+KMX:
+  name: CarMax, Inc.
+
+KO:
+  name: The Coca-Cola Company
+
+KR:
+  name: The Kroger Co.
+
+KVUE:
+  name: Kenvue Inc.
+
+L:
+  name: Loews Corporation
+
+LDOS:
+  name: Leidos Holdings, Inc.
+
+LEN:
+  name: Lennar Corporation
+
+LEN.B:
+  name: Lennar Corporation
+
+LH:
+  name: Laboratory Corporation of America Holdings
+
+LHX:
+  name: L3Harris Technologies, Inc.
+
+LIN:
+  name: Linde plc
+
+LKQ:
+  name: LKQ Corporation
+
+LLY:
+  name: Eli Lilly and Company
+
+LMT:
+  name: Lockheed Martin Corporation
+
+LNT:
+  name: Alliant Energy Corporation
+
+LOW:
+  name: Lowe's Companies, Inc.
+
+LRCX:
+  name: Lam Research Corporation
+
+LULU:
+  name: Lululemon Athletica Inc.
+
+LUV:
+  name: Southwest Airlines Co.
+
+LVS:
+  name: Las Vegas Sands Corp.
+
+LW:
+  name: Lamb Weston Holdings, Inc.
+
+LYB:
+  name: LyondellBasell Industries N.V.
+
+LYV:
+  name: Live Nation Entertainment, Inc.
+
+MA:
+  name: Mastercard Incorporated
+
+MAA:
+  name: Mid-America Apartment Communities, Inc.
+
+MAR:
+  name: Marriott International, Inc.
+
+MAS:
+  name: Masco Corporation
+
+MCD:
+  name: McDonald's Corporation
+
+MCHP:
+  name: Microchip Technology Incorporated
+
+MCK:
+  name: McKesson Corporation
+
+MCO:
+  name: Moody's Corporation
+
+MDLZ:
+  name: Mondelez International, Inc.
+
+MDT:
+  name: Medtronic plc
+
+MET:
+  name: MetLife, Inc.
+
+META:
+  name: Meta Platforms, Inc.
+
+MGM:
+  name: MGM Resorts International
+
+MHK:
+  name: Mohawk Industries, Inc.
+
+MKC:
+  name: McCormick & Company, Incorporated
+
+MKTX:
+  name: MarketAxess Holdings Inc.
+
+MLM:
+  name: Martin Marietta Materials, Inc.
+
+MMC:
+  name: Marsh & McLennan Companies, Inc.
+
+MMM:
+  name: 3M Company
+
+MNST:
+  name: Monster Beverage Corporation
+
+MO:
+  name: Altria Group, Inc.
+
+MOH:
+  name: Molina Healthcare, Inc.
+
+MOS:
+  name: The Mosaic Company
+
+MPC:
+  name: Marathon Petroleum Corporation
+
+MPWR:
+  name: Monolithic Power Systems, Inc.
+
+MRK:
+  name: Merck & Co., Inc.
+
+MRNA:
+  name: Moderna, Inc.
+
+MRO:
+  name: Marathon Oil Corporation
+
+MS:
+  name: Morgan Stanley
+
+MSCI:
+  name: MSCI Inc.
+
+MSFT:
+  name: Microsoft Corporation
+
+MSI:
+  name: Motorola Solutions, Inc.
+
+MTB:
+  name: M&T Bank Corporation
+
+MTCH:
+  name: Match Group, Inc.
+
+MTD:
+  name: Mettler-Toledo International Inc.
+
+MU:
+  name: Micron Technology, Inc.
+
+NCLH:
+  name: Norwegian Cruise Line Holdings Ltd.
+
+NDAQ:
+  name: Nasdaq, Inc.
+
+NDSN:
+  name: Nordson Corporation
+
+NEE:
+  name: NextEra Energy, Inc.
+
+NEM:
+  name: Newmont Corporation
+
+NFLX:
+  name: Netflix, Inc.
+
+NI:
+  name: NiSource Inc.
+
+NKE:
+  name: NIKE, Inc.
+
+NOC:
+  name: Northrop Grumman Corporation
+
+NOW:
+  name: ServiceNow, Inc.
+
+NRG:
+  name: NRG Energy, Inc.
+
+NSC:
+  name: Norfolk Southern Corporation
+
+NTAP:
+  name: NetApp, Inc.
+
+NTRS:
+  name: Northern Trust Corporation
+
+NUE:
+  name: Nucor Corporation
+
+NVDA:
+  name: NVIDIA Corporation
+
+NVR:
+  name: NVR, Inc.
+
+NWS:
+  name: News Corporation
+
+NWSA:
+  name: News Corporation
+
+NXPI:
+  name: NXP Semiconductors N.V.
+
+O:
+  name: Realty Income Corporation
+
+ODFL:
+  name: Old Dominion Freight Line, Inc.
+
+OKE:
+  name: ONEOK, Inc.
+
+OMC:
+  name: Omnicom Group Inc.
+
+ON:
+  name: ON Semiconductor Corporation
+
+ORCL:
+  name: Oracle Corporation
+
+ORLY:
+  name: O'Reilly Automotive, Inc.
+
+OTIS:
+  name: Otis Worldwide Corporation
+
+OXY:
+  name: Occidental Petroleum Corporation
+
+PANW:
+  name: Palo Alto Networks, Inc.
+
+PARA:
+  name: Paramount Global
+
+PAYC:
+  name: Paycom Software, Inc.
+
+PAYX:
+  name: Paychex, Inc.
+
+PCAR:
+  name: PACCAR Inc
+
+PCG:
+  name: PG&E Corporation
+
+PEG:
+  name: Public Service Enterprise Group Incorporated
+
+PEP:
+  name: PepsiCo, Inc.
+
+PFE:
+  name: Pfizer Inc.
+
+PFG:
+  name: Principal Financial Group, Inc.
+
+PG:
+  name: The Procter & Gamble Company
+
+PGR:
+  name: The Progressive Corporation
+
+PH:
+  name: Parker-Hannifin Corporation
+
+PHM:
+  name: PulteGroup, Inc.
+
+PKG:
+  name: Packaging Corporation of America
+
+PLD:
+  name: Prologis, Inc.
+
+PM:
+  name: Philip Morris International Inc.
+
+PNC:
+  name: The PNC Financial Services Group, Inc.
+
+PNR:
+  name: Pentair plc
+
+PNW:
+  name: Pinnacle West Capital Corporation
+
+PODD:
+  name: Insulet Corporation
+
+POOL:
+  name: Pool Corporation
+
+PPG:
+  name: PPG Industries, Inc.
+
+PPL:
+  name: PPL Corporation
+
+PRU:
+  name: Prudential Financial, Inc.
+
+PSA:
+  name: Public Storage
+
+PSX:
+  name: Phillips 66
+
+PTC:
+  name: PTC Inc.
+
+PWR:
+  name: Quanta Services, Inc.
+
+PYPL:
+  name: PayPal Holdings, Inc.
+
+QCOM:
+  name: QUALCOMM Incorporated
+
+QRVO:
+  name: Qorvo, Inc.
+
+RCL:
+  name: Royal Caribbean Cruises Ltd.
+
+REG:
+  name: Regency Centers Corporation
+
+REGN:
+  name: Regeneron Pharmaceuticals, Inc.
+
+RF:
+  name: Regions Financial Corporation
+
+RJF:
+  name: Raymond James Financial, Inc.
+
+RL:
+  name: Ralph Lauren Corporation
+
+RMD:
+  name: ResMed Inc.
+
+ROK:
+  name: Rockwell Automation, Inc.
+
+ROL:
+  name: Rollins, Inc.
+
+ROP:
+  name: Roper Technologies, Inc.
+
+ROST:
+  name: Ross Stores, Inc.
+
+RSG:
+  name: Republic Services, Inc.
+
+RTX:
+  name: RTX Corporation
+
+RVTY:
+  name: Revvity, Inc.
+
+SBAC:
+  name: SBA Communications Corporation
+
+SBUX:
+  name: Starbucks Corporation
+
+SCHW:
+  name: The Charles Schwab Corporation
+
+SHW:
+  name: The Sherwin-Williams Company
+
+SJM:
+  name: The J.M. Smucker Company
+
+SLB:
+  name: SLB
+
+SMCI:
+  name: Super Micro Computer, Inc.
+
+SNA:
+  name: Snap-on Incorporated
+
+SNPS:
+  name: Synopsys, Inc.
+
+SO:
+  name: The Southern Company
+
+SOLV:
+  name: Solventum Corporation
+
+SPG:
+  name: Simon Property Group, Inc.
+
+SPGI:
+  name: S&P Global Inc.
+
+SRE:
+  name: Sempra
+
+STE:
+  name: STERIS plc
+
+STLD:
+  name: Steel Dynamics, Inc.
+
+STT:
+  name: State Street Corporation
+
+STX:
+  name: Seagate Technology Holdings plc
+
+STZ:
+  name: Constellation Brands, Inc.
+
+SWK:
+  name: Stanley Black & Decker, Inc.
+
+SWKS:
+  name: Skyworks Solutions, Inc.
+
+SYF:
+  name: Synchrony Financial
+
+SYK:
+  name: Stryker Corporation
+
+SYY:
+  name: Sysco Corporation
+
+T:
+  name: AT&T Inc.
+
+TAP:
+  name: Molson Coors Beverage Company
+
+TDG:
+  name: TransDigm Group Incorporated
+
+TDY:
+  name: Teledyne Technologies Incorporated
+
+TECH:
+  name: Bio-Techne Corporation
+
+TEL:
+  name: TE Connectivity Ltd.
+
+TER:
+  name: Teradyne, Inc.
+
+TFC:
+  name: Truist Financial Corporation
+
+TFX:
+  name: Teleflex Incorporated
+
+TGT:
+  name: Target Corporation
+
+TJX:
+  name: The TJX Companies, Inc.
+
+TMO:
+  name: Thermo Fisher Scientific Inc.
+
+TMUS:
+  name: T-Mobile US, Inc.
+
+TPR:
+  name: Tapestry, Inc.
+
+TRGP:
+  name: Targa Resources Corp.
+
+TRMB:
+  name: Trimble Inc.
+
+TROW:
+  name: T. Rowe Price Group, Inc.
+
+TRV:
+  name: The Travelers Companies, Inc.
+
+TSCO:
+  name: Tractor Supply Company
+
+TSLA:
+  name: Tesla, Inc.
+
+TSN:
+  name: Tyson Foods, Inc.
+
+TT:
+  name: Trane Technologies plc
+
+TTWO:
+  name: Take-Two Interactive Software, Inc.
+
+TXN:
+  name: Texas Instruments Incorporated
+
+TXT:
+  name: Textron Inc.
+
+TYL:
+  name: Tyler Technologies, Inc.
+
+UAL:
+  name: United Airlines Holdings, Inc.
+
+UBER:
+  name: Uber Technologies, Inc.
+
+UDR:
+  name: UDR, Inc.
+
+UHS:
+  name: Universal Health Services, Inc.
+
+ULTA:
+  name: Ulta Beauty, Inc.
+
+UNH:
+  name: UnitedHealth Group Incorporated
+
+UNP:
+  name: Union Pacific Corporation
+
+UPS:
+  name: United Parcel Service, Inc.
+
+URI:
+  name: United Rentals, Inc.
+
+USB:
+  name: U.S. Bancorp
+
+V:
+  name: Visa Inc.
+
+VICI:
+  name: VICI Properties Inc.
+
+VLO:
+  name: Valero Energy Corporation
+
+VLTO:
+  name: Veralto Corporation
+
+VMC:
+  name: Vulcan Materials Company
+
+VRSK:
+  name: Verisk Analytics, Inc.
+
+VRSN:
+  name: VeriSign, Inc.
+
+VRTX:
+  name: Vertex Pharmaceuticals Incorporated
+
+VST:
+  name: Vistra Corp.
+
+VTR:
+  name: Ventas, Inc.
+
+VTRS:
+  name: Viatris Inc.
+
+VZ:
+  name: Verizon Communications Inc.
+
+WAB:
+  name: Westinghouse Air Brake Technologies Corporation
+
+WAT:
+  name: Waters Corporation
+
+WBA:
+  name: Walgreens Boots Alliance, Inc.
+
+WBD:
+  name: Warner Bros. Discovery, Inc.
+
+WDC:
+  name: Western Digital Corporation
+
+WEC:
+  name: WEC Energy Group, Inc.
+
+WELL:
+  name: Welltower Inc.
+
+WFC:
+  name: Wells Fargo & Company
+
+WM:
+  name: Waste Management, Inc.
+
+WMB:
+  name: The Williams Companies, Inc.
+
+WMT:
+  name: Walmart Inc.
+
+WRB:
+  name: W. R. Berkley Corporation
+
+WRK:
+  name: WestRock Company
+
+WST:
+  name: West Pharmaceutical Services, Inc.
+
+WTW:
+  name: Willis Towers Watson Public Limited Company
+
+WY:
+  name: Weyerhaeuser Company
+
+WYNN:
+  name: Wynn Resorts, Limited
+
+XEL:
+  name: Xcel Energy Inc.
+
+XOM:
+  name: Exxon Mobil Corporation
+
+XYL:
+  name: Xylem Inc.
+
+YUM:
+  name: Yum! Brands, Inc.
+
+ZBH:
+  name: Zimmer Biomet Holdings, Inc.
+
+ZBRA:
+  name: Zebra Technologies Corporation
+
+ZTS:
+  name: Zoetis Inc.
