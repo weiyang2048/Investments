@@ -1,0 +1,296 @@
+NVDA:
+  name: NVIDIA Corporation
+
+AAPL:
+  name: Apple Inc.
+
+MSFT:
+  name: Microsoft Corporation
+
+GOOG:
+  name: Alphabet Inc.
+
+AMZN:
+  name: Amazon.com, Inc.
+
+AVGO:
+  name: Broadcom Inc.
+
+META:
+  name: Meta Platforms, Inc.
+
+TSLA:
+  name: Tesla, Inc.
+
+BRK.B:
+  name: Berkshire Hathaway Inc.
+
+JPM:
+  name: JPMorgan Chase & Co.
+
+WMT:
+  name: Walmart Inc.
+
+LLY:
+  name: Eli Lilly and Company
+
+ORCL:
+  name: Oracle Corporation
+
+V:
+  name: Visa Inc.
+
+MA:
+  name: Mastercard Incorporated
+
+XOM:
+  name: Exxon Mobil Corporation
+
+PLTR:
+  name: Palantir Technologies Inc.
+
+NFLX:
+  name: Netflix, Inc.
+
+JNJ:
+  name: Johnson & Johnson
+
+AMD:
+  name: Advanced Micro Devices, Inc.
+
+COST:
+  name: Costco Wholesale Corporation
+
+ABBV:
+  name: AbbVie Inc.
+
+BAC:
+  name: Bank of America Corporation
+
+HD:
+  name: The Home Depot, Inc.
+
+PG:
+  name: The Procter & Gamble Company
+
+GE:
+  name: General Electric Company
+
+UNH:
+  name: UnitedHealth Group Incorporated
+
+CVX:
+  name: Chevron Corporation
+
+KO:
+  name: The Coca-Cola Company
+
+IBM:
+  name: International Business Machines Corporation
+
+CSCO:
+  name: Cisco Systems, Inc.
+
+CAT:
+  name: Caterpillar Inc.
+
+WFC:
+  name: Wells Fargo & Company
+
+MS:
+  name: Morgan Stanley
+
+MU:
+  name: Micron Technology, Inc.
+
+GS:
+  name: The Goldman Sachs Group, Inc.
+
+AXP:
+  name: American Express Company
+
+CRM:
+  name: Salesforce, Inc.
+
+RTX:
+  name: RTX Corporation
+
+TMUS:
+  name: T-Mobile US, Inc.
+
+PM:
+  name: Philip Morris International Inc.
+
+ABT:
+  name: Abbott Laboratories
+
+MCD:
+  name: McDonald's Corporation
+
+MRK:
+  name: Merck & Co., Inc.
+
+TMO:
+  name: Thermo Fisher Scientific Inc.
+
+APP:
+  name: AppLovin Corporation
+
+LRCX:
+  name: Lam Research Corporation
+
+PEP:
+  name: PepsiCo, Inc.
+
+LIN:
+  name: Linde plc
+
+UBER:
+  name: Uber Technologies, Inc.
+
+DIS:
+  name: The Walt Disney Company
+
+ANET:
+  name: Arista Networks Inc
+
+NOW:
+  name: ServiceNow, Inc.
+
+INTC:
+  name: Intel Corporation
+
+QCOM:
+  name: QUALCOMM Incorporated
+
+ISRG:
+  name: Intuitive Surgical, Inc.
+
+AMAT:
+  name: Applied Materials, Inc.
+
+INTU:
+  name: Intuit Inc.
+
+BX:
+  name: Blackstone Inc.
+
+C:
+  name: Citigroup Inc.
+
+BLK:
+  name: BlackRock, Inc.
+
+T:
+  name: AT&T Inc.
+
+SCHW:
+  name: The Charles Schwab Corporation
+
+APH:
+  name: Amphenol Corporation
+
+NEE:
+  name: NextEra Energy, Inc.
+
+VZ:
+  name: Verizon Communications Inc.
+
+BKNG:
+  name: Booking Holdings Inc.
+
+KLAC:
+  name: KLA Corporation
+
+TJX:
+  name: The TJX Companies, Inc.
+
+AMGN:
+  name: Amgen Inc.
+
+GEV:
+  name: GE Vernova Inc.
+
+ACN:
+  name: Accenture plc
+
+BA:
+  name: The Boeing Company
+
+DHR:
+  name: Danaher Corporation
+
+SPGI:
+  name: S&P Global Inc.
+
+ETN:
+  name: Eaton Corporation plc
+
+BSX:
+  name: Boston Scientific Corporation
+
+PANW:
+  name: Palo Alto Networks, Inc.
+
+GILD:
+  name: Gilead Sciences, Inc.
+
+TXN:
+  name: Texas Instruments Incorporated
+
+ADBE:
+  name: Adobe Inc.
+
+SYK:
+  name: Stryker Corporation
+
+COF:
+  name: Capital One Financial Corporation
+
+PFE:
+  name: Pfizer Inc.
+
+CRWD:
+  name: CrowdStrike Holdings, Inc.
+
+LOW:
+  name: Lowe's Companies, Inc.
+
+UNP:
+  name: Union Pacific Corporation
+
+HON:
+  name: Honeywell International Inc.
+
+DE:
+  name: Deere & Company
+
+HOOD:
+  name: Robinhood Markets, Inc.
+
+WELL:
+  name: Welltower Inc.
+
+PGR:
+  name: The Progressive Corporation
+
+CEG:
+  name: Constellation Energy Corporation
+
+PLD:
+  name: Prologis, Inc.
+
+MDT:
+  name: Medtronic plc
+
+ADI:
+  name: Analog Devices, Inc.
+
+LMT:
+  name: Lockheed Martin Corporation
+
+COP:
+  name: ConocoPhillips
+
+CB:
+  name: Chubb Limited

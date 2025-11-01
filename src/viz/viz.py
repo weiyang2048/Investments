@@ -20,9 +20,6 @@ def _create_hover_template(symbol: str, colors_dict: Dict[str, str], equity_conf
     """Create hover template for plotly traces."""
     base_template = f"<b style='color: {colors_dict[symbol]}'>Symbol:</b> {symbol}<br>"
     
-    if equity_config.get(symbol, {}).get("name"):
-        base_template += f"<b style='color: {colors_dict[symbol]}'>ETF Name:</b> {equity_config[symbol].get('name', '-')}<br>"
-    
     for key in keys:
         if key in equity_config.get(symbol, {}):
             base_template += f"<b style='color: {colors_dict[symbol]}'>{key}:</b> {equity_config[symbol].get(key, '-')}<br>"

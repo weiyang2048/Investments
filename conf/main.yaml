@@ -1,17 +1,17 @@
 lenses:
   main:
-    Regions: ${union:[SPMO, IDMO,EEMO, CEE,  FLN, AFK, AIA, ASEA, IPAC, FEP], [GLTR, GDLC], [VNAM, EWY, EPU, EWS, EWK, NFTY, EPOL, EZA, EIS, ARGT, EWN, FCA]}
-    Sectors: ${union:[PYZ, PTH, PUI, PFI], [ARKX, ARKF,ARKW, ARKQ, ARKG], [QTUM,
-     REMX, AIPO, EUFN, EUAD], [BKCH, GOEX, SLVP, COPX, DMAT, HYDR, URA, LIT, AIQ, BOTZ, SHLD], ${get_keys:tickers.sectors}}
-    Commodities: [GDLC, BTC, ETH, BKCH, GLTR, IAUM, GOEX, SLV, SLVP, PPLT, COPX, REMX, DMAT, HYDR, URA, LIT, IEO, DBA]
+    Regions: ${union:[SPMO, IDMO,EEMO, AVDV, AVUV, AVES, CEE,  FLN, AFK, AIA, ASEA, IPAC, FEP], [GLTR, GDLC], [VNAM, EWY, EPU, EWS, EWK, NFTY, EPOL, EZA, EIS, ARGT, EWN, FCA]}
+    Sectors: ${union:[PYZ, PTH, PTF, PRN, PDP, PUI, PFI], [ARKX, ARKF,ARKW, ARKQ, ARKG], [QTUM,XSD,
+     REMX, AIPO, EUFN, EUAD, ILIT], [BKCH, GOEX, SLVP, COPX, DMAT, HYDR, URA, LIT, AIQ, BOTZ, CHPX,SHLD], ${get_keys:tickers.sectors}}
+    Commodities: [GDLC, BTC, ETH, GSOL, BKCH, GLTR, IAUM, GOEX, SLV, SLVP, PPLT, COPX, REMX, DMAT, HYDR, URA, ILIT, LIT, IEO, DBA]
     Stocks: ${union:[AVGO, CAT,GE, GOOGL], [ASML, ARGX, TCEHY, BBVA], [OPEN, LCID, LITS], [LAC, OKLO, MP, PLUG, RGTI]}
     r: [ VEU, GOOGL, AIA]
-    f: ['YGLD', 'MAXI', 'SLV', 'BKCH', 'IAUM', 'SPMO', 'GOEX', 'SLVP', 'ARKQ', 'TRAMX', 'ARGX', 'ASML', 'AIQ', 'CAT', 'AVGO', 'AIA', 'IEMG', 'JXI', 'IPAC', 'VXUS', 'AVDV',  'LCID', 'OPEN']
+    f: ${get_keys:tickers.ports.f}
   themes:
     regions: ${union:[SPMO, IDMO, FEM, AVUV, AVDV, AVES],${get_keys:tickers.regions}}
     income: [YGLD, MAXI, SCY, BPI, BCCC,  SCHD, SCHY,LVHI, LVHD, GPIQ, GPIX, JEPI, JEPQ, DIVO, IDVO, EFAS, SDEM]
-    sp50: ${get_keys:tickers.stocks.sp50}
-    adr50: ${get_keys:tickers.stocks.adr50}
+    sp100: ${get_keys:tickers.sp50}
+    adr100: ${get_keys:tickers.adr50}
     ARK: ${get_keys:tickers.ark}
     invescoMomentum: ${get_keys:tickers.momentum}
     globalX: ${get_keys:tickers.globalX}
@@ -26,5 +26,6 @@ defaults:
       - globalX
       - momentum
       - ark
-      - stocks/sp50
-      - stocks/adr50
+      - sp50
+      - adr50
+      - ports/f

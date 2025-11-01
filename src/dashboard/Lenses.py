@@ -66,6 +66,9 @@ def display_fear_and_greed_info():
             |
             <a href="https://alternative.me/crypto/fear-and-greed-index/" target="_blank" style="color:{color_hex_crypto};text-decoration:none;margin-left:5px; font-weight: bold;">{crypto_value} {crypto_desc} (Crypto)</a>
         </div>
+        <div>
+            <span style="color:black;text-decoration:none;">YF Rank:</span> <a href="https://finance.yahoo.com/markets/stocks/most-active/" target="_blank" style="color:#2895f7;text-decoration:none;">Stock</a> | <a href="https://finance.yahoo.com/markets/etfs/top-performing/?start=0&count=25" target="_blank" style="color:#2895f7;text-decoration:none;">ETF</a> 
+        </div>
     </div>
     """
     cols = st.columns(3)

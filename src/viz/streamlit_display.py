@@ -3,6 +3,8 @@ import pandas as pd
 from typing import Optional
 import numpy as np
 from functools import partial
+import yaml
+from pyhere import here
 
 
 def highlight_row(row):
@@ -124,6 +126,21 @@ def display_dataframe(
     # Hide specified rows if provided
     if hide_rows:
         df = df.drop(index=hide_rows, errors='ignore')
+    
+    # Load f.yaml to get list of tickers and append * to matching column names
+    f_yaml_tickers = set()
+    try:
+        f_yaml_path = here("conf/tickers/ports/f.yaml")
+        with open(f_yaml_path, "r") as f:
+            f_yaml_data = yaml.safe_load(f)
+            f_yaml_tickers = set(f_yaml_data.keys()) if f_yaml_data else set()
+    except Exception:
+        # If file doesn't exist or can't be loaded, continue without modification
+        pass
+    
+    # Rename columns to append * for tickers in f.yaml
+    if f_yaml_tickers:
+        df.columns = [f"{col}*" if col in f_yaml_tickers else col for col in df.columns]
     
     if symbol_type and data_type:
         styled_df = (
