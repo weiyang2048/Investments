@@ -17,7 +17,8 @@ class Tickers:
         self.ticker = yf.Ticker(symbols)
 
     def get_daily_prices(self, period: str = "1mo") -> pd.DataFrame:
-        return self.ticker.history(period=period)
+        self.df = self.ticker.history(period=period)
+
 
 class Ticker:
     """
@@ -573,8 +574,8 @@ def compute_annualized_momentum_sum(df: pd.DataFrame, window_sizes: List[int] = 
             d0_latest_change[symbol] = np.nan
 
         # Calculate put-call ratio
-        pcr = get_pcr_m1(symbol)
-        pcr_m1s[symbol] = pcr if pcr is not None else np.nan
+        # pcr = get_pcr_m1(symbol)
+        # pcr_m1s[symbol] = pcr if pcr is not None else np.nan
 
         # Weighted average of annualized momentum by window size
         m[symbol] = total_annualized_momentum / total_weight if total_weight != 0 else 0
@@ -598,7 +599,7 @@ def compute_annualized_momentum_sum(df: pd.DataFrame, window_sizes: List[int] = 
             "avg%+": avg_plus_percent[symbol],
             "avg%-": avg_minus_percent[symbol],
             "stride": stride[symbol],
-            "pcr_m1": pcr_m1s[symbol],
+            # "pcr_m1": pcr_m1s[symbol],
             "d0": d0_latest_change[symbol],
             f"d{min(window_sizes)}": pct_change_smallest_window[symbol],
         }
@@ -625,7 +626,7 @@ def compute_annualized_momentum_sum(df: pd.DataFrame, window_sizes: List[int] = 
             ordered_columns.append(f"a{window}")
 
     # Add weighted average, acceleration, combined score, stride, streaks, average consecutive movements, average percentage movements, %change, and put-call ratio at the end
-    ordered_columns.extend(["m", "a", "combined_score", "stride", "s0", "s1", "s2", "avg_s+", "avg_s-", "avg%+", "avg%-", "d0", f"d{min(window_sizes)}", "pcr_m1"])
+    ordered_columns.extend(["m", "a", "combined_score", "stride", "s0", "s1", "s2", "avg_s+", "avg_s-", "avg%+", "avg%-", "d0", f"d{min(window_sizes)}"]) #, "pcr_m1"])
 
     result_df = result_df[ordered_columns]
 

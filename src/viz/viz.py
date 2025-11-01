@@ -52,7 +52,7 @@ def create_momentum_ranking_display(
     
     # Create the desired row order: m first, then a, then d0, then d6, then combined_score, then put-call ratio, then stride, then streak rows, then average consecutive movements, then average percentage movements, then momentum rows (hide individual acceleration rows)
     pct_change_row = f"d{min(window_sizes)}"
-    ordered_rows = ["m"] + ["a"] + ["d0"] + [pct_change_row] + ["combined_score"] + ["pcr_m1"] + ["stride", "s0", "s1", "s2", "avg_s+", "avg_s-", "avg%+", "avg%-"] + momentum_rows
+    ordered_rows = ["m"] + ["a"] + ["d0"] + [pct_change_row] + ["combined_score"]  + ["stride", "s0", "s1", "s2", "avg_s+", "avg_s-", "avg%+", "avg%-"] + momentum_rows
     
     # Filter to only include rows that exist in the dataframe
     existing_rows = [row for row in ordered_rows if row in transposed_df.index]
