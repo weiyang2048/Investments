@@ -182,8 +182,13 @@ def _process_symbol_tab(
 
     # Display momentum ranking table first
     display_dataframe(momentum_ranking, symbol_type, "am", vmin=-0.1, vmax=1, hide_rows=["combined_score"])
-
+    num_symbols = len(df_pivot.columns) - 1  # Subtract 1 for Date column
     # Always create and display combined plot
+    if num_symbols > 100:
+        st.info(f"Number of symbols ({num_symbols}) is greater than 100. Displaying first 50 symbols.")
+        symbols = list(momentum_ranking.columns[:50])
+        momentum_ranking = momentum_ranking[symbols]
+        df_pivot = df_pivot[["Date"] + symbols]
     with st.spinner("Creating combined performance & momentum plot..."):
         combined_result = create_combined_performance_momentum_plot(
             df_pivot,
@@ -195,13 +200,9 @@ def _process_symbol_tab(
             momentum_ranking=momentum_ranking,
         )
         combined_fig = combined_result["figure"]
-        momentum_combined = combined_result["momentum_combined"]
 
-    # Display combined plot
     st.plotly_chart(combined_fig, config={"displayModeBar": False})
 
-    # Store momentum data for summary (moved outside conditional)
-    momentum_summaries[symbol_type] = momentum_combined
 
     # Display correlation section
     display_section_header("Correlation")
@@ -212,9 +213,10 @@ def _process_symbol_tab(
         corr_matrix = corr_matrix.round(0).astype(int)
         display_dataframe(corr_matrix, symbol_type, "Correlation Matrix")
 
-    # Always show correlation plot (in addition to the table)
+    # Show correlation plot (clustermap) only if less than 100 symbols
+    # Calculate number of symbols (excluding Date column)
     with st.spinner("Computing correlation plot..."):
-        pivoted_to_corr(df_pivot, plot=True, streamlit=True, marchenko_pastur=marchenko_pastur)
+        pivoted_to_corr(df=df_pivot, plot=True, streamlit=True, corr_matrix=corr_matrix)
 
     # Add ratio plot if exactly two symbols are provided
     display_section_header("Price Ratio Analysis")

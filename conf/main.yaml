@@ -1,17 +1,18 @@
 lenses:
   main:
-    Regions: ${union:[SPMO, IDMO,EEMO, AVDV, AVUV, AVES, CEE,  FLN, AFK, AIA, ASEA, IPAC, FEP], [GLTR, GDLC], [VNAM, EWY, EPU, EWS, EWK, NFTY, EPOL, EZA, EIS, ARGT, EWN, FCA]}
+    Regions: ${union:[SPMO, IDMO, FEM, AVUV, AVDV, AVES],${get_keys:tickers.regions},  [GLTR, GDLC]}
     Sectors: ${union:[PYZ, PTH, PTF, PRN, PDP, PUI, PFI], [ARKX, ARKF,ARKW, ARKQ, ARKG], [QTUM,XSD,
      REMX, AIPO, EUFN, EUAD, ILIT], [BKCH, GOEX, SLVP, COPX, DMAT, HYDR, URA, LIT, AIQ, BOTZ, CHPX,SHLD], ${get_keys:tickers.sectors}}
     Commodities: [GDLC, BTC, ETH, GSOL, BKCH, GLTR, IAUM, GOEX, SLV, SLVP, PPLT, COPX, REMX, DMAT, HYDR, URA, ILIT, LIT, IEO, DBA]
+    income: ${union:${get_keys:tickers.ymax},[YGLD, MAXI,  BPI, BCCC,  SCHD, SCHY,LVHI, LVHD, GPIQ, GPIX, JEPI, JEPQ, DIVO, IDVO, EFAS, SDEM]}
     Stocks: ${union:[AVGO, CAT,GE, GOOGL], [ASML, ARGX, TCEHY, BBVA], [OPEN, LCID, LITS], [LAC, OKLO, MP, PLUG, RGTI]}
     r: [ VEU, GOOGL, AIA]
     f: ${get_keys:tickers.ports.f}
   themes:
-    regions: ${union:[SPMO, IDMO, FEM, AVUV, AVDV, AVES],${get_keys:tickers.regions}}
-    income: [YGLD, MAXI, SCY, BPI, BCCC,  SCHD, SCHY,LVHI, LVHD, GPIQ, GPIX, JEPI, JEPQ, DIVO, IDVO, EFAS, SDEM]
     sp100: ${get_keys:tickers.sp50}
     adr100: ${get_keys:tickers.adr50}
+    sp400: ${get_keys:tickers.sp400}
+    sp600: ${get_keys:tickers.sp600}
     ARK: ${get_keys:tickers.ark}
     invescoMomentum: ${get_keys:tickers.momentum}
     globalX: ${get_keys:tickers.globalX}

@@ -35,19 +35,24 @@ def denoise_corr_marchenko_pastur(corr: pd.DataFrame, q: float = None) -> pd.Dat
     return pd.DataFrame(corr_denoised, index=corr.index, columns=corr.columns)
 
 
-def pivoted_to_corr(df: pd.DataFrame, plot: bool = False, streamlit: bool = False, marchenko_pastur: bool = True) -> pd.DataFrame:
+def pivoted_to_corr(df: pd.DataFrame, plot: bool = False, streamlit: bool = False, marchenko_pastur: bool = True, corr_matrix: pd.DataFrame = None) -> pd.DataFrame:
     df_pivot = df.copy()
-    df_pivot.drop(columns=["Date"], inplace=True)
-    df_pivot_count = df_pivot.apply(lambda x: x.count(), axis=0)
-    # # show number of observations for each symbol and sort by number of observations
-    df_pivot_count = df_pivot_count.sort_values(ascending=False)
-    df_pivot.dropna(axis=0, inplace=True)
-    q = df_pivot.shape[0] / df_pivot.shape[1]
-    df_pivot = df_pivot.pct_change()
-    corr_matrix = df_pivot.corr()
-    if marchenko_pastur:
-        corr_matrix = denoise_corr_marchenko_pastur(corr_matrix, q)
-    corr_matrix = corr_matrix * 10
+    if corr_matrix is None:
+        df_pivot.drop(columns=["Date"], inplace=True)
+        df_pivot_count = df_pivot.apply(lambda x: x.count(), axis=0)
+        # # show number of observations for each symbol and sort by number of observations
+        df_pivot_count = df_pivot_count.sort_values(ascending=False)
+        df_pivot.dropna(axis=0, inplace=True)
+        q = df_pivot.shape[0] / df_pivot.shape[1]
+        df_pivot = df_pivot.pct_change()
+        corr_matrix = df_pivot.corr()
+        if marchenko_pastur:
+            try:
+                corr_matrix = denoise_corr_marchenko_pastur(corr_matrix, q)
+            except Exception as e:
+                st.error(f"Error denoising correlation matrix: {e}")
+                corr_matrix = corr_matrix
+        corr_matrix = corr_matrix * 10
     if plot:
         mask = np.eye(corr_matrix.shape[0], dtype=bool)
         annot_matrix = corr_matrix.round(0).astype(int).astype(str)
