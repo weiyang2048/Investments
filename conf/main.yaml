@@ -41,3 +41,5 @@ defaults:
       - sp600
       - adr50
       - f
+      - s
+      - r
