@@ -1,3 +1,80 @@
+GPIQ:
+  name: Goldman Sachs Nasdaq-100 Premium Income ETF
+
+GPIX:
+  name: Goldman Sachs S&P 500 Premium Income ETF
+
+JEPQ:
+  name: JPMorgan Nasdaq Equity Premium Income ETF
+
+JEPI:
+  name: JPMorgan Equity Premium Income ETF
+
+DIVO:
+  name: Amplify CWP Enhanced Dividend Income ETF
+
+IDVO:
+  name: Amplify CWP International Enhanced Dividend Income ETF
+
+SCHD:
+  name: Schwab U.S. Dividend Equity ETF
+
+SCHY:
+  name: Schwab International Dividend Equity ETF
+
+LVHD:
+  name: Franklin U.S. Low Volatility High Dividend Index ETF
+
+LVHI:
+  name: Franklin International Low Volatility High Dividend Index ETF
+
+YGLD:
+  name: Simplify Gold Strategy Plus Income ETF
+
+MAXI:
+  name: Simplify Bitcoin Strategy Plus Income ETF
+
+BPI:
+  name: Grayscale Bitcoin Premium Income ETF
+
+BCCC:
+  name: Global X Bitcoin Covered Call ETF
+
+# statestreet
+XLBI:
+  name: Materials Select Sector SPDR Premium Income Fund
+
+XLCI:
+  name: Communication Services Select Sector SPDR Premium Income Fund
+
+XLEI:
+  name: Energy Select Sector SPDR Premium Income Fund
+
+XLFI:
+  name: Financial Select Sector SPDR Premium Income Fund
+
+XLII:
+  name: Industrial Select Sector SPDR Premium Income Fund
+
+XLKI:
+  name: Technology Select Sector SPDR Premium Income Fund
+
+XLSI:
+  name: Consumer Staples Select Sector SPDR Premium Income Fund
+
+XLRI:
+  name: Real Estate Select Sector SPDR Premium Income Fund
+
+XLUI:
+  name: Utilities Select Sector SPDR Premium Income Fund
+
+XLVI:
+  name: Health Care Select Sector SPDR Premium Income Fund
+
+XLYI:
+  name: Consumer Discretionary Select Sector SPDR Premium Income Fund
+
+
 # https://yieldmaxetfs.com/our-etfs/
 ABNY:
   name: YieldMax ABNB Option Income Strategy ETF

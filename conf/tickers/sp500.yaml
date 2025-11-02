@@ -1,3 +1,5 @@
+# https://en.wikipedia.org/wiki/List_of_S%26P_500_companies#Selected_changes_to_the_list_of_S&P_500_components
+# 11-04-2025
 A:
   name: Agilent Technologies, Inc.
 
@@ -99,9 +101,6 @@ AMZN:
 
 ANET:
   name: Arista Networks, Inc.
-
-ANSS:
-  name: ANSYS, Inc.
 
 AON:
   name: Aon plc
@@ -354,9 +353,6 @@ CSX:
 
 CTAS:
   name: Cintas Corporation
-
-CTLT:
-  name: Catalent, Inc.
 
 CTRA:
   name: Coterra Energy Inc.
@@ -664,9 +660,6 @@ HCA:
 HD:
   name: The Home Depot, Inc.
 
-HES:
-  name: Hess Corporation
-
 HIG:
   name: The Hartford Financial Services Group, Inc.
 
@@ -780,9 +773,6 @@ JKHY:
 
 JNJ:
   name: Johnson & Johnson
-
-JNPR:
-  name: Juniper Networks, Inc.
 
 JPM:
   name: JPMorgan Chase & Co.
@@ -1065,9 +1055,6 @@ OKE:
 
 OMC:
   name: Omnicom Group Inc.
-
-ON:
-  name: ON Semiconductor Corporation
 
 ORCL:
   name: Oracle Corporation
@@ -1440,9 +1427,6 @@ WAB:
 
 WAT:
   name: Waters Corporation
-
-WBA:
-  name: Walgreens Boots Alliance, Inc.
 
 WBD:
   name: Warner Bros. Discovery, Inc.

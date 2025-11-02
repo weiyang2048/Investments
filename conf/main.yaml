@@ -1,19 +1,20 @@
 lenses:
   main:
     Regions: ${union:${get_keys:tickers.regions},  [GLTR, GDLC]}
-    Sectors: ${union:${get_keys:tickers.sectors}, [PYZ, PTH, PTF, PRN, PDP, PUI, PFI], [ARKX, ARKF,ARKW, ARKQ, ARKG], [QTUM,XSD,
-     REMX, AIPO, EUFN, EUAD, ILIT], [BKCH, GOEX, SLVP, COPX, DMAT, HYDR, URA, LIT, AIQ, BOTZ, CHPX,SHLD]}
+    Sectors: ${get_keys:tickers.sectors}
     Commodities: [ GLTR, IAUM, GOEX, SLV, SLVP, PPLT, GDLC, BTC, ETH, GSOL, BKCH,COPX, REMX, DMAT, HYDR, URA, ILIT, LIT, IEO, DBA]
-    income: ${union:[GPIQ, GPIX,  JEPQ, JEPI,  DIVO, IDVO, SCHD, SCHY,LVHD,LVHI ], ${get_keys:tickers.ymax},[YGLD, MAXI,  BPI, BCCC,   EFAS, SDEM]}
+    income: ${get_keys:tickers.income}
     Stocks: ${union:[AVGO, CAT,GE, GOOGL], [ASML, ARGX, TCEHY, BBVA], [OPEN, LCID, LITS], [LAC, OKLO, MP, PLUG, RGTI]}
     r: [ VEU, GOOGL, AIA]
     f: ${get_keys:tickers.f}
   stocks:
     sp100: ${get_keys:tickers.sp50}
     adr100: ${get_keys:tickers.adr50}
+    sp500: ${get_keys:tickers.sp500}
     sp400: ${get_keys:tickers.sp400}
     sp600: ${get_keys:tickers.sp600}
   etfs:
+    Defiance: ${get_keys:tickers.defiance}
     ARK: ${get_keys:tickers.ark}
     invescoMomentum: ${get_keys:tickers.momentum}
     globalX: ${get_keys:tickers.globalX}
@@ -35,10 +36,12 @@ defaults:
       - globalX
       - momentum
       - ark
+      - defiance
       - sp50
       - sp500
       - sp400
       - sp600
+      - income
       - adr50
       - f
       - s

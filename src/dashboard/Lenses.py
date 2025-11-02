@@ -231,9 +231,32 @@ def _process_symbol_tab(
         corr_matrix = pivoted_to_corr(df=df_pivot, plot=True, streamlit=True, marchenko_pastur=marchenko_pastur)
     
     # Display correlation matrix in a collapsible expander (collapsed by default)
+    if "combined_score" in momentum_ranking.index and len(momentum_ranking.columns) > 1:
+    # Get top symbols by combined_score (momentum)
+        combined_scores = momentum_ranking.loc["combined_score"]
+        top_n = min(20, len(combined_scores))
+        top_symbols = combined_scores.nlargest(top_n).index.tolist()
+        
+        if len(top_symbols) > 1:
+            with st.expander(f"📊 Top {len(top_symbols)} Symbols by Momentum Correlation", expanded=False):
+                with st.spinner(f"Computing correlation for top {len(top_symbols)} symbols..."):
+                    # Filter df_pivot to top symbols
+                    top_df_pivot = df_pivot[["Date"] + top_symbols].copy()
+                    
+                    # Create correlation plot for top symbols
+                    top_corr_matrix = pivoted_to_corr(
+                        df=top_df_pivot, 
+                        plot=True, 
+                        streamlit=True, 
+                        marchenko_pastur=marchenko_pastur
+                    )
+                    
+
     with st.expander("Correlation Matrix", expanded=False):
         corr_matrix = corr_matrix.round(0).astype(int)
         display_dataframe(corr_matrix, symbol_type, "Correlation Matrix")
+    
+    # Add correlation plot for top 20 symbols by momentum in expander
 
     # Performance section removed as requested
 
@@ -335,7 +358,8 @@ def show_market_performance(
 
 
 if __name__ == "__main__":
-
+    import platform
+    print(platform.system()=="Windows")
     if hydra.core.global_hydra.GlobalHydra().is_initialized():
         hydra.core.global_hydra.GlobalHydra.instance().clear()
     register_resolvers()

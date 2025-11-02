@@ -55,6 +55,7 @@ def get_daily_prices_streamlit(symbol: str, period: str = "1mo") -> pd.DataFrame
     """
     Get daily price data for a single symbol using yfinance
     """
+    symbol = symbol.replace(".", "-")
     ticker = yf.Ticker(symbol)
     df = ticker.history(period=period)
     return df

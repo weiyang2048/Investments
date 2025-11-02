@@ -1,0 +1,336 @@
+# Defiance ETFs - Complete List (52 ETFs)
+# Data as of November 2025
+
+# @ Thematic ETFs
+QTUM:
+  name: Defiance Quantum ETF
+  aum: $2.92B
+  expense_ratio: 0.40%
+  category: Quantum Computing
+
+SIXG:
+  name: Defiance Connective Technologies ETF
+  aum: $671.89M
+  expense_ratio: 0.30%
+  category: 5G/6G Technology
+
+AIPO:
+  name: Defiance AI & Power Infrastructure ETF
+  aum: $76.26M
+  expense_ratio: 0.69%
+  category: AI Infrastructure
+
+XMAG:
+  name: Defiance Large Cap ex-Mag 7 ETF
+  aum: $50.54M
+  expense_ratio: 0.35%
+  category: Large Cap ex-Mag 7
+
+JEDI:
+  name: Defiance Drone and Modern Warfare ETF
+  aum: $23.57M
+  expense_ratio: 0.69%
+  category: Defense/Drones
+
+TRIL:
+  name: Defiance Trillion Dollar Club Index ETF
+  expense_ratio: 0.49%
+  category: Mega Cap
+
+# @ Income & Options Strategy ETFs
+QQQY:
+  name: Defiance Nasdaq 100 Enhanced Options & 0DTE Income ETF
+  aum: $205.80M
+  expense_ratio: 1.00%
+  dividend_yield: 45.91%
+  frequency: Weekly
+  category: Nasdaq 100 Income
+
+WDTE:
+  name: Defiance S&P 500 Enhanced Options & 0DTE Income ETF
+  aum: $75.43M
+  expense_ratio: 1.01%
+  frequency: Weekly
+  category: S&P 500 Income
+
+IWMY:
+  name: Defiance R2000 Enhanced Options & 0DTE Income ETF
+  aum: $155.66M
+  expense_ratio: 1.02%
+  dividend_yield: 64.23%
+  frequency: Weekly
+  category: Russell 2000 Income
+
+SPYT:
+  name: Defiance S&P 500 Target Income ETF
+  aum: $119.03M
+  expense_ratio: 0.94%
+  dividend_yield: 20.62%
+  category: S&P 500 Income
+
+QQQT:
+  name: Defiance Nasdaq 100 Income Target ETF
+  aum: $32.62M
+  expense_ratio: 1.05%
+  dividend_yield: 20.09%
+  category: Nasdaq 100 Income
+
+USOY:
+  name: Defiance Oil Enhanced Options Income ETF
+  aum: $52.30M
+  expense_ratio: 1.22%
+  dividend_yield: 117.22%
+  category: Oil Income
+
+GLDY:
+  name: Defiance Gold Enhanced Options Income ETF
+  aum: $29.57M
+  expense_ratio: 0.99%
+  dividend_yield: 25.67%
+  category: Gold Income
+
+QLDY:
+  name: Defiance Nasdaq 100 LightningSpread Income ETF
+  aum: $15.05M
+  expense_ratio: 1.04%
+  dividend_yield: 3.08%
+  category: Nasdaq 100 Income
+
+# @ Daily Target 2X Long ETFs (Single Stock Leverage)
+MSTX:
+  name: Defiance Daily Target 2X Long MSTR ETF
+  aum: $672.45M
+  expense_ratio: 1.31%
+  underlying: MicroStrategy
+
+ORCX:
+  name: Defiance Daily Target 2X Long ORCL ETF
+  aum: $256.80M
+  expense_ratio: 1.36%
+  underlying: Oracle
+
+SMCX:
+  name: Defiance Daily Target 2X Long SMCI ETF
+  aum: $197.78M
+  expense_ratio: 1.43%
+  underlying: Super Micro Computer
+
+HIMZ:
+  name: Defiance Daily Target 2X Long HIMS ETF
+  aum: $170.23M
+  expense_ratio: 1.29%
+  underlying: Hims & Hers Health
+
+IONX:
+  name: Defiance Daily Target 2X Long IONQ ETF
+  aum: $161.70M
+  expense_ratio: 1.29%
+  underlying: IonQ
+
+OKLL:
+  name: Defiance Daily Target 2X Long OKLO ETF
+  aum: $157.06M
+  expense_ratio: 1.31%
+  underlying: Oklo Inc
+
+AVGX:
+  name: Defiance Daily Target 2X Long AVGO ETF
+  aum: $119.54M
+  expense_ratio: 1.30%
+  underlying: Broadcom
+
+RGTX:
+  name: Defiance Daily Target 2X Long RGTI ETF
+  aum: $118.09M
+  expense_ratio: 1.29%
+  underlying: Rigetti Computing
+
+RKLX:
+  name: Defiance Daily Target 2X Long RKLB ETF
+  aum: $109.99M
+  expense_ratio: 1.29%
+  underlying: Rocket Lab
+
+SOFX:
+  name: Defiance Daily Target 2X Long SOFI ETF
+  aum: $90.44M
+  expense_ratio: 1.29%
+  underlying: SoFi Technologies
+
+NVOX:
+  name: Defiance Daily Target 2X Long NVO ETF
+  aum: $84.09M
+  expense_ratio: 1.30%
+  underlying: Novo Nordisk
+
+LLYX:
+  name: Defiance Daily Target 2X Long LLY ETF
+  aum: $54.04M
+  expense_ratio: 1.32%
+  underlying: Eli Lilly
+
+RIOX:
+  name: Defiance Daily Target 2X Long RIOT ETF
+  aum: $47.59M
+  expense_ratio: 0.95%
+  underlying: Riot Platforms
+
+SOUX:
+  name: Defiance Daily Target 2X Long SOUN ETF
+  aum: $39.01M
+  expense_ratio: 1.29%
+  underlying: SoundHound AI
+
+QPUX:
+  name: Defiance 2X Daily Long Pure Quantum ETF
+  aum: $32.04M
+  expense_ratio: 1.29%
+  underlying: Quantum Computing Stocks
+
+HOOX:
+  name: Defiance Daily Target 2X Long HOOD ETF
+  aum: $25.10M
+  expense_ratio: 1.29%
+  underlying: Robinhood
+
+OSCX:
+  name: Defiance Daily Target 2X Long OSCR ETF
+  aum: $9.85M
+  expense_ratio: 1.31%
+  underlying: Oscar Health
+
+ANEL:
+  name: Defiance Daily Target 2X Long ANET ETF
+  aum: $7.47M
+  expense_ratio: 1.31%
+  underlying: Arista Networks
+
+VSTL:
+  name: Defiance Daily Target 2X Long VST ETF
+  aum: $5.67M
+  expense_ratio: 1.29%
+  underlying: Vistra Corp
+
+DKNX:
+  name: Defiance Daily Target 2X Long DKNG ETF
+  aum: $5.65M
+  expense_ratio: 1.29%
+  underlying: DraftKings
+
+CVNX:
+  name: Defiance Daily Target 2X Long CVNA ETF
+  aum: $2.78M
+  expense_ratio: 1.29%
+  underlying: Carvana
+
+JPX:
+  name: Defiance Daily Target 2X Long JPM ETF
+  aum: $2.50M
+  expense_ratio: 1.29%
+  underlying: JPMorgan Chase
+
+ZYN:
+  name: Defiance Daily Target 2X Long PM ETF
+  aum: $556.22K
+  expense_ratio: 1.31%
+  underlying: Philip Morris
+
+# @ Daily Target 2X Short ETFs (Inverse Leverage)
+RGTZ:
+  name: Defiance Daily Target 2X Short RGTI ETF
+  aum: $92.46M
+  expense_ratio: 1.29%
+  underlying: Rigetti Computing (Short)
+
+PLTZ:
+  name: Defiance Daily Target 2X Short PLTR ETF
+  aum: $77.10M
+  expense_ratio: 1.29%
+  underlying: Palantir (Short)
+
+IONZ:
+  name: Defiance Daily Target 2X Short IONQ ETF
+  aum: $72.90M
+  expense_ratio: 1.29%
+  underlying: IonQ (Short)
+
+QBTZ:
+  name: Defiance Daily Target 2X Short QBTS ETF
+  aum: $30.28M
+  expense_ratio: 1.29%
+  underlying: D-Wave Quantum (Short)
+
+SMST:
+  name: Defiance Daily Target 2X Short MSTR ETF
+  aum: $24.13M
+  expense_ratio: 1.31%
+  underlying: MicroStrategy (Short)
+
+SMCZ:
+  name: Defiance Daily Target 2X Short SMCI ETF
+  aum: $10.61M
+  expense_ratio: 1.29%
+  underlying: Super Micro Computer (Short)
+
+LLYZ:
+  name: Defiance Daily Target 2X Short LLY ETF
+  aum: $1.53M
+  expense_ratio: 1.29%
+  underlying: Eli Lilly (Short)
+
+# @ Leveraged Long + Income ETFs
+MST:
+  name: Defiance Leveraged Long Income MSTR ETF
+  aum: $62.94M
+  expense_ratio: 1.31%
+  dividend_yield: 75.21%
+  underlying: MicroStrategy
+
+HIMY:
+  name: Defiance Leveraged Long Income HIMS ETF
+  aum: $7.04M
+  expense_ratio: 1.51%
+  dividend_yield: 19.57%
+  underlying: Hims & Hers Health
+
+AMDU:
+  name: Defiance Leveraged Long + Income AMD ETF
+  aum: $3.01M
+  expense_ratio: 1.51%
+  dividend_yield: 6.93%
+  underlying: AMD
+
+ETHI:
+  name: Defiance Leveraged Long Income Ethereum ETF
+  aum: $2.34M
+  expense_ratio: 1.51%
+  dividend_yield: 8.45%
+  underlying: Ethereum
+
+HOOI:
+  name: Defiance Leveraged Long Income HOOD ETF
+  aum: $2.18M
+  expense_ratio: 1.51%
+  dividend_yield: 9.90%
+  underlying: Robinhood
+
+PLT:
+  name: Defiance Leveraged Long Income PLTR ETF
+  aum: $1.79M
+  expense_ratio: 1.51%
+  dividend_yield: 9.18%
+  underlying: Palantir
+
+SMCC:
+  name: Defiance Leveraged Long + Income SMCI ETF
+  aum: $1.47M
+  expense_ratio: 1.51%
+  dividend_yield: 13.15%
+  underlying: Super Micro Computer
+
+# @ Volatility
+VIXI:
+  name: Defiance Enhanced Long Vol ETF
+  aum: $1.89M
+  expense_ratio: 1.52%
+  category: Volatility

@@ -448,9 +448,6 @@ CVI:
 CWEN:
   name: Clearway Energy, Inc. (Class C)
 
-CWEN.A:
-  name: Clearway Energy, Inc. (Class A)
-
 CWK:
   name: Cushman & Wakefield plc
 
@@ -1038,9 +1035,6 @@ MNRO:
 
 MODG:
   name: Topgolf Callaway Brands
-
-MOG.A:
-  name: Moog Inc.
 
 MPW:
   name: Medical Properties Trust

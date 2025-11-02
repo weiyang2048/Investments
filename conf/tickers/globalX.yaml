@@ -1,31 +1,30 @@
-# ! Commodities
+# ! Commodities & Materials
 URA:
   name: Global X Uranium ETF
   color: yellowgreen
 HYDR:
   name: Global X Hydrogen ETF
   color: lightblue
-DMAT:
-  name: Global X Disruptive Materials ETF
-  color: rosybrown
 LIT:
   name: Global X Lithium & Battery Tech ETF
   color: lightyellow
 RNRG:
   name: Global X Renewable Energy Producers ETF
+COPX:
+  name: Global X Copper Miners ETF
+  color: saddlebrown
+SIL:
+  name: Global X Silver Miners ETF
+  color: silver
 
-# @ Sector or Industry
+# @ Technology & Innovation
 CHPX:
-  name: AI Semiconductor & Quantum ETF
+  name: Global X AI Semiconductor & Quantum ETF
   color: greenyellow
 AIQ:
   name: Global X Artificial Intelligence & Technology ETF
   region: Global
   color: rgba(150,255,0,1)
-SHLD:
-  name: Global X Defense Tech ETF
-  region: Global
-  color: rgba(150,0,0,1)
 BOTZ:
   name: Global X Robotics & Artificial Intelligence ETF
 BUG:
@@ -40,47 +39,59 @@ FINX:
   name: Global X FinTech ETF
 SNSR:
   name: Global X Internet of Things ETF
+
+# @ Digital & Social
 HERO:
   name: Global X Video Games & Esports ETF
 SOCL:
   name: Global X Social Media ETF
+EBIZ:
+  name: Global X E-commerce ETF
+BKCH:
+  name: Global X Blockchain ETF
+  color: orange
+BITS:
+  name: Global X Blockchain & Bitcoin Strategy ETF
+  color: darkorange
+
+# @ Healthcare & Life Sciences
 GNOM:
   name: Global X Genomics & Biotechnology ETF
 HEAL:
-  name: Global X HealthTech ETF
+  name: Global X Health & Wellness ETF
+AGNG:
+  name: Global X Aging Population ETF
+  color: mediumseagreen
+
+# @ Clean Energy & Sustainability
 CTEC:
   name: Global X CleanTech ETF
 AQWA:
   name: Global X Clean Water ETF
 KROP:
   name: Global X AgTech & Food Innovation ETF
-EBIZ:
-  name: Global X E-commerce ETF
+
+# @ Infrastructure & Defense
 PAVE:
   name: Global X U.S. Infrastructure Development ETF
-# [
-#      "AIQ", "SHLD", "BOTZ", "LIT", "BUG", "DTCR", "DRIV", "FINX",
-#     "CLOU", "BKCH", "SNSR", "HERO",  "SOCL", "MILN", "AGNG", "EBIZ",
-#     "HEAL", "GNOM", "HYDR", "BITS", "RNRG", "CTEC", "AQWA", "GXDW", "KROP",
-#     "BTRN"
-# ]
+SHLD:
+  name: Global X Defense Tech ETF
+  region: Global
+  color: rgba(150,0,0,1)
 
-# @ 2025 Q2 Releases
-## %% Income
-# GXIG:
-#   name: Global X Investment Grade Corporate Bond ETF
-# ## %% Thematics
-# GXPC:
-#   name: Global X PureCap MSCI Communication Services ETF
-# GXPD:
-#   name: Global X PureCap MSCI Consumer Discretionary ETF
-# GXPE:
-#   name: Global X PureCap MSCI Energy ETF
-# GXPS:
-#   name: Global X PureCap MSCI Consumer Staples ETF
-# GXPT:
-#   name: Global X PureCap MSCI Information Technology ETF
-# ZAP:
-#   name: Global X U.S. Electrification ETF
-# IPAV:
-#   name: Global X Infrastructure Development ex-U.S. ETF
+# @ Demographics & Values
+MILN:
+  name: Global X Millennials Consumer ETF
+  color: hotpink
+CHRI:
+  name: Global X S&P 500 Christian Values ETF
+  color: royalblue
+CATH:
+  name: Global X S&P 500 Catholic Values ETF
+  color: navy
+
+# @ Multi-Thematic
+GXDW:
+  name: Global X Dorsey Wright Thematic ETF
+  color: purple
+  line_style: solid

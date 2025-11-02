@@ -201,7 +201,11 @@ def display_dataframe(
                 marked_columns.append(col)
                 break
     
-    if marked_columns:
+    # Only display subtable if some (but not all) symbols are marked
+    # Don't display if: no symbols marked OR all symbols marked
+    unmarked_columns = [col for col in df.columns if col not in marked_columns]
+    
+    if marked_columns and unmarked_columns:
         # Create subtable with only marked symbols
         marked_df = df[marked_columns].copy()
         
