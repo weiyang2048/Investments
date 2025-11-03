@@ -67,7 +67,7 @@ def display_fear_and_greed_info():
             <a href="https://alternative.me/crypto/fear-and-greed-index/" target="_blank" style="color:{color_hex_crypto};text-decoration:none;margin-left:5px; font-weight: bold;">{crypto_value} {crypto_desc} (Crypto)</a>
         </div>
         <div>
-             <a href="https://finance.yahoo.com/markets/stocks/most-active/" target="_blank" style="color:#2895f7;text-decoration:none;">yStock</a> | <a href="https://finance.yahoo.com/markets/etfs/top-performing/?start=0&count=25" target="_blank" style="color:#2895f7;text-decoration:none;">yETF</a> | <a href="https://stockanalysis.com/stocks/compare/chpy-vs-nvdy-vs-gooy-vs-googl-vs-soxy-vs-gpty-vs-ygld-vs-maxi-vs-lfgy/" target="_blank" style="color:#2895f7;text-decoration:none;">Compare</a>
+             <a href="https://finance.yahoo.com/markets/stocks/most-active/" target="_blank" style="color:#2895f7;text-decoration:none;">yStock</a> | <a href="https://finance.yahoo.com/markets/etfs/top-performing/?start=0&count=25" target="_blank" style="color:#2895f7;text-decoration:none;">yETF</a> | <a href="https://www.etfrc.com/funds/overlap.php" target="_blank" style="color:#2895f7;text-decoration:none;">Overlap</a> | <a href="https://totalrealreturns.com/" target="_blank" style="color:#2895f7;text-decoration:none;">TotalReturns</a>
         </div>
     </div>
     """

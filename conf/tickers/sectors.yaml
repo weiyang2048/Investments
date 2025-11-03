@@ -1,246 +1,178 @@
-
-# ishare
+# ! Technology
 IXN:
   name: iShares Global Tech ETF
-  region: Global
   color: rgba(0,200,0,1) # matching the Technology color from README
-  line_style: dot
-IXP:
-  name: iShares Global Communications Services ETF
-  region: Global
-  color: rgba(150,255,150,1)
-  line_style: dot
-EXI:
-  name: iShares Global Industrials ETF
-  region: Global
-  color: rgba(255,150,0,1)
-  line_style: dot
-IXG:
-  name: iShares Global Financials ETF
-  region: Global
-  color: gold
-  line_style: dot
-IXC:
-  name: iShares Global Energy ETF
-  region: Global
-  color: rgba(150,0,255,1) # orange447
-  line_style: dot
-JXI:
-  name: iShares Global Utilities ETF
-  region: Global
-  color: rgba(255,255,0,1) # yellow
-  line_style: dot
-RXI:
-  name: iShares Global Consumer Discretionary ETF
-  region: Global
-  color: rgba(100, 150,255, 1) # lightblue
-  line_style: dot
-IXJ:
-  name: iShares Global Healthcare ETF
-  region: Global
-  color: pink
-  line_style: dot
-KXI:
-  name: iShares Global Consumer Staples ETF
-  region: Global
-  color: rgba(100, 200,255, 1)
-  line_style: dot
-MXI:
-  name: iShares Global Materials ETF
-  region: Global
-  color: darkgray
-  line_style: dot
-# ishare regional sectors
-EUFN:
-  name: iShares MSCI Europe Financials ETF
-  region: Europe
-  color: gold
-  line_style: dot
-
-EUAD:
-  name: Select STOXX Europe Aerospace & Defense ETF
-  region: Europe
-  color: darkblue
-  line_style: dot
-
-# momemtum 
 PTF:
   name: Invesco DWA Technology Momentum ETF
-  region: US
   color: rgba(0,200,0,1)
-  line_style: dashdot
-PRN:
-  name: Invesco DWA Industrials Momentum ETF
-  region: US
-  color: rgba(255,150,0,1)
-  line_style: dashdot
-PEZ:
-  name: Invesco Dorsey Wright Consumer Cyclicals Momentum ETF
-  region: US
-  color: orange
-  line_style: dashdot
-PTH:
-  name: Invesco Dorsey Wright Healthcare Momentum ETF
-  region: US
-  color: mediumseagreen
-  line_style: dashdot
-PYZ:
-  name: Invesco Dorsey Wright Basic Materials Momentum ETF
-  region: US
-  color: saddlebrown
-  line_style: dashdot
-PSL:
-  name: Invesco Dorsey Wright Consumer Staples Momentum ETF
-  region: US
-  color: darkgreen
-  line_style: dashdot
-PUI:
-  name: Invesco Dorsey Wright Utilities Momentum ETF
-  region: US
-  color: darkblue
-  line_style: dashdot
-PFI:
-  name: Invesco Dorsey Wright Financial Momentum ETF
-  region: US
-  color: goldenrod
-  line_style: dashdot
-PXI:
-  name: Invesco Dorsey Wright Energy Momentum ETF
-  region: US
-  color: darkred
-  line_style: dashdot
-
-# State Street 
-XLB:
-  name: Materials Select Sector SPDR Fund
-
-XLC:
-  name: Communication Services Select Sector SPDR Fund
-
-XLE:
-  name: Energy Select Sector SPDR Fund
-
-XLF:
-  name: Financial Select Sector SPDR Fund
-
-XLI:
-  name: Industrial Select Sector SPDR Fund
-
 XLK:
   name: Technology Select Sector SPDR Fund
+CLOU:
+  name: Global X Cloud Computing ETF
+ARKK:
+  name: ARK Innovation ETF
+  color: rgba(255,99,71,1) # tomato
+ARKW:
+  name: ARK Next Generation Internet ETF
+  color: rgba(30,144,255,1) # dodgerblue
+IZRL:
+  name: ARK Israel Innovative Technology ETF
+  color: rgba(0,100,200,1) # blue
+# ! AI
+AIQ:
+  name: Global X Artificial Intelligence & Technology ETF
+  color: rgba(150,255,0,1)
+AIPO:
+  name: Defiance AI & Power Infrastructure ETF
+  color: rgba(0,191,255,1) # deepskyblue
+BOTZ:
+  name: Global X Robotics & Artificial Intelligence ETF
+DTCR:
+  name: Global X Data Center And Digital Infrastructure ETF
+# ! Semiconductor & Quantum
+CHPX:
+  name: AI Semiconductor & Quantum ETF
+  color: greenyellow
+XSD:
+  name: SPDR S&P Semiconductor ETF
+QTUM:
+  name: Defiance Quantum ETF
+  color: rgba(138,43,226,1) # blueviolet
+# ! Communications
+IXP:
+  name: iShares Global Communications Services ETF
+  color: rgba(150,255,150,1)
+XLC:
+  name: Communication Services Select Sector SPDR Fund
+XTL:
+  name: SPDR S&P Telecom ETF
+SIXG:
+  name: Defiance Connective Technologies ETF
+  color: rgba(72,61,139,1) # darkslateblue
 
-XLP:
-  name: Consumer Staples Select Sector SPDR Fund
-
+# ! Blockchain & Finance
+IXG:
+  name: iShares Global Financials ETF
+  color: gold
+PFI:
+  name: Invesco Dorsey Wright Financial Momentum ETF
+  color: goldenrod
+EUFN:
+  name: iShares MSCI Europe Financials ETF
+  color: gold
+BKCH:
+  name: Global X Blockchain ETF
+  color: magenta
+FDIG:
+  name: FIDELITY CRYPTO INDUSTRY DIGITAL PAYMENTS ETF
+ARKF:
+  name: ARK Fintech Innovation ETF
+  color: rgba(34,139,34,1) # forestgreen
+FINX:
+  name: Global X FinTech ETF
 XLRE:
   name: Real Estate Select Sector SPDR Fund
 
-XLU:
-  name: Utilities Select Sector SPDR Fund
-
-XLV:
-  name: Health Care Select Sector SPDR Fund
-
-XLY:
-  name: Consumer Discretionary Select Sector SPDR Fund
-
-KBE:
-  name: SPDR S&P Bank ETF
-
-KCE:
-  name: SPDR S&P Capital Markets ETF
-
-KIE:
-  name: SPDR S&P Insurance ETF
-
-KRE:
-  name: SPDR S&P Regional Banking ETF
-
+# ! Industrials & Aerospace & Defense
+EXI:
+  name: iShares Global Industrials ETF
+  color: rgba(255,150,0,1)
+PRN:
+  name: Invesco DWA Industrials Momentum ETF
+  color: rgba(255,150,0,1)
+DRIV:
+  name: Global X Autonomous & Electric Vehicles ETF
+ARKQ:
+  name: ARK Autonomous Technology & Robotics ETF
+  color: rgba(75,0,130,1) # indigo
+EUAD:
+  name: Select STOXX Europe Aerospace & Defense ETF
+  color: darkblue
+SHLD:
+  name: Global X Defense Tech ETF
+  color: rgba(150,0,0,1)
+ARKX:
+  name: Ark SpAce Exploration & Innovation ETF
+  color: rgba(186, 85, 211, 1) # lightpurple
 XAR:
   name: SPDR S&P Aerospace & Defense ETF
+PAVE:
+  name: Global X U.S. Infrastructure Development ETF
 
-XBI:
-  name: SPDR S&P Biotech ETF
-
-XES:
-  name: SPDR S&P Oil & Gas Equipment & Services ETF
-
-XHB:
-  name: SPDR S&P Homebuilders ETF
-
-XHE:
-  name: SPDR S&P Health Care Equipment ETF
-
-XHS:
-  name: SPDR S&P Health Care Services ETF
-
-XME:
-  name: SPDR S&P Metals & Mining ETF
-XOP:
-  name: SPDR S&P Oil & Gas Exploration & Production ETF
-
+# ! Biotech & Pharma
+IXJ:
+  name: iShares Global Healthcare ETF
+  color: pink
+HEAL:
+  name: Global X HealthTech ETF
+PTH:
+  name: Invesco Dorsey Wright Healthcare Momentum ETF
 XPH:
   name: SPDR S&P Pharmaceuticals ETF
+XBI:
+  name: SPDR S&P Biotech ETF
+ARKG:
+  name: ARK Genomic Revolution ETF
+  color: turquoise
+GNOM:
+  name: Global X Genomics & Biotechnology ETF
 
+
+# ! Direct to consumer
+RXI:
+  name: iShares Global Consumer Discretionary ETF
+  color: rgba(100, 150,255, 1) # lightblue
+KXI:
+  name: iShares Global Consumer Staples ETF
+  color: rgba(100, 200,255, 1)
+PEZ:
+  name: Invesco Dorsey Wright Consumer Cyclicals Momentum ETF
+  color: orange
+PSL:
+  name: Invesco Dorsey Wright Consumer Staples Momentum ETF
+  color: darkgreen
+EBIZ:
+  name: Global X E-commerce ETF
 XRT:
   name: SPDR S&P Retail ETF
 
-XSD:
-  name: SPDR S&P Semiconductor ETF
+# ! Energy And Utilities
+IXC:
+  name: iShares Global Energy ETF
+  color: rgba(150,0,255,1) # orange447
+PXI:
+  name: Invesco Dorsey Wright Energy Momentum ETF
+  color: darkred
+XES:
+  name: SPDR S&P Oil & Gas Equipment & Services ETF
+XOP:
+  name: SPDR S&P Oil & Gas Exploration & Production ETF
+CTEC:
+  name: Global X CleanTech ETF
+RNRG:
+  name: Global X Renewable Energy Producers ETF
+JXI:
+  name: iShares Global Utilities ETF
+  color: rgba(255,255,0,1) # yellow
+PUI:
+  name: Invesco Dorsey Wright Utilities Momentum ETF
+  color: darkblue
 
-XSW:
-  name: SPDR S&P Software & Services ETF
-
-XTL:
-  name: SPDR S&P Telecom ETF
-
-XTN:
-  name: SPDR S&P Transportation ETF
-
-XITK:
-  name: SPDR FactSet Innovative Technology ETF
-
-XNTK:
-  name: SPDR NYSE Technology ETF
-
-
-# ark
-ARKF:
-  name: ARK Fintech Innovation ETF
-  region: US
-  color: rgba(34,139,34,1) # forestgreen
-ARKG:
-  name: ARK Genomic Revolution ETF
-  region: US
-  color: turquoise
-ARKK:
-  name: ARK Innovation ETF
-  region: US
-  color: rgba(255,99,71,1) # tomato
-ARKQ:
-  name: ARK Autonomous Technology & Robotics ETF
-  region: US
-  color: rgba(75,0,130,1) # indigo
-ARKW:
-  name: ARK Next Generation Internet ETF
-  region: US
-  color: rgba(30,144,255,1) # dodgerblue
-ARKX:
-  name: Ark SpAce Exploration & Innovation ETF
-  region: US
-  color: rgba(186, 85, 211, 1) # lightpurple
-IZRL:
-  name: ARK Israel Innovative Technology ETF
-  region: Israel
-  color: rgba(0,100,200,1) # blue
-  line_style: solid
+# ! Commodities & Materials
+MXI:
+  name: iShares Global Materials ETF
+  color: darkgray
+PYZ:
+  name: Invesco Dorsey Wright Basic Materials Momentum ETF
+  color: saddlebrown
 PRNT:
   name: The 3D Printing ETF
-  region: US
   color: rgba(128,0,128,1) # purple
-  line_style: solid
-# globalx
-# ! Commodities
+XME:
+  name: SPDR S&P Metals & Mining ETF
+LIT:
+  name: Global X Lithium & Battery Tech ETF
+  color: lightyellow
 URA:
   name: Global X Uranium ETF
   color: yellowgreen
@@ -250,91 +182,16 @@ HYDR:
 DMAT:
   name: Global X Disruptive Materials ETF
   color: rosybrown
-LIT:
-  name: Global X Lithium & Battery Tech ETF
-  color: lightyellow
-RNRG:
-  name: Global X Renewable Energy Producers ETF
-
-# @ Sector or Industry
 GOEX:
   name: Global X Gold Explorers ETF
   color: gold
-  line_style: dash
 SLVP:
   name: iShares MSCI Global Silver and Metals Miners ETF
   color: silver
-  line_style: dash
 COPX:
   name: Global X Copper Miners ETF
   color: brown
-  line_style: dash
-BKCH:
-  name: Global X Blockchain ETF
-  color: magenta
-  line_style: dash
-CHPX:
-  name: AI Semiconductor & Quantum ETF
-  color: greenyellow
-AIQ:
-  name: Global X Artificial Intelligence & Technology ETF
-  region: Global
-  color: rgba(150,255,0,1)
-SHLD:
-  name: Global X Defense Tech ETF
-  region: Global
-  color: rgba(150,0,0,1)
-BOTZ:
-  name: Global X Robotics & Artificial Intelligence ETF
-BUG:
-  name: Global X Cybersecurity ETF
-DTCR:
-  name: Global X Data Center And Digital Infrastructure ETF
-DRIV:
-  name: Global X Autonomous & Electric Vehicles ETF
-CLOU:
-  name: Global X Cloud Computing ETF
-FINX:
-  name: Global X FinTech ETF
-SNSR:
-  name: Global X Internet of Things ETF
-HERO:
-  name: Global X Video Games & Esports ETF
-SOCL:
-  name: Global X Social Media ETF
-GNOM:
-  name: Global X Genomics & Biotechnology ETF
-HEAL:
-  name: Global X HealthTech ETF
-CTEC:
-  name: Global X CleanTech ETF
 AQWA:
   name: Global X Clean Water ETF
 KROP:
   name: Global X AgTech & Food Innovation ETF
-EBIZ:
-  name: Global X E-commerce ETF
-PAVE:
-  name: Global X U.S. Infrastructure Development ETF
-# defiance
-QTUM:
-  name: Defiance Quantum ETF
-  region: US
-  color: rgba(138,43,226,1) # blueviolet
-  line_style: solid
-AIPO:
-  name: Defiance AI & Power Infrastructure ETF
-  region: US
-  color: rgba(0,191,255,1) # deepskyblue
-  line_style: solid
-JEDI:
-  name: Defiance Drone and Modern Warfare ETF
-  region: US
-  color: rgba(139,0,0,1) # darkred
-  line_style: solid
-
-SIXG:
-  name: Defiance Connective Technologies ETF
-  region: US
-  color: rgba(72,61,139,1) # darkslateblue
-  line_style: solid

@@ -41,3 +41,7 @@ omegaconf
 loguru
 pyhere
 fear-and-greed
+
+# selenium
+# webdriver-manager
+# nest-asyncio

@@ -5,8 +5,10 @@ lenses:
     Commodities: [ GLTR, IAUM, GOEX, SLV, SLVP, PPLT, GDLC, BTC, ETH, GSOL, BKCH,COPX, REMX, DMAT, HYDR, URA, ILIT, LIT, IEO, DBA]
     income: ${get_keys:tickers.income}
     Stocks: ${union:[AVGO, CAT,GE, GOOGL], [ASML, ARGX, TCEHY, BBVA], [OPEN, LCID, LITS], [LAC, OKLO, MP, PLUG, RGTI]}
-    r: [ VEU, GOOGL, AIA]
+    ro: [ VEU, GOOGL, AIA]
     f: ${get_keys:tickers.f}
+    s: ${get_keys:tickers.s}
+    r: ${get_keys:tickers.r}
   stocks:
     sp100: ${get_keys:tickers.sp50}
     adr100: ${get_keys:tickers.adr50}

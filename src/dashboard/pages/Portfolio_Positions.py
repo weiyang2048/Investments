@@ -14,6 +14,12 @@ import hydra
 from src.configurations.yaml import register_resolvers
 from src.dashboard.create_page import setup_page_and_sidebar
 from src.viz.streamlit_display import display_dataframe
+from cli.update_portfolio_yaml import (
+    load_account_mapping,
+    read_portfolio_csv,
+    filter_by_account,
+    update_yaml_file,
+)
 
 
 def clean_currency_value(value):
@@ -103,17 +109,27 @@ def calc_gain_loss_pct(gain_loss: float, value: float) -> float:
 
 def calc_subset_stats(subset_df: pd.DataFrame):
     """Calculate statistics for a subset of positions (excluding cash)."""
+    # Filter to only include valid accounts (non-empty positions or positive cash)
+    valid_accounts = get_valid_accounts(subset_df)
+    if valid_accounts:
+        subset_df = subset_df[subset_df["Account Number"].isin(valid_accounts)]
+    
     non_cash = filter_non_cash(subset_df)
     value = subset_df["Current Value"].sum() if "Current Value" in subset_df.columns else 0
     gain_loss = subset_df["Total Gain/Loss Dollar"].sum() if "Total Gain/Loss Dollar" in subset_df.columns else 0
     gain_loss_pct = calc_gain_loss_pct(gain_loss, value)
     positions = len(non_cash)
-    accounts = subset_df["Account Number"].nunique() if "Account Number" in subset_df.columns else 0
+    accounts = subset_df["Account Number"].nunique() if "Account Number" in subset_df.columns and len(subset_df) > 0 else 0
     return value, gain_loss, gain_loss_pct, positions, accounts
 
 
 def display_portfolio_summary(df: pd.DataFrame) -> None:
     """Display portfolio summary statistics with Short-Term and Long-Term breakdown."""
+    # Filter to only include valid accounts (non-empty positions or positive cash)
+    valid_accounts = get_valid_accounts(df)
+    if valid_accounts:
+        df = df[df["Account Number"].isin(valid_accounts)]
+    
     df_classified = classify_account_type(df)
     
     # Calculate totals
@@ -130,30 +146,23 @@ def display_portfolio_summary(df: pd.DataFrame) -> None:
     long_term_df = df_classified[df_classified["Account Type"] == "Long-Term"]
     long_term_value, long_term_gain_loss, long_term_gain_loss_pct, long_term_positions, long_term_accounts = calc_subset_stats(long_term_df)
     
-    # Display overall summary metrics
-    st.subheader("📊 Overall Summary")
-    col1, col2, col3, col4 = st.columns(4)
+    # Display overall summary, Short-Term, and Long-Term in the same row
+    st.subheader("📊 Portfolio Summary")
+    col1, col2, col3 = st.columns(3)
     
+    # Overall Summary column
     with col1:
+        st.markdown("**📊 Overall Summary**")
         st.metric("Total Value", f"${total_value:,.2f}" if total_value else "N/A")
-    
-    with col2:
         st.metric(
             "Total Gain/Loss",
             f"${total_gain_loss:,.2f} ({total_gain_loss_pct:.2f}%)" if total_gain_loss else "N/A",
             delta=f"{total_gain_loss_pct:.2f}%" if total_gain_loss else None,
         )
+        st.caption(f"Positions: {num_positions} | Accounts: {num_accounts}")
     
-    with col3:
-        st.metric("Number of Positions", num_positions)
-    
-    with col4:
-        st.metric("Number of Accounts", num_accounts)
-    
-    # Display Short-Term and Long-Term breakdown
-    col1, col2 = st.columns(2)
-    
-    with col1:
+    # Short-Term column
+    with col2:
         st.markdown("**🔄 Short-Term**")
         st.metric("Total Value", f"${short_term_value:,.2f}" if short_term_value else "$0.00")
         st.metric(
@@ -163,7 +172,8 @@ def display_portfolio_summary(df: pd.DataFrame) -> None:
         )
         st.caption(f"Positions: {short_term_positions} | Accounts: {short_term_accounts}")
     
-    with col2:
+    # Long-Term column
+    with col3:
         st.markdown("**📅 Long-Term**")
         st.metric("Total Value", f"${long_term_value:,.2f}" if long_term_value else "$0.00")
         st.metric(
@@ -180,6 +190,39 @@ def is_cash_position(symbol: str) -> bool:
         return False
     symbol_str = str(symbol)
     return symbol_str.endswith(("**", "***"))
+
+
+def get_valid_accounts(df: pd.DataFrame) -> set:
+    """Get set of account numbers that have non-empty positions or positive cash."""
+    if "Account Number" not in df.columns or len(df) == 0:
+        return set()
+    
+    # Identify cash positions
+    df_copy = df.copy()
+    if "Symbol" in df_copy.columns:
+        df_copy["Is Cash"] = df_copy["Symbol"].apply(is_cash_position)
+    else:
+        df_copy["Is Cash"] = False
+    
+    # Group by account and calculate cash and non-cash values
+    valid_accounts = set()
+    
+    if "Current Value" in df_copy.columns:
+        # Calculate cash value per account
+        cash_df = df_copy[df_copy["Is Cash"]]
+        if not cash_df.empty:
+            cash_by_account = cash_df.groupby("Account Number")["Current Value"].sum()
+            # Accounts with positive cash
+            valid_accounts.update(cash_by_account[cash_by_account > 0].index.tolist())
+        
+        # Calculate non-cash value per account
+        non_cash_df = df_copy[~df_copy["Is Cash"]]
+        if not non_cash_df.empty:
+            non_cash_by_account = non_cash_df.groupby("Account Number")["Current Value"].sum()
+            # Accounts with non-empty positions (positive value)
+            valid_accounts.update(non_cash_by_account[non_cash_by_account > 0].index.tolist())
+    
+    return valid_accounts
 
 
 def filter_non_cash(df: pd.DataFrame) -> pd.DataFrame:
@@ -305,6 +348,11 @@ def display_account_breakdown(df: pd.DataFrame, include_cash: bool = True) -> No
     """Display breakdown by account, including cash positions."""
     if "Account Number" not in df.columns or "Account Name" not in df.columns:
         return
+    
+    # Filter to only include valid accounts (non-empty positions or positive cash)
+    valid_accounts = get_valid_accounts(df)
+    if valid_accounts:
+        df = df[df["Account Number"].isin(valid_accounts)]
     
     st.subheader("📊 Account Breakdown")
     
@@ -434,7 +482,7 @@ def display_account_breakdown(df: pd.DataFrame, include_cash: bool = True) -> No
     }
     styled_account = styled_account.format({k: v for k, v in account_format_dict.items() if k in display_account_summary.columns})
     
-    st.dataframe(styled_account, use_container_width=True, hide_index=True)
+    st.dataframe(styled_account, width='stretch', hide_index=True)
     
     # Add note about cash positions
     st.caption("💡 Cash positions (FDRXX**, SPAXX**, USD***, etc.) are included in Total Value and Cash Value columns.")
@@ -474,6 +522,7 @@ def main_portfolio_page():
     
     st.title("📈 Portfolio Positions")
     st.markdown("View your Fidelity portfolio positions from CSV export.")
+    st.info("ℹ️ **Note:** Currently only Fidelity positions files are supported.")
     
     # Check for CSV file in root
     root_csv_path = here("Portfolio_Positions.csv")
@@ -483,6 +532,38 @@ def main_portfolio_page():
     if root_csv_path.exists():
         file_status_msg = "✅ Found Portfolio_Positions.csv in project root"
         csv_path = root_csv_path
+        
+        # Run inv-port update if CSV file exists
+        try:
+            with st.spinner("🔄 Updating portfolio YAML files..."):
+                # Load account mapping from config
+                account_mapping = load_account_mapping()
+                
+                # Read portfolio positions
+                positions = read_portfolio_csv(str(csv_path))
+                
+                total_tickers = 0
+                
+                # Process each account
+                for account_number, yaml_file in account_mapping.items():
+                    tickers = filter_by_account(positions, account_number)
+                    
+                    if tickers:
+                        total_tickers += len(tickers)
+                        # Create a simple echo function for Streamlit
+                        def streamlit_echo(message):
+                            pass  # Silently process, we'll show summary at the end
+                        update_yaml_file(yaml_file, tickers, echo=streamlit_echo)
+                
+                if total_tickers > 0:
+                    st.success(f"✅ Portfolio YAML files updated successfully! Updated {total_tickers} tickers across {len(account_mapping)} accounts")
+                else:
+                    st.info("ℹ️ No tickers found to update")
+        except FileNotFoundError as e:
+            st.warning(f"⚠️ Could not update portfolio YAML files: {e}")
+        except Exception as e:
+            st.warning(f"⚠️ Could not update portfolio YAML files: {e}")
+        
     else:
         st.info("📤 No Portfolio_Positions.csv found in root. Please upload your portfolio positions file.")
         uploaded_file = st.file_uploader(
@@ -612,7 +693,7 @@ def main_portfolio_page():
             if format_dict:
                 styled_marked_df = styled_marked_df.format(format_dict)
             
-            st.dataframe(styled_marked_df, use_container_width=True, hide_index=True)
+            st.dataframe(styled_marked_df, width='stretch', hide_index=True)
         
         st.divider()
     
@@ -666,7 +747,7 @@ def main_portfolio_page():
         # Display the styled dataframe
         st.dataframe(
             styled_df,
-            use_container_width=True,
+            width='stretch',
             hide_index=True,
             height=600,
         )
