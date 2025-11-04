@@ -518,10 +518,7 @@ def main_portfolio_page():
                     
                     if tickers:
                         total_tickers += len(tickers)
-                        # Create a simple echo function for Streamlit
-                        def streamlit_echo(message):
-                            pass  # Silently process, we'll show summary at the end
-                        update_yaml_file(yaml_file, tickers, echo=streamlit_echo)
+                        update_yaml_file(yaml_file, tickers)
                 
                 if total_tickers > 0:
                     st.success(f"✅ Portfolio YAML files updated successfully! Updated {total_tickers} tickers across {len(account_mapping)} accounts")

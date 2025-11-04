@@ -26,8 +26,7 @@ def load_account_mapping() -> Dict[str, str]:
     config_path = here("conf/account_mapping.json")
     if not config_path.exists():
         raise FileNotFoundError(
-            f"Account mapping config not found: {config_path}\n"
-            "Please create conf/account_mapping.json with account number mappings."
+            f"Account mapping config not found: {config_path}\n" "Please create conf/account_mapping.json with account number mappings."
         )
     with open(config_path, "r", encoding="utf-8") as f:
         return json.load(f)
@@ -40,8 +39,8 @@ def read_portfolio_csv(csv_path: str) -> List[Dict]:
     with open(csv_path, "r", encoding="utf-8-sig") as f:
         reader = csv.DictReader(f)
         # Normalize column names to strip BOM and whitespace
-        reader.fieldnames = [col.strip().lstrip('\ufeff') for col in reader.fieldnames] if reader.fieldnames else None
-        
+        reader.fieldnames = [col.strip().lstrip("\ufeff") for col in reader.fieldnames] if reader.fieldnames else None
+
         for row in reader:
             # Skip empty rows and footer text
             if not row.get("Symbol") or row.get("Symbol").startswith("*"):
@@ -59,7 +58,7 @@ def filter_by_account(positions: List[Dict], account_number: str) -> List[Tuple[
     result = []
     for pos in positions:
         # Handle BOM in account number field - try both with and without normalization
-        account_num = pos.get("Account Number", "").strip().lstrip('\ufeff')
+        account_num = pos.get("Account Number", "").strip().lstrip("\ufeff")
         if account_num == account_number:
             symbol = pos.get("Symbol", "").strip()
             description = pos.get("Description", "").strip()
@@ -68,32 +67,24 @@ def filter_by_account(positions: List[Dict], account_number: str) -> List[Tuple[
     return result
 
 
-def update_yaml_file(yaml_file: str, tickers: List[Tuple[str, str]], echo=None) -> None:
+def update_yaml_file(yaml_file: str, tickers: List[Tuple[str, str]]) -> None:
     """Update YAML file with new ticker symbols and descriptions.
-    
+
     Args:
         yaml_file: Name of the YAML file to update
         tickers: List of (symbol, description) tuples
-        echo: Optional output function (defaults to print)
     """
-    if echo is None:
-        echo = print
-    
     yaml_path = here(f"conf/tickers/{yaml_file}")
-    
+
     # Load existing YAML file if it exists
     existing_data = {}
-    if yaml_path.exists():
-        with open(yaml_path, "r", encoding="utf-8") as f:
-            existing_data = yaml.safe_load(f) or {}
-    
     # Update with new tickers (new ones will overwrite old ones with same symbol)
     for symbol, description in tickers:
         existing_data[symbol] = {"name": description}
-    
+
     # Sort by symbol for consistency
     sorted_data = dict(sorted(existing_data.items()))
-    
+
     # Write back to YAML file
     with open(yaml_path, "w", encoding="utf-8") as f:
         yaml.dump(
@@ -104,8 +95,8 @@ def update_yaml_file(yaml_file: str, tickers: List[Tuple[str, str]], echo=None) 
             allow_unicode=True,
             width=1000,  # Prevent line wrapping
         )
-    
-    echo(f"✓ Updated {yaml_file} with {len(tickers)} tickers ({len(sorted_data)} total)")
+
+    print(f"✅ Updated {yaml_file} with {len(tickers)} tickers ({len(sorted_data)} total)")
 
 
 def main(csv_file_path: str) -> None:
@@ -114,18 +105,18 @@ def main(csv_file_path: str) -> None:
     if not csv_path.exists():
         print(f"Error: CSV file not found: {csv_file_path}")
         sys.exit(1)
-    
+
     # Load account mapping from config
     try:
         account_mapping = load_account_mapping()
     except FileNotFoundError as e:
         print(f"Error: {e}")
         sys.exit(1)
-    
+
     print(f"Reading portfolio positions from: {csv_file_path}")
     positions = read_portfolio_csv(csv_path)
     print(f"Found {len(positions)} positions")
-    
+
     # Process each account
     for account_number, yaml_file in account_mapping.items():
         print(f"\nProcessing account {account_number} → {yaml_file}")
@@ -146,6 +137,5 @@ if __name__ == "__main__":
         print("\nExample:")
         print("  python cli/update_portfolio_yaml.py Notebooks/Portfolio_Positions.csv")
         sys.exit(1)
-    
-    main(sys.argv[1])
 
+    main(sys.argv[1])
