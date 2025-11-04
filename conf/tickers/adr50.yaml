@@ -1,299 +1,968 @@
-TSM:
-  name: Taiwan Semiconductor Manufacturing Co Ltd
-
-TCEHY:
-  name: Tencent Holdings Ltd
-
-AZN:
-  name: AstraZeneca PLC
-
-ASML:
-  name: ASML Holding NV
-
-BABA:
-  name: Alibaba Group Holding Limited
-
-SMFG:
-  name: Sumitomo Mitsui Financial Group Inc
-
-SAP:
-  name: SAP SE
-
-TM:
-  name: Toyota Motor Corp
-
-HSBC:
-  name: HSBC Holdings PLC
-
-NVS:
-  name: Novartis AG
-
-NVO:
-  name: Novo Nordisk A/S
-
-SHEL:
-  name: Shell PLC
-
-HDB:
-  name: HDFC Bank Ltd
-
-ARM:
-  name: Arm Holdings PLC
-
-MUFG:
-  name: Mitsubishi UFJ Financial Group Inc
-
-SONY:
-  name: Sony Group Corp
-
-SAN:
-  name: Banco Santander SA
-
-UL:
-  name: Unilever PLC
-
-BHP:
-  name: BHP Group Ltd
-
-TTE:
-  name: TotalEnergies SE
-
-SNY:
-  name: Sanofi SA
-
-BUD:
-  name: Anheuser-Busch Inbev SA
-
-RIO:
-  name: Rio Tinto PLC
-
-BBVA:
-  name: Banco Bilbao Vizcaya Argentaria SA
-
-BTI:
-  name: British American Tobacco PLC
-
-GSK:
-  name: GSK plc
-
-SE:
-  name: Sea Ltd
-
-BP:
-  name: BP PLC
-
-NTES:
-  name: NetEase Inc
-
-MFG:
-  name: Mizuho Financial Group Inc
-
-RELX:
-  name: Relx PLC
-
-ING:
-  name: ING Groep NV
-
-BCS:
-  name: Barclays PLC
-
-PBR:
-  name: Petroleo Brasileiro SA Petrobras
-
-PKX:
-  name: Posco Holdings Inc
-
-INFY:
-  name: Infosys Ltd
-
-LYG:
-  name: Lloyds Banking Group PLC
-
-EQNR:
-  name: Equinor ASA
-
-IBN:
-  name: ICICI Bank Ltd
-
-VALE:
-  name: Vale SA
-
-DEO:
-  name: Diageo PLC
-
-ARGX:
-  name: argenx SE
-
-PDD:
-  name: PDD Holdings Inc
-
-TCOM:
-  name: Trip.com Group Ltd
-
-VIPS:
-  name: Vipshop Holdings Ltd
-
-TAK:
-  name: Takeda Pharmaceutical Co Ltd
-
-HMC:
-  name: Honda Motor Co Ltd
-
-BIDU:
-  name: Baidu Inc
-
-HLN:
-  name: HALEON PLC
-
-NOK:
-  name: Nokia Oyj
-
+AAL:
+    name: Anglo American PLC
+ABB:
+    name: ABB Ltd
 ABEV:
-  name: Ambev SA
-
-CHL:
-  name: China Mobile Ltd
-
-PTR:
-  name: PetroChina Co Ltd
-
-SNP:
-  name: China Petroleum & Chemical Corp
-
-SCCO:
-  name: Southern Copper Corp
-
-CEO:
-  name: CNOOC Ltd
-
+    name: Ambev SA
+ACGBY:
+    name: Aegon NV
+ACH:
+    name: Aluminum Corp of China Ltd
+ACS:
+    name: ACS Actividades de Construccion y Servicios SA
+ADDYY:
+    name: Adidas AG
+ADRNY:
+    name: Adyen NV
+AER:
+    name: AerCap Holdings NV
+AERI:
+    name: Aerie Pharmaceuticals Inc
+AGRX:
+    name: Agile Therapeutics Inc
+AIOT:
+    name: PowerFleet Inc
+AIRC:
+    name: Apartment Income REIT Corp
+AIRTP:
+    name: Air T Inc
+AJINY:
+    name: Ajinomoto Co Inc
+AKBA:
+    name: Akebia Therapeutics Inc
+AKRO:
+    name: Akero Therapeutics Inc
+AKTS:
+    name: Akoustis Technologies Inc
+AKYA:
+    name: Akoya Biosciences Inc
+ALAB:
+    name: Astera Labs Inc
+ALB:
+    name: Albemarle Corp
+ALBT:
+    name: Avalon GloboCare Corp
+ALCO:
+    name: Alico Inc
+ALDX:
+    name: Aldeyra Therapeutics Inc
+ALIT:
+    name: Alight Inc
+ALIZF:
+    name: Allianz SE
+ALJJ:
+    name: ALJ Regional Holdings Inc
+ALKT:
+    name: Alkami Technology Inc
+ALLO:
+    name: Allogene Therapeutics Inc
+ALLT:
+    name: Allot Ltd
+ALNY:
+    name: Alnylam Pharmaceuticals Inc
+ALOT:
+    name: AstroNova Inc
+ALPN:
+    name: Alpine Immune Sciences Inc
+ALPP:
+    name: Alpine 4 Holdings Inc
+ALRN:
+    name: Aileron Therapeutics Inc
+ALRS:
+    name: Alerus Financial Corp
+ALSA:
+    name: Alpha Star Acquisition Corp
+AMOV:
+    name: America Movil SAB de CV Series L
 AMX:
-  name: America Movil SAB de CV
-
-ITUB:
-  name: Itau Unibanco Holding SA
-
-JD:
-  name: JD.com Inc
-
-GOLD:
-  name: Barrick Gold Corp
-
-LFC:
-  name: China Life Insurance Co Ltd
-
-CHT:
-  name: Chunghwa Telecom Co Ltd
-
-VOD:
-  name: Vodafone Group PLC
-
-ERIC:
-  name: Telefonaktiebolaget LM Ericsson
-
-DB:
-  name: Deutsche Bank AG
-
-BBD:
-  name: Banco Bradesco SA
-
-E:
-  name: Eni SpA
-
-MT:
-  name: ArcelorMittal SA
-
-FMX:
-  name: Fomento Economico Mexicano SAB de CV
-
-STM:
-  name: STMicroelectronics NV
-
-NIO:
-  name: NIO Inc
-
-LI:
-  name: Li Auto Inc
-
-XPEV:
-  name: XPeng Inc
-
-PHG:
-  name: Koninklijke Philips NV
-
-WIT:
-  name: Wipro Ltd
-
-KB:
-  name: KB Financial Group Inc
-
-SHG:
-  name: Shinhan Financial Group Co Ltd
-
-KEP:
-  name: Korea Electric Power Corp
-
-SKM:
-  name: SK Telecom Co Ltd
-
-TME:
-  name: Tencent Music Entertainment Group
-
-YUMC:
-  name: Yum China Holdings Inc
-
-CHU:
-  name: China Unicom Hong Kong Ltd
-
-NMR:
-  name: Nomura Holdings Inc
-
-SBS:
-  name: Companhia de Saneamento Basico do Estado de Sao Paulo
-
-CX:
-  name: CEMEX SAB de CV
-
-TX:
-  name: Ternium SA
-
-GGB:
-  name: Gerdau SA
-
-SSL:
-  name: Sasol Ltd
-
+    name: America Movil SAB de CV
+ANGHY:
+    name: Angostura Holdings Ltd
+ANGPY:
+    name: Anglo American Platinum Ltd
+ANZBY:
+    name: Australia and New Zealand Banking Group Ltd
+ARA:
+    name: Aracruz Celulose SA
+ARGX:
+    name: argenx SE
+ARM:
+    name: Arm Holdings PLC
+ASGLY:
+    name: Asahi Group Holdings Ltd
+ASML:
+    name: ASML Holding NV
+ASR:
+    name: Grupo Aeroportuario del Sureste SAB de CV
+ASX:
+    name: ASE Technology Holding Co Ltd
+ATHM:
+    name: Autohome Inc
+ATKPY:
+    name: Axis Bank Ltd
+ATLKY:
+    name: Atlas Copco AB
 AU:
-  name: AngloGold Ashanti Ltd
-
+    name: AngloGold Ashanti Ltd
+AUDVF:
+    name: AudioCodes Ltd
 AUY:
-  name: Yamana Gold Inc
-
-GGAL:
-  name: Grupo Financiero Galicia SA
-
-YPF:
-  name: YPF SA
-
-TV:
-  name: Grupo Televisa SAB
-
-SID:
-  name: Companhia Siderurgica Nacional SA
-
-ZNH:
-  name: China Southern Airlines Co Ltd
-
+    name: Yamana Gold Inc
+AVAV:
+    name: AeroVironment Inc
+AVGO:
+    name: Broadcom Inc
+AVVIY:
+    name: Aviva PLC
+AXA:
+    name: AXA SA
+AXAHY:
+    name: AXA SA
+AYALY:
+    name: Ayala Corp
+AZN:
+    name: AstraZeneca PLC
+AZO:
+    name: AutoZone Inc
+AZRE:
+    name: Azure Power Global Ltd
+BABA:
+    name: Alibaba Group Holding Ltd
+BACHF:
+    name: Bank of China Ltd
+BAESY:
+    name: BAE Systems PLC
+BASFY:
+    name: BASF SE
+BAYN:
+    name: Bayer AG
+BAYRY:
+    name: Bayer AG
+BBCAF:
+    name: Bangkok Bank PCL
+BBD:
+    name: Banco Bradesco SA
+BBDBY:
+    name: Bouygues SA
+BBDO:
+    name: Banco Bradesco SA
+BBL:
+    name: BHP Group Ltd
+BBVA:
+    name: Banco Bilbao Vizcaya Argentaria SA
+BCLYF:
+    name: Barratt Developments PLC
+BCS:
+    name: Barclays PLC
+BEKE:
+    name: KE Holdings Inc
+BHP:
+    name: BHP Group Ltd
+BHPKY:
+    name: BHP Billiton Ltd
+BIDU:
+    name: Baidu Inc
+BILI:
+    name: Bilibili Inc
+BKMY:
+    name: Bank of China Ltd
+BMA:
+    name: Banco Macro SA
+BMWYY:
+    name: Bayerische Motoren Werke AG
+BMY:
+    name: Bristol-Myers Squibb Co
+BNCPY:
+    name: Banco Pan SA
+BNPQY:
+    name: BNP Paribas SA
+BNZLY:
+    name: Bunzl PLC
+BP:
+    name: BP PLC
+BRFS:
+    name: BRF SA
+BSAC:
+    name: Banco Santander Chile SA
+BSBR:
+    name: Banco Santander Brasil SA
+BTI:
+    name: British American Tobacco PLC
+BUD:
+    name: Anheuser-Busch Inbev SA
+BURBY:
+    name: Burberry Group PLC
+BVN:
+    name: Compania de Minas Buenaventura SAA
+BZUN:
+    name: Baozun Inc
+CAJ:
+    name: Canon Inc
+CBAUY:
+    name: Commonwealth Bank of Australia
+CBD:
+    name: Companhia Brasileira de Distribuicao
+CBDTY:
+    name: Compass Group PLC
+CCL:
+    name: Carnival Corp
 CEA:
-  name: China Eastern Airlines Corp Ltd
-
+    name: China Eastern Airlines Corp Ltd
+CEMI:
+    name: Chembio Diagnostics Inc
+CEO:
+    name: CNOOC Ltd
+CFR:
+    name: Cullen/Frost Bankers Inc
+CGA:
+    name: China Green Agriculture Inc
+CHA:
+    name: China Telecom Corp Ltd
+CHKP:
+    name: Check Point Software Technologies Ltd
+CHL:
+    name: China Mobile Ltd
+CHT:
+    name: Chunghwa Telecom Co Ltd
+CHU:
+    name: China Unicom Hong Kong Ltd
+CIB:
+    name: BanColombia SA
+CICHY:
+    name: China Construction Bank Corp
+CIG:
+    name: Companhia Energetica de Minas Gerais
+CIG.C:
+    name: Companhia Energetica de Minas Gerais Class C
+CIHKY:
+    name: China Merchants Bank Co Ltd
+CJPRY:
+    name: Japan Post Holdings Co Ltd
+CMCM:
+    name: Cheetah Mobile Inc
+CMPBY:
+    name: Companhia Brasileira de Aluminio
+CMTOY:
+    name: Comcast Corp
+CNH:
+    name: CNH Industrial NV
+CNQ:
+    name: Canadian Natural Resources Ltd
+COGNY:
+    name: Cogna Educacao SA
+COOP:
+    name: Mr. Cooper Group Inc
+COP:
+    name: ConocoPhillips
+CPAC:
+    name: Cementos Pacasmayo SAA
+CPFEY:
+    name: CPFL Energia SA
+CRESY:
+    name: Cresud SA
+CRHCY:
+    name: Carlsberg A/S
+CRKCY:
+    name: Corecivic Inc
+CRYLF:
+    name: Crystallex International Corp
+CS:
+    name: Credit Suisse Group AG
+CSTM:
+    name: Constellium SE
+CSUZY:
+    name: Companhia Suzano de Papel e Celulose
+CTMWY:
+    name: Centamin PLC
+CUK:
+    name: Carnival PLC
+CVE:
+    name: Cenovus Energy Inc
+CYBR:
+    name: CyberArk Software Ltd
+DAC:
+    name: Danaos Corp
+DADA:
+    name: Dada Nexus Ltd
+DAIGY:
+    name: Dai-ichi Life Holdings Inc
+DAIMAY:
+    name: Daimler AG
+DAIMY:
+    name: Daiwa House Industry Co Ltd
+DANOY:
+    name: Danone SA
+DB:
+    name: Deutsche Bank AG
+DBOEY:
+    name: Deutsche Boerse AG
+DBSDF:
+    name: DBS Group Holdings Ltd
+DBSDY:
+    name: DBS Group Holdings Ltd
+DCM:
+    name: NTT DOCOMO Inc
+DDL:
+    name: Dingdong Cayman Ltd
+DEO:
+    name: Diageo PLC
+DFS:
+    name: Discover Financial Services
+DIEAF:
+    name: Diebold Nixdorf Inc
+DKKNY:
+    name: Daikin Industries Ltd
+DNBBY:
+    name: DNB ASA
+DNHBY:
+    name: DNB Bank ASA
+DNNGY:
+    name: Danske Bank A/S
+DNSKF:
+    name: Denso Corp
+DOYU:
+    name: DouYu International Holdings Ltd
+DQ:
+    name: Daqo New Energy Corp
+DTEGY:
+    name: Deutsche Telekom AG
+E:
+    name: Eni SpA
+EC:
+    name: Ecopetrol SA
+ECOPETROL:
+    name: Ecopetrol SA
+EDU:
+    name: New Oriental Education & Technology Group Inc
+EGLE:
+    name: Eagle Bulk Shipping Inc
+ELBRY:
+    name: Eletrobras
+ELP:
+    name: Companhia Paranaense de Energia COPEL
+ENLAY:
+    name: Enel SpA
+EOCHY:
+    name: Embraer SA
+EOCTF:
+    name: Embraer SA
+EQNR:
+    name: Equinor ASA
+ERF:
+    name: Enerplus Corp
+ERIC:
+    name: Telefonaktiebolaget LM Ericsson
+ERICF:
+    name: Telefonaktiebolaget LM Ericsson
+ERJ:
+    name: Embraer SA
+ESEA:
+    name: Euroseas Ltd
+FANUY:
+    name: Fanuc Corp
+FCX:
+    name: Freeport-McMoRan Inc
+FENG:
+    name: Phoenix New Media Ltd
+FER:
+    name: Ferrovial SE
+FINV:
+    name: FinVolution Group
+FMS:
+    name: Fresenius Medical Care AG & Co KGaA
+FMX:
+    name: Fomento Economico Mexicano SAB de CV
+FRCOY:
+    name: Fomento Economico Mexicano SAB de CV
+FUJHY:
+    name: Fujifilm Holdings Corp
+FUJIY:
+    name: Fujitsu Ltd
+FUTU:
+    name: Futu Holdings Ltd
+GALP:
+    name: Galp Energia SGPS SA
+GELYF:
+    name: Geely Automobile Holdings Ltd
+GFI:
+    name: Gold Fields Ltd
+GGAL:
+    name: Grupo Financiero Galicia SA
+GGB:
+    name: Gerdau SA
+GGBR:
+    name: Gerdau SA
+GLNCY:
+    name: Glencore PLC
+GOGL:
+    name: Golden Ocean Group Ltd
+GOLD:
+    name: Barrick Gold Corp
+GOOG:
+    name: Google LLC
+GOTU:
+    name: Gaotu Techedu Inc
+GRMNY:
+    name: Garmin Ltd
+GRVY:
+    name: Gravity Co Ltd
+GSK:
+    name: GSK plc
+GSX:
+    name: Genshuixue Education Inc
+GVALY:
+    name: Gol Linhas Aereas Inteligentes SA
+HDB:
+    name: HDFC Bank Ltd
+HEINY:
+    name: Heineken Holding NV
+HENKY:
+    name: Henkel AG & Co KGaA
+HENOY:
+    name: Heineken NV
+HESAY:
+    name: Hermes International SA
+HKXCY:
+    name: Hong Kong Exchanges and Clearing Ltd
+HLN:
+    name: HALEON PLC
+HMC:
+    name: Honda Motor Co Ltd
+HMY:
+    name: Harmony Gold Mining Co Ltd
+HNP:
+    name: Huaneng Power International Inc
+HPGLY:
+    name: Hapag-Lloyd AG
+HSBC:
+    name: HSBC Holdings PLC
+HTHIY:
+    name: Hitachi Ltd
+HTHT:
+    name: Huazhu Group Ltd
+HUYA:
+    name: HUYA Inc
+HYMLF:
+    name: Hyundai Mobis Co Ltd
+HYMTF:
+    name: Hyundai Motor Co
+IBN:
+    name: ICICI Bank Ltd
+IDCBY:
+    name: Industrial & Commercial Bank of China Ltd
+IDEXY:
+    name: Industria de Diseno Textil SA Inditex
+IFNNY:
+    name: Infineon Technologies AG
+IHG:
+    name: InterContinental Hotels Group PLC
+IMO:
+    name: Imperial Oil Ltd
+IMPUY:
+    name: Impala Platinum Holdings Ltd
+INFY:
+    name: Infosys Ltd
+ING:
+    name: ING Groep NV
+IQ:
+    name: iQIYI Inc
+IRS:
+    name: IRSA Inversiones y Representaciones SA
+ITOCY:
+    name: Itochu Corp
+ITUB:
+    name: Itau Unibanco Holding SA
+JD:
+    name: JD.com Inc
+JKS:
+    name: JinkoSolar Holding Co Ltd
+KB:
+    name: KB Financial Group Inc
+KDDIY:
+    name: KDDI Corp
+KEP:
+    name: Korea Electric Power Corp
+KMDA:
+    name: Kamada Ltd
+KNBWY:
+    name: Koenig & Bauer AG
+KOF:
+    name: Coca-Cola FEMSA SAB de CV
+KT:
+    name: KT Corp
+KYOCY:
+    name: Kyocera Corp
+LFC:
+    name: China Life Insurance Co Ltd
+LFL:
+    name: Lufax Holding Ltd
+LGRDY:
+    name: Legrand SA
+LGRVF:
+    name: Legal & General Group PLC
+LHEGY:
+    name: Legal & General Group PLC
+LHGLY:
+    name: Leonardo SpA
+LI:
+    name: Li Auto Inc
+LOMA:
+    name: Loma Negra Compania Industrial Argentina SA
+LPG:
+    name: Dorian LPG Ltd
+LPL:
+    name: LG Display Co Ltd
+LRLCY:
+    name: L'Oreal SA
+LU:
+    name: Lufax Holding Ltd
+LUKOY:
+    name: Lukoil PJSC
+LYG:
+    name: Lloyds Banking Group PLC
+MAHLY:
+    name: Marubeni Corp
+MBFJF:
+    name: Mitsubishi UFJ Financial Group Inc
+MBGAF:
+    name: Mercedes-Benz Group AG
 MBT:
-  name: Mobile TeleSystems PJSC
-
-QIWI:
-  name: QIWI plc
-
-ASAI:
-  name: Sendas Distribuidora SA
-
-WPP:
-  name: WPP plc
+    name: Mobile TeleSystems PJSC
+MCRUY:
+    name: Munich Re Group
+MDGS:
+    name: Medigus Ltd
+MFG:
+    name: Mizuho Financial Group Inc
+MITSY:
+    name: Mitsui & Co Ltd
+MLLRY:
+    name: Maersk A/S
+MMYT:
+    name: MakeMyTrip Ltd
+MNDY:
+    name: monday.com Ltd
+MNSO:
+    name: Miniso Group Holding Ltd
+MPNGF:
+    name: Meituan
+MPNGY:
+    name: Meituan
+MRAAY:
+    name: Murata Manufacturing Co Ltd
+MSBHF:
+    name: Mitsubishi Corp
+MT:
+    name: ArcelorMittal SA
+MTL:
+    name: Mechel PAO
+MTN:
+    name: MTN Group Ltd
+MTR:
+    name: Mesa Royalty Trust
+MTRX:
+    name: Matrix Service Co
+MTSFY:
+    name: Mahanagar Telephone Nigam Ltd
+MUFG:
+    name: Mitsubishi UFJ Financial Group Inc
+NABZY:
+    name: National Australia Bank Ltd
+NAT:
+    name: Nordic American Tankers Ltd
+NEDHY:
+    name: Nedbank Group Ltd
+NEWR:
+    name: New Relic Inc
+NG:
+    name: Novogold Resources Inc
+NGG:
+    name: National Grid PLC
+NGLOY:
+    name: Anglo American PLC
+NGLSY:
+    name: National Grid PLC
+NHYDY:
+    name: Norsk Hydro ASA
+NICE:
+    name: Nice Ltd
+NIO:
+    name: NIO Inc
+NIPNY:
+    name: Nippon Telegraph and Telephone Corp
+NMM:
+    name: Navios Maritime Partners LP
+NMR:
+    name: Nomura Holdings Inc
+NNDM:
+    name: Nano Dimension Ltd
+NOK:
+    name: Nokia Oyj
+NRWAY:
+    name: Nordea Bank Abp
+NSANY:
+    name: Nissan Motor Co Ltd
+NSRGY:
+    name: Nestle SA
+NTDOY:
+    name: Nintendo Co Ltd
+NTES:
+    name: NetEase Inc
+NURO:
+    name: NeuroMetrix Inc
+NVO:
+    name: Novo Nordisk A/S
+NVS:
+    name: Novartis AG
+OCBCF:
+    name: Oversea-Chinese Banking Corp Ltd
+OGZPY:
+    name: Gazprom PJSC
+OMC:
+    name: Omnicom Group Inc
+ORAN:
+    name: Orange SA
+PAC:
+    name: Grupo Aeroportuario del Pacifico SAB de CV
+PAM:
+    name: Pampa Energia SA
+PARKY:
+    name: Park Hotels & Resorts Inc
+PBR:
+    name: Petroleo Brasileiro SA Petrobras
+PDD:
+    name: PDD Holdings Inc
+PERKY:
+    name: Pernod Ricard SA
+PEUGF:
+    name: Peugeot SA
+PFRDY:
+    name: Perdigao SA
+PGAS:
+    name: PT Perusahaan Gas Negara Tbk
+PHI:
+    name: PLDT Inc
+PHIA:
+    name: Koninklijke Philips NV
+PHIO:
+    name: Phio Pharmaceuticals Corp
+PICC:
+    name: People's Insurance Co Group of China Ltd
+PKX:
+    name: Posco Holdings Inc
+PLTK:
+    name: Playtika Holding Corp
+PMMAY:
+    name: Puma SE
+POAHY:
+    name: Porsche Automobil Holding SE
+PROSF:
+    name: Prosus NV
+PROSY:
+    name: Prosus NV
+PRPO:
+    name: Precipio Diagnostics LLC
+PTR:
+    name: PetroChina Co Ltd
+PUK:
+    name: Prudential PLC
+PUKKY:
+    name: Prudential PLC
+QD:
+    name: Qudian Inc
+QGEN:
+    name: QIAGEN NV
+RBA:
+    name: RB Global Inc
+RBGLY:
+    name: Reckitt Benckiser Group PLC
+RCRUY:
+    name: Recruit Holdings Co Ltd
+RDS.A:
+    name: Royal Dutch Shell PLC Class A
+RDS.B:
+    name: Royal Dutch Shell PLC Class B
+RDY:
+    name: Dr. Reddy's Laboratories Ltd
+REDF:
+    name: Rediff.com India Ltd
+RELX:
+    name: Relx PLC
+REPYY:
+    name: Repsol SA
+RHHBY:
+    name: Roche Holding AG
+RICOY:
+    name: Ricoh Co Ltd
+RIO:
+    name: Rio Tinto PLC
+RIOKY:
+    name: Rio Tinto PLC
+RNO:
+    name: Renault SA
+RNW:
+    name: ReNew Energy Global plc
+ROSN:
+    name: Rosneft Oil Co PJSC
+RSG:
+    name: Republic Services Inc
+RYCEY:
+    name: Rolls-Royce Holdings PLC
+S:
+    name: SentinelOne Inc
+SAFRY:
+    name: Safran SA
+SAN:
+    name: Banco Santander SA
+SAP:
+    name: SAP SE
+SAXPY:
+    name: SAP SE
+SBER:
+    name: Sberbank of Russia PJSC
+SBKFF:
+    name: Standard Bank Group Ltd
+SBLMY:
+    name: Stolt-Nielsen Ltd
+SBRCY:
+    name: Schroders PLC
+SBS:
+    name: Companhia de Saneamento Basico do Estado de Sao Paulo SABESP
+SBSW:
+    name: Sibanye Stillwater Ltd
+SCBFY:
+    name: Standard Chartered PLC
+SCCO:
+    name: Southern Copper Corp
+SCMWY:
+    name: Schweizerische Nationalbank
+SE:
+    name: Sea Ltd
+SFTBY:
+    name: SoftBank Group Corp
+SGAMY:
+    name: Sega Sammy Holdings Inc
+SGBLY:
+    name: SingTel Ltd
+SGGEF:
+    name: Sage Group PLC
+SHECY:
+    name: Shenzhou International Group Holdings Ltd
+SHEL:
+    name: Shell PLC
+SHG:
+    name: Shinhan Financial Group Co Ltd
+SHI:
+    name: Sinopec Shanghai Petrochemical Co Ltd
+SHKCY:
+    name: Sekisui Chemical Co Ltd
+SHKLY:
+    name: Sekisui House Ltd
+SID:
+    name: Companhia Siderurgica Nacional SA
+SIEGY:
+    name: Siemens AG
+SIFY:
+    name: Sify Technologies Ltd
+SINGF:
+    name: Singapore Telecommunications Ltd
+SKM:
+    name: SK Telecom Co Ltd
+SMAWF:
+    name: Schneider Electric SE
+SMFCY:
+    name: Sumitomo Chemical Co Ltd
+SMFG:
+    name: Sumitomo Mitsui Financial Group Inc
+SMMYY:
+    name: SMC Corp
+SMSEY:
+    name: Samsung Electronics Co Ltd
+SNDXF:
+    name: Sandvik AB
+SNEJF:
+    name: Sony Group Corp
+SNP:
+    name: China Petroleum & Chemical Corp
+SNY:
+    name: Sanofi SA
+SOHU:
+    name: Sohu.com Ltd
+SOMLY:
+    name: Secom Co Ltd
+SONY:
+    name: Sony Group Corp
+SQM:
+    name: Sociedad Quimica y Minera de Chile SA
+SSDOY:
+    name: Shiseido Co Ltd
+SSL:
+    name: Sasol Ltd
+SSUMY:
+    name: Sumitomo Corp
+SSXAY:
+    name: SSE PLC
+STLAM:
+    name: Stellantis NV
+STLZF:
+    name: Stellantis NV
+STM:
+    name: STMicroelectronics NV
+STMEF:
+    name: STMicroelectronics NV
+STNG:
+    name: Scorpio Tankers Inc
+SU:
+    name: Suncor Energy Inc
+SUPV:
+    name: Grupo Supervielle SA
+SWCEY:
+    name: Swiss Life Holding AG
+SWDBY:
+    name: Swedbank AB
+SZKMY:
+    name: Suzuki Motor Corp
+SZMWY:
+    name: Shimano Inc
+TAK:
+    name: Takeda Pharmaceutical Co Ltd
+TAL:
+    name: TAL Education Group
+TCEHY:
+    name: Tencent Holdings Ltd
+TCOM:
+    name: Trip.com Group Ltd
+TECK:
+    name: Teck Resources Ltd
+TEF:
+    name: Telefonica SA
+TEO:
+    name: Telecom Argentina SA
+TEVA:
+    name: Teva Pharmaceutical Industries Ltd
+TGS:
+    name: Transportadora de Gas del Sur SA
+TI:
+    name: Telecom Italia SpA
+TIGR:
+    name: UP Fintech Holding Ltd
+TIMB:
+    name: TIM SA
+TKC:
+    name: Turkcell Iletisim Hizmetleri AS
+TKIOY:
+    name: Tokio Marine Holdings Inc
+TKOMY:
+    name: Thyssenkrupp AG
+TLK:
+    name: PT Telekomunikasi Indonesia Persero Tbk
+TLKMF:
+    name: PT Telekomunikasi Indonesia Tbk
+TLSNY:
+    name: Telenor ASA
+TM:
+    name: Toyota Motor Corp
+TMICY:
+    name: Thai Military Bank PCL
+TNK:
+    name: Teekay Tankers Ltd
+TNP:
+    name: Tsakos Energy Navigation Ltd
+TOELY:
+    name: Tokyo Electron Ltd
+TRMD:
+    name: Torm PLC
+TSLZF:
+    name: Tesla Inc
+TSM:
+    name: Taiwan Semiconductor Manufacturing Co Ltd
+TSU:
+    name: TIM Participacoes SA
+TTE:
+    name: TotalEnergies SE
+TTM:
+    name: Tata Motors Ltd
+TV:
+    name: Grupo Televisa SAB
+TYEKF:
+    name: Teekay Corp
+UBS:
+    name: UBS Group AG
+UGP:
+    name: Ultrapar Participacoes SA
+UL:
+    name: Unilever PLC
+UMC:
+    name: United Microelectronics Corp
+UNLRY:
+    name: Unilever PLC
+UOVEY:
+    name: United Overseas Bank Ltd
+VALE:
+    name: Vale SA
+VCISY:
+    name: Vinci SA
+VDNTY:
+    name: Vedanta Resources Ltd
+VEDL:
+    name: Vedanta Ltd
+VIPS:
+    name: Vipshop Holdings Ltd
+VIV:
+    name: Telefonica Brasil SA
+VIVHY:
+    name: Vivendi SE
+VLKAF:
+    name: Volkswagen AG
+VLVLY:
+    name: Volvo AB
+VOD:
+    name: Vodafone Group PLC
+VOLVF:
+    name: Volvo Car AB
+VOLVY:
+    name: Volvo AB
+VWAGY:
+    name: Volkswagen AG
+WB:
+    name: Weibo Corp
+WDH:
+    name: Waterdrop Inc
+WESTF:
+    name: Westpac Banking Corp
+WF:
+    name: Woori Financial Group Inc
+WIT:
+    name: Wipro Ltd
+WIX:
+    name: Wix.com Ltd
+WNS:
+    name: WNS Holdings Ltd
+WPPGY:
+    name: WPP PLC
+WUBA:
+    name: WuxiAppTec Co Ltd
+XPEV:
+    name: XPeng Inc
+YAMCY:
+    name: Yamaha Corp
+YPF:
+    name: YPF SA
+YQ:
+    name: Qianzhan Holdings Ltd
+YRD:
+    name: Yiren Digital Ltd
+YTRA:
+    name: Yatra Online Inc
+YUMC:
+    name: Yum China Holdings Inc
+YZC:
+    name: Yanzhou Coal Mining Co Ltd
+ZCAR:
+    name: Zoomcar Holdings Inc
+ZS:
+    name: Zscaler Inc
+ZTO:
+    name: ZTO Express Cayman Inc
+ZURVY:
+    name: Zurich Insurance Group AG

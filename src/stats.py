@@ -29,7 +29,7 @@ class Stats:
             df (pd.DataFrame): The input DataFrame containing financial data.
         """
         self.df_values = df
-        self.df_pct_changes = df.iloc[:, 1:].fillna(1).pct_change().dropna()
+        self.df_pct_changes = df.iloc[:, 1:].fillna(1).pct_change(fill_method=None).dropna()
         self.final_return = df.iloc[-1, 1:] - 1
         self.df_values.fillna(1, inplace=True)
         with pd.option_context("future.no_silent_downcasting", True):

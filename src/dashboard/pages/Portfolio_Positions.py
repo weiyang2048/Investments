@@ -8,12 +8,12 @@ provides an option to upload the file.
 
 import streamlit as st
 import pandas as pd
+import numpy as np
 from pathlib import Path
 from pyhere import here
 import hydra
 from src.configurations.yaml import register_resolvers
 from src.dashboard.create_page import setup_page_and_sidebar
-from src.viz.streamlit_display import display_dataframe
 from cli.update_portfolio_yaml import (
     load_account_mapping,
     read_portfolio_csv,
@@ -127,6 +127,7 @@ def display_portfolio_summary(df: pd.DataFrame) -> None:
     """Display portfolio summary statistics with Short-Term and Long-Term breakdown."""
     # Filter to only include valid accounts (non-empty positions or positive cash)
     valid_accounts = get_valid_accounts(df)
+    print(df)
     if valid_accounts:
         df = df[df["Account Number"].isin(valid_accounts)]
     
@@ -300,46 +301,13 @@ def apply_positive_gradient(styled_df, df: pd.DataFrame, col_name: str, cmap: st
     return styled_df.background_gradient(subset=[col_name], cmap=cmap, vmin=0, vmax=vmax)
 
 
-def is_crypto_position(symbol: str, description: str = "") -> bool:
-    """Check if a position is crypto."""
-    if pd.isna(symbol):
-        symbol_str = ""
-    else:
-        symbol_str = str(symbol).upper()
-    
-    if pd.isna(description):
-        desc_str = ""
-    else:
-        desc_str = str(description).upper()
-    
-    # Check if symbol or description contains crypto-related terms
-    crypto_indicators = ["CRYPTO", "BITCOIN", "BTC", "ETH", "ETHEREUM"]
-    return any(indicator in symbol_str or indicator in desc_str for indicator in crypto_indicators)
-
-
-def is_short_term_account(account_number: str) -> bool:
-    """Check if account number indicates short-term account (starts with letter)."""
-    if pd.isna(account_number):
-        return False
-    account_str = str(account_number).strip()
-    if not account_str:
-        return False
-    # Short-term if starts with a letter
-    return account_str[0].isalpha()
-
-
 def classify_account_type(df: pd.DataFrame) -> pd.DataFrame:
     """Add Account Type column (Short-Term or Long-Term)."""
     df = df.copy()
     df["Account Type"] = "Long-Term"
-    
-    if "Account Number" in df.columns and "Symbol" in df.columns:
-        # Vectorized operations
-        account_is_short = df["Account Number"].astype(str).apply(is_short_term_account)
-        symbols = df["Symbol"].astype(str)
-        descriptions = df["Description"].astype(str) if "Description" in df.columns else pd.Series([""] * len(df))
-        is_crypto = pd.Series([is_crypto_position(s, d) for s, d in zip(symbols, descriptions)])
-        df.loc[account_is_short | is_crypto, "Account Type"] = "Short-Term"
+    # if len of Account Number is >9, or begin with a letter, then it is short-term
+    df["Account Type"] = np.where((df["Account Number"].astype(str).str.len() > 9) | df["Account Number"].astype(str).str.startswith(("A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z")), "Short-Term", "Long-Term")
+   
     
     return df
 

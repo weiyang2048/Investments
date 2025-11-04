@@ -166,7 +166,34 @@ def display_dataframe(
                 suffixes.append(suffix)
         return "".join(suffixes)
     
+    # First, append suffixes to column names
     df.columns = [f"{col}{get_column_suffix(col)}" if get_column_suffix(col) else col for col in df.columns]
+    
+    # Add prefix based on "m" value if ticker has a suffix
+    def get_column_prefix(column_name):
+        # Check if column has any suffix
+        has_suffix = any(column_name.endswith(suffix) for suffix in yaml_suffix_map.values())
+        if not has_suffix:
+            return ""
+        
+        # Check if "m" row exists in the DataFrame
+        if "m" not in df.index:
+            return ""
+        
+        # Get the "m" value for this column
+        m_value = df.loc["m", column_name]
+        
+        # Return prefix based on m value thresholds
+        if pd.isna(m_value):
+            return ""
+        elif m_value < 0.2:
+            return "="  # Prefix for m < 0.2
+        elif m_value < 0.4:
+            return "-"  # Prefix for m < 0.3
+        return ""
+    
+    # Add prefixes to columns that have suffixes
+    df.columns = [f"{prefix}{col}" if (prefix := get_column_prefix(col)) else col for col in df.columns]
     
     if symbol_type and data_type:
         styled_df = (

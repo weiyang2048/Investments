@@ -62,7 +62,7 @@ def _compute_consecutive_streaks(df: pd.DataFrame, symbol: str) -> tuple[int, in
         return 0, 0
 
     # Calculate daily returns
-    returns = df[symbol].pct_change().dropna()
+    returns = df[symbol].pct_change(fill_method=None).dropna()
 
     if len(returns) < 2:
         return 0, 0
@@ -130,7 +130,7 @@ def _compute_average_consecutive_movements(df: pd.DataFrame, symbol: str) -> tup
         return 0.0, 0.0
     
     # Calculate daily returns
-    returns = df[symbol].pct_change().dropna()
+    returns = df[symbol].pct_change(fill_method=None).dropna()
     
     if len(returns) < 2:
         return 0.0, 0.0
@@ -190,7 +190,7 @@ def _compute_average_percentage_movements(df: pd.DataFrame, symbol: str) -> tupl
         return 0.0, 0.0
     
     # Calculate daily returns
-    returns = df[symbol].pct_change().dropna()
+    returns = df[symbol].pct_change(fill_method=None).dropna()
     
     if len(returns) < 2:
         return 0.0, 0.0

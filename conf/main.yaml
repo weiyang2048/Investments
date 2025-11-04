@@ -6,12 +6,13 @@ lenses:
     income: ${get_keys:tickers.income}
     Stocks: ${union:[AVGO, CAT,GE, GOOGL], [ASML, ARGX, TCEHY, BBVA], [OPEN, LCID, LITS], [LAC, OKLO, MP, PLUG, RGTI]}
     ro: [ VEU, GOOGL, AIA]
-    f: ${get_keys:tickers.f}
+    F: ${get_keys:tickers.f}
     s: ${get_keys:tickers.s}
     r: ${get_keys:tickers.r}
+    R: ${get_keys:tickers.Ri}
+    I: ${get_keys:tickers.In}
   stocks:
-    sp100: ${get_keys:tickers.sp50}
-    adr100: ${get_keys:tickers.adr50}
+    adr500: ${get_keys:tickers.adr50}
     sp500: ${get_keys:tickers.sp500}
     sp400: ${get_keys:tickers.sp400}
     sp600: ${get_keys:tickers.sp600}
@@ -22,9 +23,11 @@ lenses:
     globalX: ${get_keys:tickers.globalX}
 
 yaml_suffix_map:
-  f.yaml: "*"
-  s.yaml: "~"
-  r.yaml: "^"
+  f.yaml: "@"
+  s.yaml: "#"
+  r.yaml: "%"
+  Ri.yaml: "!"
+  In.yaml: "$"
   # Future additions can be added here, e.g.:
   # "3.yaml": "3"
 

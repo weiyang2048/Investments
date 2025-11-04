@@ -44,7 +44,7 @@ def pivoted_to_corr(df: pd.DataFrame, plot: bool = False, streamlit: bool = Fals
         df_pivot_count = df_pivot_count.sort_values(ascending=False)
         df_pivot.dropna(axis=0, inplace=True)
         q = df_pivot.shape[0] / df_pivot.shape[1]
-        df_pivot = df_pivot.pct_change()
+        df_pivot = df_pivot.pct_change(fill_method=None)
         corr_matrix = df_pivot.corr()
         if marchenko_pastur:
             try:
