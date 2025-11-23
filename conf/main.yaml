@@ -1,11 +1,9 @@
 lenses:
   main:
-    Regions: ${union:${get_keys:tickers.regions},  [GLTR, GDLC]}
-    Sectors: ${get_keys:tickers.sectors}
+    Regions: ${union:${get_keys:tickers.regions},[DYNF,CORO],  [GLTR, GDLC]}
+    Sectors: ${union:${get_keys:tickers.sectors}, [INRO,SECT]}
     Commodities: [ GLTR, IAUM, GOEX, SLV, SLVP, PPLT, GDLC, BTC, ETH, GSOL, BKCH,COPX, REMX, DMAT, HYDR, URA, ILIT, LIT, IEO, DBA]
     income: ${get_keys:tickers.income}
-    Stocks: ${union:[AVGO, CAT,GE, GOOGL], [ASML, ARGX, TCEHY, BBVA], [OPEN, LCID, LITS], [LAC, OKLO, MP, PLUG, RGTI]}
-    ro: [ VEU, GOOGL, AIA]
     F: ${get_keys:tickers.f}
     s: ${get_keys:tickers.s}
     r: ${get_keys:tickers.r}
@@ -17,10 +15,11 @@ lenses:
     sp400: ${get_keys:tickers.sp400}
     sp600: ${get_keys:tickers.sp600}
   etfs:
-    Defiance: ${get_keys:tickers.defiance}
     ARK: ${get_keys:tickers.ark}
     invescoMomentum: ${get_keys:tickers.momentum}
     globalX: ${get_keys:tickers.globalX}
+    Defiance: ${get_keys:tickers.defiance}
+
 
 yaml_suffix_map:
   f.yaml: "@"

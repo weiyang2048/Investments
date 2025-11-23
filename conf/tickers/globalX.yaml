@@ -16,6 +16,11 @@ COPX:
 SIL:
   name: Global X Silver Miners ETF
   color: silver
+DMAT:
+  name: Global X Disruptive Materials ETF
+  # Targets next-generation materials for clean energy, EVs, and tech
+  expense_ratio: 0.59
+  color: darkkhaki
 
 # @ Technology & Innovation
 CHPX:
@@ -59,9 +64,15 @@ GNOM:
   name: Global X Genomics & Biotechnology ETF
 HEAL:
   name: Global X Health & Wellness ETF
+  # Focuses on HealthTech & healthcare
 AGNG:
   name: Global X Aging Population ETF
   color: mediumseagreen
+BFIT:
+  name: Global X Health & Wellness ETF
+  # Focuses on consumer wellness products & services (complements HEAL)
+  expense_ratio: 0.50
+  color: palegreen
 
 # @ Clean Energy & Sustainability
 CTEC:
@@ -74,6 +85,11 @@ KROP:
 # @ Infrastructure & Defense
 PAVE:
   name: Global X U.S. Infrastructure Development ETF
+ZAP:
+  name: Global X U.S. Electrification ETF
+  # U.S. electric grid modernization and electrification theme
+  expense_ratio: 0.50
+  color: deepskyblue
 SHLD:
   name: Global X Defense Tech ETF
   region: Global

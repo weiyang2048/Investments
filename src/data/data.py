@@ -345,6 +345,10 @@ def compute_annualized_momentum_sum(df: pd.DataFrame, window_sizes: List[int] = 
         - combined_score: Sum of m + a, used for ranking
         - d0: Latest day-to-day percentage change
         - d6: 6-day percentage change (smallest window size)
+        - p: Current price
+        - ema50: 50-day exponential moving average
+        - rsi: Relative Strength Index with period 9
+        - drawdown: Drop from maximum price observed in the data (1 - current/max, where 1.0 = 100% drop, 0.76 = 76% drop, 0.05 = 5% drop)
         - stride: Compound growth factor based on average consecutive movements
         - s0, s1, s2: Current, previous, and before-previous consecutive streaks
         - avg_s+, avg_s-: Average consecutive up/down movements
@@ -358,7 +362,6 @@ def compute_annualized_momentum_sum(df: pd.DataFrame, window_sizes: List[int] = 
     s0_streaks = {}
     s_minus_1_streaks = {}
     s_minus_2_streaks = {}
-    pcr_m1s = {}
     avg_s_plus = {}
     avg_s_minus = {}
     avg_plus_percent = {}
@@ -366,6 +369,13 @@ def compute_annualized_momentum_sum(df: pd.DataFrame, window_sizes: List[int] = 
     stride = {}
     pct_change_smallest_window = {}
     d0_latest_change = {}
+    drawdown = {}
+    ema50_values = {}
+    ema200_values = {}
+    rsi_values = {}
+    rsi1_values = {}
+    rsi_delta_values = {}
+    current_prices = {}
     a = {}
     # Calculate acceleration for all window sizes except the last one
     acceleration_windows = window_sizes[:-1]  # Exclude the last window
@@ -450,6 +460,85 @@ def compute_annualized_momentum_sum(df: pd.DataFrame, window_sizes: List[int] = 
         else:
             d0_latest_change[symbol] = np.nan
 
+        # Calculate current price (p)
+        if len(df[symbol]) > 0:
+            current_price = df[symbol].iloc[-1]
+            current_prices[symbol] = np.round(current_price, 2)
+        else:
+            current_prices[symbol] = np.nan
+
+        # Calculate EMA50
+        if len(df[symbol]) >= 50:
+            ema50 = df[symbol].ewm(span=50, adjust=False).mean()
+            current_ema50 = ema50.iloc[-1]
+            ema50_values[symbol] = np.round(current_ema50, 2)
+        else:
+            ema50_values[symbol] = np.nan
+
+        # Calculate EMA200
+        if len(df[symbol]) >= 200:
+            ema200 = df[symbol].ewm(span=200, adjust=False).mean()
+            current_ema200 = ema200.iloc[-1]
+            ema200_values[symbol] = np.round(current_ema200, 2)
+        else:
+            ema200_values[symbol] = np.nan
+
+        # Calculate RSI with period 9 using Wilder's smoothing method
+        if len(df[symbol]) >= 10:  # Need at least 10 values for RSI(9)
+            prices = df[symbol]
+            delta = prices.diff()
+            gain = delta.where(delta > 0, 0)
+            loss = -delta.where(delta < 0, 0)
+            
+            period = 9
+            # Initialize series for Wilder's smoothed averages
+            avg_gain = pd.Series(index=prices.index, dtype=float)
+            avg_loss = pd.Series(index=prices.index, dtype=float)
+            
+            # First average is SMA
+            avg_gain.iloc[period] = gain.iloc[1:period+1].mean()
+            avg_loss.iloc[period] = loss.iloc[1:period+1].mean()
+            
+            # Apply Wilder's smoothing for subsequent values
+            for i in range(period + 1, len(prices)):
+                avg_gain.iloc[i] = (avg_gain.iloc[i-1] * (period - 1) + gain.iloc[i]) / period
+                avg_loss.iloc[i] = (avg_loss.iloc[i-1] * (period - 1) + loss.iloc[i]) / period
+            
+            # Calculate RS and RSI
+            rs = avg_gain / avg_loss.replace(0, np.nan)
+            rsi = 100 - (100 / (1 + rs))
+            
+            rsi_values[symbol] = np.round(rsi.iloc[-1], 2) if not pd.isna(rsi.iloc[-1]) else np.nan
+            # Calculate RSI for previous day (rsi1) - used for rsi_delta calculation
+            if len(rsi) >= 2:
+                rsi1_val = rsi.iloc[-2] if not pd.isna(rsi.iloc[-2]) else np.nan
+                rsi1_values[symbol] = np.round(rsi1_val, 2) if not pd.isna(rsi1_val) else np.nan
+                
+                # Calculate rsi_delta = rsi - rsi1
+                rsi_val = rsi.iloc[-1] if not pd.isna(rsi.iloc[-1]) else np.nan
+                if not pd.isna(rsi1_val) and not pd.isna(rsi_val):
+                    rsi_delta_values[symbol] = np.round(rsi_val - rsi1_val, 2)
+                else:
+                    rsi_delta_values[symbol] = np.nan
+            else:
+                rsi1_values[symbol] = np.nan
+                rsi_delta_values[symbol] = np.nan
+        else:
+            rsi_values[symbol] = np.nan
+            rsi1_values[symbol] = np.nan
+            rsi_delta_values[symbol] = np.nan
+
+        # Calculate drawdown (drop from maximum price observed in the data)
+        if len(df[symbol]) > 0:
+            max_price = df[symbol].max()
+            current_price = df[symbol].iloc[-1]
+            if max_price > 0:
+                drawdown[symbol] = np.round(1 - (current_price / max_price), 2)
+            else:
+                drawdown[symbol] = np.nan
+        else:
+            drawdown[symbol] = np.nan
+
         # Calculate put-call ratio
         # pcr = get_pcr_m1(symbol)
         # pcr_m1s[symbol] = pcr if pcr is not None else np.nan
@@ -479,6 +568,12 @@ def compute_annualized_momentum_sum(df: pd.DataFrame, window_sizes: List[int] = 
             # "pcr_m1": pcr_m1s[symbol],
             "d0": d0_latest_change[symbol],
             f"d{min(window_sizes)}": pct_change_smallest_window[symbol],
+            "p": current_prices[symbol],
+            "ema50": ema50_values[symbol],
+            "ema200": ema200_values[symbol],
+            "rsi": rsi_values[symbol],
+            "rsi_delta": rsi_delta_values[symbol],
+            "drawdown": drawdown[symbol],
         }
         row.update(individual_momentum[symbol])
         row.update(individual_accelerations[symbol])
@@ -502,8 +597,8 @@ def compute_annualized_momentum_sum(df: pd.DataFrame, window_sizes: List[int] = 
         if window in acceleration_windows:
             ordered_columns.append(f"a{window}")
 
-    # Add weighted average, acceleration, combined score, stride, streaks, average consecutive movements, average percentage movements, %change, and put-call ratio at the end
-    ordered_columns.extend(["m", "a", "combined_score", "stride", "s0", "s1", "s2", "avg_s+", "avg_s-", "avg%+", "avg%-", "d0", f"d{min(window_sizes)}"]) #, "pcr_m1"])
+    # Add weighted average, acceleration, combined score, stride, streaks, average consecutive movements, average percentage movements, p, ema50, ema200, rsi, rsi_delta, drawdown, and put-call ratio at the end
+    ordered_columns.extend(["m", "a", "combined_score", "stride", "s0", "s1", "s2", "avg_s+", "avg_s-", "avg%+", "avg%-", "p", "ema50", "ema200", "rsi", "rsi_delta", "drawdown"]) #, "pcr_m1"])
 
     result_df = result_df[ordered_columns]
 

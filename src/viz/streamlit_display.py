@@ -2,32 +2,25 @@ import streamlit as st
 import pandas as pd
 from typing import Optional
 import numpy as np
-from functools import partial
 import yaml
 from pyhere import here
 
 
-def highlight_row(row):
-    max_abs_value = np.max(abs(row))
-    if "pcr_m1" in row.name:
-        row = row
-    else:
-        row = row / max_abs_value
+def highlight_row(row, df=None):
+    """Apply conditional formatting to DataFrame rows based on row type."""
+    row_original = row.copy()
 
     result = []
+    
     if row.name == "a":
         for value in row:
             if pd.isnull(value):
                 result.append("")
                 continue
-            if value <= 0:
-                color = f"background-color: rgba(0, 0, 255, {abs(value):.2f}); color: white; font-weight: bold;"
-            elif value > 0:
-                color = f"background-color: rgba(255, 0, 255, {abs(value):.2f}); color: white; font-weight: bold;"
-            else:
-                color = ""
+            color = f"background-color: rgba(0, 0, 255, {abs(value):.2f}); color: white; font-weight: bold;" if value <= 0 else f"background-color: rgba(255, 0, 255, {abs(value):.2f}); color: white; font-weight: bold;"
             result.append(color)
         return result
+    
     elif row.name in ["s0", "s1", "s2"]:
         for value in row:
             if pd.isnull(value):
@@ -36,34 +29,34 @@ def highlight_row(row):
             color = f"background-color: white; color: rgba({abs(value)*255 if value < 0 else 0}, {value*255 if value > 0 else 0}, 0, {0.5+abs(value)/2:.2f});"
             result.append(color)
         return result
+    
     elif row.name == "pcr_m1":
         for value in row:
             if pd.isnull(value):
                 result.append("")
                 continue
-            # Normalize value between 0 and 1 for color intensity (assuming typical range 0-3)
             if value > 1:
-                # Orange for bearish sentiment (more puts than calls)
-                color = f"background-color: rgba(255, 165, 0, {np.clip(value/2, 0, 1):.2f}); border: 1px solid rgba(255, 165, 0, {np.clip(value/2, 0, 1):.2f})"
+                intensity = np.clip(value/2, 0, 1)
+                color = f"background-color: rgba(255, 165, 0, {intensity:.2f}); border: 1px solid rgba(255, 165, 0, {intensity:.2f})"
             elif value < 1:
-                # Seagreen for bullish sentiment (more calls than puts)
-                color = f"background-color: rgba(46, 139, 120, {np.clip(1-value, 0, 1):.2f}); border: 1px solid rgba(46, 139, 87, {np.clip(1-value/2, 0, 1):.2f})"
-            elif value == 1:
-                color = f"background-color: white; color: black"
+                intensity = np.clip(1-value, 0, 1)
+                color = f"background-color: rgba(46, 139, 120, {intensity:.2f}); border: 1px solid rgba(46, 139, 87, {intensity:.2f})"
             else:
-                color = ""
+                color = "background-color: white; color: black"
             result.append(color)
         return result
+    
     elif row.name in ["avg%+", "avg_s+", "avg_s-", "avg%-"]:
         for value in row:
             if pd.isnull(value):
                 result.append("")
                 continue
-            background_color = "white" if row.name in ["avg%+", "avg%-"] else "black"
+            bg_color = "white" if row.name in ["avg%+", "avg%-"] else "black"
             text_color = f"rgb(0, {value*255}, 0)" if row.name in ["avg%+", "avg_s+"] else f"rgb({abs(value)*255}, 0, 0)"
-            color = f"background-color: {background_color}; color: {text_color}; font-weight: bold"
+            color = f"background-color: {bg_color}; color: {text_color}; font-weight: bold"
             result.append(color)
         return result
+    
     elif row.name == "stride":
         for value in row:
             if pd.isnull(value):
@@ -72,25 +65,110 @@ def highlight_row(row):
             color = f"background-color: rgb({abs(value)*255 if value < 0 else 0}, {value*255 if value > 0 else 0}, 0); color: white; font-weight: bold"
             result.append(color)
         return result
-    elif row.name.startswith("d") and row.name[1:].isdigit():  # Handle d6, d7, etc.
+    
+    elif row.name.startswith("d") and row.name[1:].isdigit():
         for value in row:
             if pd.isnull(value):
                 result.append("")
                 continue
-            # Normalize value for color intensity (assuming typical range -10% to +10%)
-            intensity = min(abs(value) *10, 1)  # Cap at 1 for very large values
-            
+            intensity = min(abs(value) * 10, 1)
             if value > 0:
-                # Green gradient for positive changes
-                color = f"background-color: rgba(0, {int(100 + intensity * 155)}, 0, {0.3 + intensity * 0.7}); color: white; font-weight: bold; border: 1px solid rgba(0, {int(100 + intensity * 155)}, 0, 0.8)"
+                green = int(100 + intensity * 155)
+                color = f"background-color: rgba(0, {green}, 0, {0.3 + intensity * 0.7}); color: white; font-weight: bold; border: 1px solid rgba(0, {green}, 0, 0.8)"
             elif value < 0:
-                # Red gradient for negative changes
-                color = f"background-color: rgba({int(100 + intensity * 155)}, 0, 0, {0.3 + intensity * 0.7}); color: white; font-weight: bold; border: 1px solid rgba({int(100 + intensity * 155)}, 0, 0, 0.8)"
+                red = int(100 + intensity * 155)
+                color = f"background-color: rgba({red}, 0, 0, {0.3 + intensity * 0.7}); color: white; font-weight: bold; border: 1px solid rgba({red}, 0, 0, 0.8)"
             else:
-                # Neutral color for zero change
-                color = f"background-color: rgba(128, 128, 128, 0.3); color: white; font-weight: bold"
+                color = "background-color: rgba(128, 128, 128, 0.3); color: white; font-weight: bold"
             result.append(color)
         return result
+    
+    elif row.name in ["p", "ema50", "ema200"]:
+        if df is not None and "p" in df.index and "ema50" in df.index:
+            for col in row_original.index:
+                p_val = df.loc["p", col] if "p" in df.index else None
+                ema50_val = df.loc["ema50", col] if "ema50" in df.index else None
+                ema200_val = df.loc["ema200", col] if "ema200" in df.index and row.name == "ema200" else None
+                
+                if pd.isnull(row_original[col]):
+                    result.append("")
+                    continue
+                
+                if row.name in ["p", "ema50"]:
+                    # Both p and ema50: green if p > ema50, else red
+                    if pd.isnull(p_val) or pd.isnull(ema50_val):
+                        result.append("")
+                        continue
+                    color = "background-color: white; color: rgb(0, 150, 0); font-weight: bold" if p_val > ema50_val else "background-color: white; color: rgb(200, 0, 0); font-weight: bold"
+                elif row.name == "ema200":
+                    # ema200: green if ema200 < ema50, else red
+                    if pd.isnull(ema200_val) or pd.isnull(ema50_val):
+                        result.append("")
+                        continue
+                    color = "background-color: white; color: rgb(0, 150, 0); font-weight: bold" if ema200_val < ema50_val else "background-color: white; color: rgb(200, 0, 0); font-weight: bold"
+                else:
+                    color = "background-color: white; color: black; font-weight: bold"
+                result.append(color)
+        else:
+            for value in row_original:
+                result.append("" if pd.isnull(value) else "background-color: rgba(200, 200, 200, 0.3); color: black; font-weight: bold")
+        return result
+    
+    elif row.name == "rsi":
+        for value in row_original:
+            if pd.isnull(value):
+                result.append("")
+                continue
+            rsi_value = float(value)
+            distance = abs(rsi_value - 50)
+            intensity = min(distance / 50.0, 1.0)
+            
+            if rsi_value > 50.0:
+                green = int(100 + intensity * 155)
+                color = f"background-color: white; color: rgb(0, {green}, 0); font-weight: bold"
+            elif rsi_value < 50.0:
+                red = int(100 + intensity * 155)
+                color = f"background-color: white; color: rgb({red}, 0, 0); font-weight: bold"
+            else:
+                color = "background-color: white; color: black; font-weight: bold"
+            result.append(color)
+        return result
+    
+    elif row.name == "rsi_delta":
+        for value in row_original:
+            if pd.isnull(value):
+                result.append("")
+                continue
+            rsi_delta_value = float(value)
+            # Color based on direction: green for positive (increasing), red for negative (decreasing)
+            # Intensity based on magnitude
+            abs_delta = abs(rsi_delta_value)
+            intensity = min(abs_delta / 10.0, 1.0)  # Normalize to 0-1, assuming max change ~10
+            
+            if rsi_delta_value > 0:
+                # Green for positive delta (RSI increasing)
+                green = int(100 + intensity * 155)
+                color = f"background-color: white; color: rgb(0, {green}, 0); font-weight: bold"
+            elif rsi_delta_value < 0:
+                # Red for negative delta (RSI decreasing)
+                red = int(100 + intensity * 155)
+                color = f"background-color: white; color: rgb({red}, 0, 0); font-weight: bold"
+            else:
+                # Neutral for zero change
+                color = "background-color: white; color: black; font-weight: bold"
+            result.append(color)
+        return result
+    
+    elif row.name == "drawdown":
+        for value in row_original:
+            if pd.isnull(value):
+                result.append("")
+                continue
+            red_intensity = int(np.clip(value, 0, 1) * 255)
+            color = f"background-color: white; color: rgb({red_intensity}, 0, 0); font-weight: bold"
+            result.append(color)
+        return result
+    
     else:
         return [""] * len(row)
 
@@ -107,165 +185,101 @@ def display_dataframe(
     vmax: Optional[float] = None,
     **style_kwargs,
 ) -> None:
-    """Display DataFrame with optional styling, centering, and vmin for colormap.
-    
-    Args:
-        df: DataFrame to display
-        symbol_type: Type of symbols (for styling)
-        data_type: Type of data (for styling)
-        centered: Whether to center the display
-        hide_index: Whether to hide the DataFrame index
-        hide_rows: List of row names to hide (optional, no rows hidden by default)
-        cmap: Colormap for background gradient
-        vmin: Minimum value for colormap
-        vmax: Maximum value for colormap
-        **style_kwargs: Additional styling arguments
-    """
+    """Display DataFrame with optional styling, centering, and vmin for colormap."""
     df = df.copy()
     
-    # Hide specified rows if provided
     if hide_rows:
         df = df.drop(index=hide_rows, errors='ignore')
     
-    # Load yaml files to get list of tickers and append suffixes to matching column names
-    # Load yaml_suffix_map from main.yaml config
+    # Load yaml suffix mapping
     yaml_suffix_map = {}
     try:
-        main_yaml_path = here("conf/main.yaml")
-        with open(main_yaml_path, "r") as f:
-            main_yaml_data = yaml.safe_load(f)
-            yaml_suffix_map = main_yaml_data.get("yaml_suffix_map", {})
+        with open(here("conf/main.yaml"), "r") as f:
+            yaml_suffix_map = yaml.safe_load(f).get("yaml_suffix_map", {})
     except Exception:
-        # If config doesn't exist or can't be loaded, use default mapping
-        yaml_suffix_map = {
-            "r.yaml": ")",
-            "f.yaml": "*",
-        }
+        yaml_suffix_map = {"r.yaml": ")", "f.yaml": "*"}
     
-    # Dictionary to store ticker sets for each yaml file
+    # Load ticker sets for each yaml file
     yaml_ticker_sets = {}
-    
-    # Load all yaml files and collect their tickers
     for yaml_file, suffix in yaml_suffix_map.items():
-        ticker_set = set()
         try:
-            yaml_path = here(f"conf/tickers/{yaml_file}")
-            with open(yaml_path, "r") as f:
+            with open(here(f"conf/tickers/{yaml_file}"), "r") as f:
                 yaml_data = yaml.safe_load(f)
-                ticker_set = set(yaml_data.keys()) if yaml_data else set()
+                yaml_ticker_sets[suffix] = set(yaml_data.keys()) if yaml_data else set()
         except Exception:
-            # If file doesn't exist or can't be loaded, continue without modification
-            pass
-        yaml_ticker_sets[suffix] = ticker_set
+            yaml_ticker_sets[suffix] = set()
     
-    # Rename columns to append suffixes for tickers found in yaml files
-    def get_column_suffix(column_name):
-        suffixes = []
-        for suffix, ticker_set in yaml_ticker_sets.items():
-            if ticker_set and column_name in ticker_set:
-                suffixes.append(suffix)
-        return "".join(suffixes)
+    # Append suffixes to column names
+    def get_column_suffix(col):
+        return "".join(suffix for suffix, ticker_set in yaml_ticker_sets.items() if ticker_set and col in ticker_set)
     
-    # First, append suffixes to column names
     df.columns = [f"{col}{get_column_suffix(col)}" if get_column_suffix(col) else col for col in df.columns]
     
-    # Add prefix based on "m" value if ticker has a suffix
-    def get_column_prefix(column_name):
-        # Check if column has any suffix
-        has_suffix = any(column_name.endswith(suffix) for suffix in yaml_suffix_map.values())
-        if not has_suffix:
+    # Add prefixes based on "m" value for columns with suffixes
+    def get_column_prefix(col):
+        if not any(col.endswith(suffix) for suffix in yaml_suffix_map.values()) or "m" not in df.index:
             return ""
-        
-        # Check if "m" row exists in the DataFrame
-        if "m" not in df.index:
-            return ""
-        
-        # Get the "m" value for this column
-        m_value = df.loc["m", column_name]
-        
-        # Return prefix based on m value thresholds
+        m_value = df.loc["m", col]
         if pd.isna(m_value):
             return ""
-        elif m_value < 0.2:
-            return "="  # Prefix for m < 0.2
-        elif m_value < 0.4:
-            return "-"  # Prefix for m < 0.3
-        return ""
+        return "=" if m_value < 0.2 else "-" if m_value < 0.4 else ""
     
-    # Add prefixes to columns that have suffixes
     df.columns = [f"{prefix}{col}" if (prefix := get_column_prefix(col)) else col for col in df.columns]
     
+    # Style and display main table
     if symbol_type and data_type:
         styled_df = (
             df.style.set_properties(**{"font-weight": "bold"})
             .background_gradient(cmap=cmap, vmin=vmin, vmax=vmax)
-            .apply(partial(highlight_row), axis=1)
+            .apply(lambda row: highlight_row(row, df=df), axis=1)
             .format("{:.2f}", subset=[col for col in df.columns if df[col].dtype == "float64"])
-            .format("{:.0f}", subset=[col for col in df.columns if df[col].dtype == "int64" or df[col].dtype == "int32"])
+            .format("{:.0f}", subset=[col for col in df.columns if df[col].dtype in ["int64", "int32"]])
         )
-
     else:
         styled_df = df
     
     # Display main table
+    display_kwargs = {"hide_index": hide_index, "height": 35 * len(df) + 38, "width": "stretch", **style_kwargs}
     if centered:
         center_cols = st.columns([1, 6, 1])
         with center_cols[1]:
-            st.dataframe(styled_df, hide_index=hide_index, height=35 * len(df) + 38, width="stretch", **style_kwargs)
+            st.dataframe(styled_df, **display_kwargs)
     else:
-        st.dataframe(styled_df, hide_index=hide_index, height=35 * len(df) + 38, width="stretch", **style_kwargs)
+        st.dataframe(styled_df, **display_kwargs)
     
-    # Create subtable with only marked symbols (those with suffixes) - after main table
-    # Get all possible suffixes from yaml_suffix_map
+    # Display marked symbols subtable if applicable
     all_suffixes = list(yaml_suffix_map.values())
-    
-    # Find columns with suffixes (marked symbols)
-    # Check if column ends with any suffix, handling multiple suffixes
-    marked_columns = []
-    for col in df.columns:
-        for suffix in all_suffixes:
-            if col.endswith(suffix):
-                marked_columns.append(col)
-                break
-    
-    # Only display subtable if some (but not all) symbols are marked
-    # Don't display if: no symbols marked OR all symbols marked
+    marked_columns = [col for col in df.columns if any(col.endswith(suffix) for suffix in all_suffixes)]
     unmarked_columns = [col for col in df.columns if col not in marked_columns]
     
     if marked_columns and unmarked_columns:
-        # Create subtable with only marked symbols
         marked_df = df[marked_columns].copy()
-        
-        # Display in expander
         with st.expander("📌 Marked Symbols Only", expanded=False):
             if symbol_type and data_type:
                 marked_styled_df = (
                     marked_df.style.set_properties(**{"font-weight": "bold"})
                     .background_gradient(cmap=cmap, vmin=vmin, vmax=vmax)
-                    .apply(partial(highlight_row), axis=1)
+                    .apply(lambda row: highlight_row(row, df=marked_df), axis=1)
                     .format("{:.2f}", subset=[col for col in marked_df.columns if marked_df[col].dtype == "float64"])
-                    .format("{:.0f}", subset=[col for col in marked_df.columns if marked_df[col].dtype == "int64" or marked_df[col].dtype == "int32"])
+                    .format("{:.0f}", subset=[col for col in marked_df.columns if marked_df[col].dtype in ["int64", "int32"]])
                 )
             else:
                 marked_styled_df = marked_df
             
-            # Show legend for suffixes
             suffix_legend = ", ".join([f"{suffix} = {yaml_file.replace('.yaml', '')}" for yaml_file, suffix in yaml_suffix_map.items()])
             st.caption(f"Symbols marked with: {suffix_legend}")
             
-            # Display the marked symbols table
             if centered:
                 marked_center_cols = st.columns([1, 6, 1])
                 with marked_center_cols[1]:
-                    st.dataframe(marked_styled_df, hide_index=hide_index, height=35 * len(marked_df) + 38, width="stretch", **style_kwargs)
+                    st.dataframe(marked_styled_df, **display_kwargs)
             else:
-                st.dataframe(marked_styled_df, hide_index=hide_index, height=35 * len(marked_df) + 38, width="stretch", **style_kwargs)
+                st.dataframe(marked_styled_df, **display_kwargs)
 
 
 def display_table_of_contents(sections: Optional[list] = None) -> None:
     """Display table of contents with sections."""
     st.markdown("<h2>Table of Contents</h2>", unsafe_allow_html=True)
-
     cols = st.columns(min(len(sections), 3))
     for i, section in enumerate(sections):
         with cols[i % 3]:

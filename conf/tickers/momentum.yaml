@@ -103,3 +103,8 @@ PXI:
   region: US
   color: darkred
   line_style: dashdot
+PREZ:
+  name: Invesco Dorsey Wright REIT Momentum ETF
+  region: US
+  color: darkmagenta
+  line_style: dashdot
