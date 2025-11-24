@@ -159,6 +159,31 @@ def highlight_row(row, df=None):
             result.append(color)
         return result
     
+    elif row.name == "macd":
+        for value in row_original:
+            if pd.isnull(value):
+                result.append("")
+                continue
+            macd_value = float(value)
+            # Color based on direction: green for positive (bullish), red for negative (bearish)
+            # Intensity based on magnitude
+            abs_macd = abs(macd_value)
+            intensity = min(abs_macd / 5.0, 1.0)  # Normalize to 0-1, assuming max MACD ~5
+            
+            if macd_value > 0:
+                # Green for positive MACD (bullish)
+                green = int(100 + intensity * 155)
+                color = f"background-color: white; color: rgb(0, {green}, 0); font-weight: bold"
+            elif macd_value < 0:
+                # Red for negative MACD (bearish)
+                red = int(100 + intensity * 155)
+                color = f"background-color: white; color: rgb({red}, 0, 0); font-weight: bold"
+            else:
+                # Neutral for zero
+                color = "background-color: white; color: black; font-weight: bold"
+            result.append(color)
+        return result
+    
     elif row.name == "drawdown":
         for value in row_original:
             if pd.isnull(value):

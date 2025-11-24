@@ -375,6 +375,7 @@ def compute_annualized_momentum_sum(df: pd.DataFrame, window_sizes: List[int] = 
     rsi_values = {}
     rsi1_values = {}
     rsi_delta_values = {}
+    macd_values = {}
     current_prices = {}
     a = {}
     # Calculate acceleration for all window sizes except the last one
@@ -484,13 +485,13 @@ def compute_annualized_momentum_sum(df: pd.DataFrame, window_sizes: List[int] = 
             ema200_values[symbol] = np.nan
 
         # Calculate RSI with period 9 using Wilder's smoothing method
-        if len(df[symbol]) >= 10:  # Need at least 10 values for RSI(9)
+        if len(df[symbol]) >= 15:  # Need at least 15 values for RSI(14)
             prices = df[symbol]
             delta = prices.diff()
             gain = delta.where(delta > 0, 0)
             loss = -delta.where(delta < 0, 0)
             
-            period = 9
+            period = 14
             # Initialize series for Wilder's smoothed averages
             avg_gain = pd.Series(index=prices.index, dtype=float)
             avg_loss = pd.Series(index=prices.index, dtype=float)
@@ -527,6 +528,20 @@ def compute_annualized_momentum_sum(df: pd.DataFrame, window_sizes: List[int] = 
             rsi_values[symbol] = np.nan
             rsi1_values[symbol] = np.nan
             rsi_delta_values[symbol] = np.nan
+
+        # Calculate MACD (12, 26, 9)
+        if len(df[symbol]) >= 35:  # Need at least 35 values for MACD(12,26,9): 26 for slow EMA + 9 for signal line
+            prices = df[symbol]
+            # Calculate MACD components
+            exp1 = prices.ewm(span=12, adjust=False).mean()  # Fast EMA
+            exp2 = prices.ewm(span=26, adjust=False).mean()  # Slow EMA
+            macd_line = exp1 - exp2
+            signal_line = macd_line.ewm(span=9, adjust=False).mean()
+            histogram = macd_line - signal_line
+            # Use the MACD histogram value (not line or signal line)
+            macd_values[symbol] = np.round(histogram.iloc[-1], 2) if not pd.isna(histogram.iloc[-1]) else np.nan
+        else:
+            macd_values[symbol] = np.nan
 
         # Calculate drawdown (drop from maximum price observed in the data)
         if len(df[symbol]) > 0:
@@ -573,6 +588,7 @@ def compute_annualized_momentum_sum(df: pd.DataFrame, window_sizes: List[int] = 
             "ema200": ema200_values[symbol],
             "rsi": rsi_values[symbol],
             "rsi_delta": rsi_delta_values[symbol],
+            "macd": macd_values[symbol],
             "drawdown": drawdown[symbol],
         }
         row.update(individual_momentum[symbol])
@@ -597,8 +613,8 @@ def compute_annualized_momentum_sum(df: pd.DataFrame, window_sizes: List[int] = 
         if window in acceleration_windows:
             ordered_columns.append(f"a{window}")
 
-    # Add weighted average, acceleration, combined score, stride, streaks, average consecutive movements, average percentage movements, p, ema50, ema200, rsi, rsi_delta, drawdown, and put-call ratio at the end
-    ordered_columns.extend(["m", "a", "combined_score", "stride", "s0", "s1", "s2", "avg_s+", "avg_s-", "avg%+", "avg%-", "p", "ema50", "ema200", "rsi", "rsi_delta", "drawdown"]) #, "pcr_m1"])
+    # Add weighted average, acceleration, combined score, stride, streaks, average consecutive movements, average percentage movements, p, ema50, ema200, rsi, rsi_delta, macd, drawdown, and put-call ratio at the end
+    ordered_columns.extend(["m", "a", "combined_score", "stride", "s0", "s1", "s2", "avg_s+", "avg_s-", "avg%+", "avg%-", "p", "ema50", "ema200", "rsi", "rsi_delta", "macd", "drawdown"]) #, "pcr_m1"])
 
     result_df = result_df[ordered_columns]
 

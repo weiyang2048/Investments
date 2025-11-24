@@ -40,8 +40,15 @@ def get_keys(args):
 
 def register_resolvers():
     if not OmegaConf.has_resolver("union"):
+        print("registering union resolver")
         OmegaConf.register_new_resolver("union", lambda *args: union(args))
+    else:
+        print("union resolver already registered")
     if not OmegaConf.has_resolver("include"):
         OmegaConf.register_new_resolver("include", lambda *args: include(args))
+    else:
+        print("include resolver already registered")
     if not OmegaConf.has_resolver("get_keys"):
         OmegaConf.register_new_resolver("get_keys", lambda *args: get_keys(args))
+    else:
+        print("get_keys resolver already registered")
