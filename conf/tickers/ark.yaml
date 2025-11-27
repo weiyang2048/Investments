@@ -7,10 +7,10 @@ ARKK:
   name: ARK Innovation ETF
 ARKQ:
   name: ARK Autonomous Tech. & Robotics ETF
-ARKT:
-  name: ARK DIET Q4 Buffer ETF
-ARKVX:
-  name: ARK Venture Fund
+# ARKT:
+#   name: ARK DIET Q4 Buffer ETF
+# ARKVX:
+#   name: ARK Venture Fund
 ARKW:
   name: ARK Next Generation Internet ETF
 ARKX:

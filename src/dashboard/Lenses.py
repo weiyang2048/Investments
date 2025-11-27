@@ -174,6 +174,7 @@ def _process_symbol_tab(
     dfs[symbol_type] = df_pivot
 
     # Display momentum section
+    st.write(len(symbols), "tickers",  look_back_days[-1], "max_lookback_days")
     display_section_header("Momentum")
 
     # Create momentum ranking first (always needed for data analysis)
@@ -324,22 +325,15 @@ def show_market_performance(
     dfs = dict()
 
     # Process the selected symbol type
-    if selected_symbol_type == "Custom Symbols":
-        if custom_symbols:
-            _process_symbol_tab(
-                custom_symbols,
-                selected_symbol_type,
-                look_back_days,
-                equity_config,
-                marchenko_pastur,
-                dfs,
-                momentum_summaries,
-                log_col=col3,
-            )
-        else:
-            st.info("No custom symbols provided. Please enter symbols in the sidebar.")
+    if selected_symbol_type == "Custom Symbols" and not custom_symbols:
+        st.info("No custom symbols provided. Please enter symbols in the sidebar.")
     else:
-        symbols = portfolio_config[selected_symbol_type]
+        symbols = (
+            custom_symbols
+            if selected_symbol_type == "Custom Symbols"
+            else portfolio_config[selected_symbol_type]
+        )
+        print(symbols)
         _process_symbol_tab(
             symbols,
             selected_symbol_type,

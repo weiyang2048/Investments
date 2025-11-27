@@ -1,14 +1,13 @@
 lenses:
   main:
-    Regions: ${union:${get_keys:tickers.regions},[DYNF,CORO],  [GLTR, GDLC]}
-    Sectors: ${union:${get_keys:tickers.sectors}, [INRO,SECT]}
-    Commodities: [ GLTR, IAUM, GOEX, SLV, SLVP, PPLT, GDLC, BTC, ETH, GSOL, BKCH,COPX, REMX, DMAT, HYDR, URA, ILIT, LIT, IEO, DBA]
-    income: ${get_keys:tickers.income}
-    F: ${get_keys:tickers.f}
-    s: ${get_keys:tickers.s}
-    r: ${get_keys:tickers.r}
-    R: ${get_keys:tickers.Ri}
-    I: ${get_keys:tickers.In}
+    Regions: ${union:${get_keys:tickers.regions},[DYNF,CORO],[GLTR,GDLC]}
+    Sectors: ${union:${get_keys:tickers.sectors},[INRO,SECT]}
+    SWING: ${union:${get_keys:tickers.ark},[LOUP, BKCH, GDX, TQQQ]}
+    HODL: ${union:${get_keys:tickers.H},[IOO, QQQ, QTOP, TOPT, FNGS, MAGS, PIEQ, IDVO, GPIQ, YGLD, MAXI]}
+    F: ${get_keys:tickers.F}
+    hs: ${union:${get_keys:tickers.hs},[IOO]}
+    rs: ${union:${get_keys:tickers.rs},[MAGS]}
+    Y: ${get_keys:tickers.Y}
   stocks:
     adr500: ${get_keys:tickers.adr50}
     sp500: ${get_keys:tickers.sp500}
@@ -20,13 +19,12 @@ lenses:
     globalX: ${get_keys:tickers.globalX}
     Defiance: ${get_keys:tickers.defiance}
 
-
 yaml_suffix_map:
-  f.yaml: "@"
-  s.yaml: "#"
-  r.yaml: "%"
-  Ri.yaml: "!"
-  In.yaml: "$"
+  F.yaml: "@"
+  hs.yaml: "#"
+  rs.yaml: "%"
+  Y.yaml: "!"
+  H.yaml: "$"
   # Future additions can be added here, e.g.:
   # "3.yaml": "3"
 
@@ -47,6 +45,8 @@ defaults:
       - sp600
       - income
       - adr50
-      - f
-      - s
-      - r
+      - F
+      - rs
+      - hs
+      - Y
+      - H
