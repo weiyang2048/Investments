@@ -1,0 +1,72 @@
+dominance_plots:
+  - row: 1
+    col: 1
+    ticker1: VTI
+    ticker2: VT
+    title: "US Dominance: VTI / VT"
+    dominance_name: "US Dominance"
+    ticker1_label: VTI
+    ticker2_label: VT
+    ticker1_color: lightblue
+    ticker2_color: lightgreen
+  - row: 2
+    col: 1
+    ticker1: FXI
+    ticker2: VT
+    title: "China Dominance: FXI / VT"
+    dominance_name: "China Dominance"
+    ticker1_label: FXI
+    ticker2_label: VT
+    ticker1_color: coral
+    ticker2_color: lightgreen
+    fill_color_above: "rgba(255, 127, 80, 1)"
+    fill_color_below: "rgba(144, 238, 144, 0.5)"
+  - row: 3
+    col: 1
+    ticker1: SPEU
+    ticker2: VT
+    title: "EU Dominance: SPEU / VT"
+    dominance_name: "EU Dominance"
+    ticker1_label: SPEU
+    ticker2_label: VT
+    ticker1_color: royalblue
+    ticker2_color: lightgreen
+    fill_color_above: "rgba(65, 105, 225, 1)"
+    fill_color_below: "rgba(144, 238, 144, 0.5)"
+  - row: 1
+    col: 2
+    ticker1: "GC=F"
+    ticker2: VT
+    title: "Gold Dominance: GC=F / VT"
+    dominance_name: "Gold Dominance"
+    ticker1_label: "GC=F"
+    ticker2_label: VT
+    ticker1_color: gold
+    ticker2_color: lightgreen
+    fill_color_above: "rgba(255, 215, 0, 1)"
+    fill_color_below: "rgba(144, 238, 144, 0.5)"
+  - row: 2
+    col: 2
+    ticker1: BTC-USD
+    ticker2: VT
+    title: "BTC Dominance: BTC-USD / VT"
+    dominance_name: "BTC Dominance"
+    ticker1_label: BTC-USD
+    ticker2_label: VT
+    ticker1_color: purple
+    ticker2_color: lightgreen
+    fill_color_above: "rgba(128, 0, 128, 1)"
+    fill_color_below: "rgba(144, 238, 144, 0.5)"
+  - row: 3
+    col: 2
+    ticker1: BTC-USD
+    ticker2: "GC=F"
+    title: "Digital Dominance: BTC-USD / GC=F"
+    dominance_name: "Digital Dominance"
+    ticker1_label: BTC-USD
+    ticker2_label: "GC=F"
+    ticker1_color: purple
+    ticker2_color: gold
+    fill_color_above: "rgba(128, 0, 128, 1)"
+    fill_color_below: "rgba(255, 215, 0, 0.5)"
+

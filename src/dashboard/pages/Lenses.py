@@ -358,7 +358,7 @@ if __name__ == "__main__":
         hydra.core.global_hydra.GlobalHydra.instance().clear()
     register_resolvers()
 
-    with hydra.initialize(version_base=None, config_path="../../conf"):
+    with hydra.initialize(version_base=None, config_path="../../../conf"):
         config = hydra.compose(config_name="main")
     (
         marchenko_pastur,

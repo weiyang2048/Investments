@@ -30,6 +30,7 @@ yaml_suffix_map:
 
 defaults:
   - style_conf: [shared_configs, color_line_styles]
+  - macro/dominance_plots
   - tickers:
       - etfs
       - sectors
@@ -50,3 +51,26 @@ defaults:
       - hs
       - Y
       - H
+
+macro:
+  lookback_weeks: 13
+  assets:
+    BTC-USD:
+      name: BTC-USD
+      color: violet
+    ^GSPC:
+      name: ^GSPC
+      color: lightblue
+    GC=F:
+      name: GC=F
+      color: gold
+    ^VIX:
+      name: ^VIX
+      color: red
+    ^FTSE:
+      name: ^FTSE
+      color: green
+    000001.SS:
+      name: 000001.SS
+      color: coral
+    # - {name: BKCH, color: purple}

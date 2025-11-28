@@ -1,3 +1,6 @@
+"""
+📦 https://pypi.org/project/liquidity/
+"""
 import streamlit as st
 import pandas as pd
 from liquidity.models.liquidity import GlobalLiquidity
@@ -11,6 +14,7 @@ def load_global_liquidity() -> pd.DataFrame:
     if not isinstance(df.index, pd.DatetimeIndex):
         df.index = pd.to_datetime(df.index)
     return df
+    
 @st.cache_resource(show_spinner=True)
 def st_load_global_liquidity() -> pd.DataFrame:
     return load_global_liquidity()
