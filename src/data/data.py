@@ -46,7 +46,7 @@ def _compute_momentum_for_symbol(df: pd.DataFrame, symbol: str, window: int) -> 
     return momentum.dropna()
 
 
-def _compute_consecutive_streaks(df: pd.DataFrame, symbol: str) -> tuple[int, int, int]:
+def _compute_consecutive_streaks(df: pd.DataFrame, symbol: str) -> tuple[int, int]:
     """
     Compute consecutive positive/negative streaks for a symbol.
     Returns negative numbers for consecutive drops, positive for consecutive increases.
@@ -56,7 +56,7 @@ def _compute_consecutive_streaks(df: pd.DataFrame, symbol: str) -> tuple[int, in
         symbol: Symbol to compute streaks for
 
     Returns:
-        Tuple of (last_streak_signed, previous_streak_signed, before_previous_streak_signed)
+        Tuple of (last_streak_signed, previous_streak_signed)
     """
     if len(df[symbol]) < 2:
         return 0, 0
@@ -87,12 +87,12 @@ def _compute_consecutive_streaks(df: pd.DataFrame, symbol: str) -> tuple[int, in
     streaks.append((current_streak, current_sign))
 
     if len(streaks) == 0:
-        return 0, 0, 0
+        return 0, 0
     elif len(streaks) == 1:
         # Apply sign: positive for increases (sign=1), negative for decreases (sign=0)
         last_streak_signed = streaks[0][0] if streaks[0][1] == 1 else -streaks[0][0]
-        return last_streak_signed, 0, 0
-    elif len(streaks) == 2:
+        return last_streak_signed, 0
+    else:
         # Last streak and previous streak with signs
         last_streak_length, last_sign = streaks[-1]
         previous_streak_length, previous_sign = streaks[-2]
@@ -100,18 +100,7 @@ def _compute_consecutive_streaks(df: pd.DataFrame, symbol: str) -> tuple[int, in
         last_streak_signed = last_streak_length if last_sign == 1 else -last_streak_length
         previous_streak_signed = previous_streak_length if previous_sign == 1 else -previous_streak_length
 
-        return last_streak_signed, previous_streak_signed, 0
-    else:
-        # Last streak, previous streak, and before previous streak with signs
-        last_streak_length, last_sign = streaks[-1]
-        previous_streak_length, previous_sign = streaks[-2]
-        before_previous_streak_length, before_previous_sign = streaks[-3]
-
-        last_streak_signed = last_streak_length if last_sign == 1 else -last_streak_length
-        previous_streak_signed = previous_streak_length if previous_sign == 1 else -previous_streak_length
-        before_previous_streak_signed = before_previous_streak_length if before_previous_sign == 1 else -before_previous_streak_length
-
-        return last_streak_signed, previous_streak_signed, before_previous_streak_signed
+        return last_streak_signed, previous_streak_signed
 
 
 def _compute_average_consecutive_movements(df: pd.DataFrame, symbol: str) -> tuple[float, float]:
@@ -350,7 +339,7 @@ def compute_annualized_momentum_sum(df: pd.DataFrame, window_sizes: List[int] = 
         - rsi: Relative Strength Index with period 9
         - drawdown: Drop from maximum price observed in the data (1 - current/max, where 1.0 = 100% drop, 0.76 = 76% drop, 0.05 = 5% drop)
         - stride: Compound growth factor based on average consecutive movements
-        - s0, s1, s2: Current, previous, and before-previous consecutive streaks
+        - s0, s1: Current and previous consecutive streaks
         - avg_s+, avg_s-: Average consecutive up/down movements
         - avg%+, avg%-: Average percentage up/down movements
         - pcr_m1: Put-call ratio for next month expiration
@@ -361,7 +350,6 @@ def compute_annualized_momentum_sum(df: pd.DataFrame, window_sizes: List[int] = 
     individual_accelerations = {}
     s0_streaks = {}
     s_minus_1_streaks = {}
-    s_minus_2_streaks = {}
     avg_s_plus = {}
     avg_s_minus = {}
     avg_plus_percent = {}
@@ -420,10 +408,9 @@ def compute_annualized_momentum_sum(df: pd.DataFrame, window_sizes: List[int] = 
                     symbol_accelerations[f"a{window}"] = np.nan
 
         # Calculate consecutive streaks
-        last_streak, previous_streak, before_previous_streak = _compute_consecutive_streaks(df, symbol)
+        last_streak, previous_streak = _compute_consecutive_streaks(df, symbol)
         s0_streaks[symbol] = last_streak
         s_minus_1_streaks[symbol] = previous_streak
-        s_minus_2_streaks[symbol] = before_previous_streak
 
         # Calculate average consecutive movements
         avg_up, avg_down = _compute_average_consecutive_movements(df, symbol)
@@ -532,9 +519,17 @@ def compute_annualized_momentum_sum(df: pd.DataFrame, window_sizes: List[int] = 
         # Calculate MACD (12, 26, 9)
         if len(df[symbol]) >= 35:  # Need at least 35 values for MACD(12,26,9): 26 for slow EMA + 9 for signal line
             prices = df[symbol]
-            # Calculate MACD components
-            exp1 = prices.ewm(span=12, adjust=False).mean()  # Fast EMA
-            exp2 = prices.ewm(span=26, adjust=False).mean()  # Slow EMA
+            # Normalize prices so that average price is 100
+            avg_price = prices.mean()
+            if avg_price > 0:
+                normalization_factor = 100.0 / avg_price
+                normalized_prices = prices * normalization_factor
+            else:
+                normalized_prices = prices
+            
+            # Calculate MACD components on normalized prices
+            exp1 = normalized_prices.ewm(span=12, adjust=False).mean()  # Fast EMA
+            exp2 = normalized_prices.ewm(span=26, adjust=False).mean()  # Slow EMA
             macd_line = exp1 - exp2
             signal_line = macd_line.ewm(span=9, adjust=False).mean()
             histogram = macd_line - signal_line
@@ -574,7 +569,6 @@ def compute_annualized_momentum_sum(df: pd.DataFrame, window_sizes: List[int] = 
             "a": np.round(a[symbol], 4),
             "s0": s0_streaks[symbol],
             "s1": s_minus_1_streaks[symbol],
-            "s2": s_minus_2_streaks[symbol],
             "avg_s+": avg_s_plus[symbol],
             "avg_s-": avg_s_minus[symbol],
             "avg%+": avg_plus_percent[symbol],
@@ -614,7 +608,7 @@ def compute_annualized_momentum_sum(df: pd.DataFrame, window_sizes: List[int] = 
             ordered_columns.append(f"a{window}")
 
     # Add weighted average, acceleration, combined score, stride, streaks, average consecutive movements, average percentage movements, p, ema50, ema200, rsi, rsi_delta, macd, drawdown, and put-call ratio at the end
-    ordered_columns.extend(["m", "a", "combined_score", "stride", "s0", "s1", "s2", "avg_s+", "avg_s-", "avg%+", "avg%-", "p", "ema50", "ema200", "rsi", "rsi_delta", "macd", "drawdown"]) #, "pcr_m1"])
+    ordered_columns.extend(["m", "a", "combined_score", "stride", "s0", "s1", "avg_s+", "avg_s-", "avg%+", "avg%-", "p", "ema50", "ema200", "rsi", "rsi_delta", "macd", "drawdown"]) #, "pcr_m1"])
 
     result_df = result_df[ordered_columns]
 

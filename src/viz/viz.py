@@ -51,11 +51,11 @@ def create_momentum_ranking_display(
     # Acceleration data is already computed in compute_annualized_momentum_sum
     
     # Create the desired row order: m first, then a, then p (second row), then ema50 (third row), then ema200 (fourth row), then rsi (fifth row), then rsi_delta (sixth row), then macd (seventh row), then drawdown, then combined_score, then put-call ratio, then stride, then streak rows, then average consecutive movements, then average percentage movements, then momentum rows (hide individual acceleration rows)
-    ordered_rows = ["m"] + ["a"] + ["p"] + ["ema50"] + ["ema200"] + ["rsi"] + ["rsi_delta"] + ["macd"] + ["drawdown"] + ["combined_score"]  + ["stride", "s0", "s1", "s2", "avg_s+", "avg_s-", "avg%+", "avg%-"] + momentum_rows
+    ordered_rows = ["m"] + ["a"] + ["p"] + ["ema50"] + ["ema200"] + ["rsi"] + ["rsi_delta"] + ["macd"] + ["drawdown"] + ["combined_score"]  + ["stride", "s0", "s1", "avg_s+", "avg_s-", "avg%+", "avg%-"] + momentum_rows
     
     # Filter to only include rows that exist in the dataframe
     existing_rows = [row for row in ordered_rows if row in transposed_df.index]
-    integer_columns = ["s0", "s1", "s2"]
+    integer_columns = ["s0", "s1"]
     transposed_df.loc[integer_columns] = transposed_df.loc[integer_columns].astype(int)
     return transposed_df.loc[existing_rows]
 

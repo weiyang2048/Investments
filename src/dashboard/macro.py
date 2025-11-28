@@ -20,6 +20,7 @@ from src.dashboard.create_page import setup_page_and_sidebar
 
 from src.data.GLI import st_load_global_liquidity
 from src.data.P import st_get_tickers_close_prices
+from src.data.FearGreed import FearGreed
 
 
 def parse_custom_symbols(symbols_text: str) -> list:
@@ -697,8 +698,51 @@ def main():
     # Load colors from style_conf
     style_conf = config.get("style_conf", {})
     colors = list(style_conf.get("colors", []))
+    
+    # Get Fear and Greed data
+    fear_greed = FearGreed()
+    traditional_data = fear_greed.get_fear_and_greed()
+    crypto_data = fear_greed.get_crypto_fear_and_greed()
+    
+    stock_value = traditional_data["value"]
+    stock_desc = traditional_data["description"]
+    crypto_value = crypto_data["value"] if crypto_data["value"] is not None else "N/A"
+    crypto_desc = crypto_data["description"] if crypto_data["value"] is not None else "Error"
+    
+    # Calculate colors for both metrics
+    normalized_stock = stock_value / 100.0
+    red_stock = int(255 * (1 - normalized_stock))
+    green_stock = int(255 * normalized_stock)
+    color_hex_stock = f"#{red_stock:02x}{green_stock:02x}{50:02x}"
+    
+    if crypto_data["value"] is not None:
+        normalized_crypto = crypto_data["value"] / 100.0
+        red_crypto = int(255 * (1 - normalized_crypto))
+        green_crypto = int(255 * normalized_crypto)
+        color_hex_crypto = f"#{red_crypto:02x}{green_crypto:02x}{50:02x}"
+    else:
+        color_hex_crypto = "#808080"
+    
+    # Add TradingView Economic Calendar and Fear & Greed Index on the same line
+    st.markdown(
+        f"""
+        <div style='text-align: center; margin: 10px 0; padding: 10px; background-color: #f0f2f6; border-radius: 5px; display: flex; justify-content: center; align-items: center; gap: 20px; flex-wrap: wrap;'>
+            <a href='https://www.tradingview.com/economic-calendar/' target='_blank' style='text-decoration: none; color: #1f77b4; font-weight: bold; font-size: 16px;'>
+                📅  Economic Calendar
+            </a>
+            <span style='color: #666;'>|</span>
+            <a href="https://www.cnn.com/markets/fear-and-greed" target="_blank" style="color:{color_hex_stock};text-decoration:none; font-weight: bold; font-size: 16px;">{stock_value} {stock_desc} (S&P 500)</a>
+            <span style='color: #666;'>|</span>
+            <a href="https://alternative.me/crypto/fear-and-greed-index/" target="_blank" style="color:{color_hex_crypto};text-decoration:none; font-weight: bold; font-size: 16px;">{crypto_value} {crypto_desc} (Crypto)</a>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+    
+    st.title("GLI : Global Liquidity Index")
+    
 
-    st.title("🌐 Global Liquidity Index")
+
     st.markdown(
         f"Visualize the **Global Liquidity Index** from a selected time period (minus {lookback_weeks} weeks) "
         "to **now**. Includes a forward-shifted (lagged) curve to explore potential lead/lag "

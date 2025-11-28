@@ -2,10 +2,10 @@ lenses:
   main:
     Regions: ${union:${get_keys:tickers.regions},[DYNF,CORO],[GLTR,GDLC]}
     Sectors: ${union:${get_keys:tickers.sectors},[INRO,SECT]}
-    SWING: ${union:${get_keys:tickers.ark},[LOUP, BKCH, GDX, TQQQ]}
+    SWING: ${union:${get_keys:tickers.ark},[LOUP, BKCH, GDX, TQQQ, IBLC,BLOK ]}
     HODL: ${union:${get_keys:tickers.H},[MAGS]}
     Crypto: ["BTC-USD", "ETH-USD", "SOL-USD", "BNB-USD", "MON-USD","LTC-USD","BAT-USD","CRO-USD", "DOGE-USD", "XRP-USD", "ADA-USD"]
-    F: ${get_keys:tickers.F}
+    F: ${get_keys:tickers.f}
     rs: ${union:${get_keys:tickers.rs},[MAGS]}
     Y: ${get_keys:tickers.Y}
   stocks:

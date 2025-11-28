@@ -73,7 +73,7 @@ def highlight_row(row, df=None):
             result.append(color)
         return result
 
-    elif row.name in ["s0", "s1", "s2"]:
+    elif row.name in ["s0", "s1"]:
         for value in row:
             if pd.isnull(value):
                 result.append("")
@@ -219,17 +219,6 @@ def display_dataframe(
         return "".join(suffix for suffix, ticker_set in yaml_ticker_sets.items() if ticker_set and col in ticker_set)
 
     df.columns = [f"{col}{get_column_suffix(col)}" if get_column_suffix(col) else col for col in df.columns]
-
-    # Add prefixes based on "m" value for columns with suffixes
-    def get_column_prefix(col):
-        if not any(col.endswith(suffix) for suffix in yaml_suffix_map.values()) or "m" not in df.index:
-            return ""
-        m_value = df.loc["m", col]
-        if pd.isna(m_value):
-            return ""
-        return "=" if m_value < 0.2 else "-" if m_value < 0.4 else ""
-
-    df.columns = [f"{prefix}{col}" if (prefix := get_column_prefix(col)) else col for col in df.columns]
 
     # Style and display main table
     if symbol_type and data_type:
