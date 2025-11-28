@@ -26,7 +26,7 @@ def parse_custom_symbols(symbols_text: str) -> list:
     """Parse comma-separated symbols and clean them."""
     if not symbols_text or symbols_text.strip() == "":
         return []
-    
+
     # Split by comma and clean each symbol
     symbols = [symbol.strip().upper() for symbol in symbols_text.split(",")]
     # Remove empty strings
@@ -34,27 +34,25 @@ def parse_custom_symbols(symbols_text: str) -> list:
     return symbols
 
 
-
-
 def get_asset_config_with_custom(default_config: dict, custom_symbols: list, colors: list) -> dict:
     """Merge default asset config with custom symbols, assigning colors from config."""
     config = default_config.copy()
-    
+
     # Add custom symbols with colors from config
     for idx, symbol in enumerate(custom_symbols):
         if symbol not in config:
             color = colors[idx % len(colors)]
             config[symbol] = {"name": symbol, "color": color}
-    
+
     return config
 
 
 def _add_macro_sidebar(macro_config: dict):
     """Sidebar controls for the macro / liquidity view."""
     st.sidebar.header("Macro Settings")
-    
+
     lookback_weeks = macro_config.get("lookback_weeks", 15)
-    
+
     # Period options mapping: display name -> timedelta
     period_options = {
         "3 months": pd.Timedelta(days=90),
@@ -65,26 +63,51 @@ def _add_macro_sidebar(macro_config: dict):
         "10 years": pd.Timedelta(days=365 * 10),
         "20 years": pd.Timedelta(days=365 * 20),
     }
-    
+
     selected_period = st.sidebar.selectbox(
         "Time Period",
         options=list(period_options.keys()),
         index=0,  # Default to 3 months
         help="Select how far back from today to start the visualization. Data will be shown from 15 weeks before this date to now.",
     )
-    
+
     # Calculate beginning_date based on selected period
     beginning_date = pd.Timestamp.today() - period_options[selected_period]
-    
+
+    st.sidebar.markdown("<hr>", unsafe_allow_html=True)
+    st.sidebar.markdown("**Lag / Look-ahead**")
+    show_lag = st.sidebar.checkbox(
+        "Show Lag",
+        value=True,
+        help="Display a lagged version of the Global Liquidity Index to visualize lead/lag effects.",
+    )
     lag_weeks = st.sidebar.slider(
         "Lag / Look-ahead (weeks)",
         min_value=0,
         max_value=52,
         value=lookback_weeks,
         step=1,
+        disabled=not show_lag,
         help="Shift the index forward in time by this many weeks to visualize a look-ahead effect.",
     )
-    
+
+    st.sidebar.markdown("<hr>", unsafe_allow_html=True)
+    st.sidebar.markdown("**EMA Smoothing**")
+    show_ema = st.sidebar.checkbox(
+        "Show EMA",
+        value=True,
+        help="Display an exponential moving average of the Global Liquidity Index.",
+    )
+    ema_period = st.sidebar.slider(
+        "EMA Period (days)",
+        min_value=5,
+        max_value=200,
+        value=10,
+        step=5,
+        disabled=not show_ema,
+        help="Number of days for the exponential moving average calculation.",
+    )
+
     st.sidebar.markdown("<hr>", unsafe_allow_html=True)
     st.sidebar.markdown("**Custom Symbols**")
     custom_symbols_text = st.sidebar.text_input(
@@ -94,42 +117,58 @@ def _add_macro_sidebar(macro_config: dict):
         key="custom_symbols_input",
     )
     custom_symbols = parse_custom_symbols(custom_symbols_text)
-    
-    return beginning_date, int(lag_weeks), custom_symbols
+
+    return beginning_date, int(lag_weeks), custom_symbols, show_ema, int(ema_period), show_lag
 
 
-def _plot_global_liquidity(df: pd.DataFrame, beginning_date: pd.Timestamp, lag_weeks: int, asset_config: dict, custom_symbols: list = None, lookback_weeks: int = 15, colors: list = None):
+def _plot_global_liquidity(
+    df: pd.DataFrame,
+    beginning_date: pd.Timestamp,
+    lag_weeks: int,
+    asset_config: dict,
+    custom_symbols: list = None,
+    lookback_weeks: int = 15,
+    colors: list = None,
+    show_ema: bool = True,
+    ema_period: int = 25,
+    show_lag: bool = True,
+):
     """Create and render the Global Liquidity plot with asset overlays (normalized)."""
     # Calculate date range: beginning_date - lookback_weeks to now
 
     lookback_days = lookback_weeks * 7
-    start_date = beginning_date - pd.Timedelta(days=lookback_days)
+    start_date = beginning_date - pd.Timedelta(days=lookback_days + 7)
     end_date = pd.Timestamp.today()  # Always plot to now
-    
+
     lag_days = lag_weeks * 7
 
     # Build extended date range so the lagged curve can extend into the future
-    max_date = end_date + pd.Timedelta(days=lag_days)
-    
+
     # Create date range with date-only (no time component) to match df.index format
     date_range_full = pd.date_range(
-        start=start_date.normalize() if hasattr(start_date, 'normalize') else pd.Timestamp(start_date).normalize(),
-        end=max_date.normalize() if hasattr(max_date, 'normalize') else pd.Timestamp(max_date).normalize(),
-        freq="D"
+        start=start_date.normalize() if hasattr(start_date, "normalize") else pd.Timestamp(start_date).normalize(),
+        end=end_date.normalize() if hasattr(end_date, "normalize") else pd.Timestamp(end_date).normalize(),
+        freq="D",
     )
-    
+
     # Reindex to full daily date_range_full and interpolate missing days
     # Use method=None to allow explicit interpolation control
     df_extended = df.reindex(date_range_full, method=None)
-    
+
     # Interpolate missing values using time-based interpolation
     # This fills gaps in the data by interpolating between known values
     if "Liquidity Index" in df_extended.columns:
         df_extended["Liquidity Index"] = df_extended["Liquidity Index"].interpolate(method="time")
-    
-    # Always create the lagged series
-    if lag_days > 0:
+        # Calculate EMA of the Liquidity Index if enabled
+        if show_ema:
+            df_extended[f"Liquidity Index (EMA {ema_period})"] = df_extended["Liquidity Index"].ewm(span=ema_period, adjust=False).mean()
+
+    # Create the lagged series if enabled
+    if show_lag and lag_days > 0:
         df_extended["Liquidity Index (Lag)"] = df_extended["Liquidity Index"].shift(lag_days)
+        # Calculate EMA of the lagged series if EMA is also enabled
+        if show_ema:
+            df_extended[f"Liquidity Index (Lag EMA {ema_period})"] = df_extended["Liquidity Index (Lag)"].ewm(span=ema_period, adjust=False).mean()
     # Only keep the plotting window (start_date to max_date with lag)
     df_plot = df_extended.loc[df_extended.index <= end_date]
     # Create plotly figure with secondary y-axis
@@ -146,8 +185,21 @@ def _plot_global_liquidity(df: pd.DataFrame, beginning_date: pd.Timestamp, lag_w
         ),
         secondary_y=False,
     )
-    # Always add lagged Global Liquidity Index
-    if "Liquidity Index (Lag)" in df_plot.columns:
+    # Add EMA of Global Liquidity Index if enabled
+    if show_ema and f"Liquidity Index (EMA {ema_period})" in df_plot.columns:
+        fig.add_trace(
+            go.Scatter(
+                x=df_plot.index,
+                y=df_plot[f"Liquidity Index (EMA {ema_period})"],
+                name=f"Liquidity Index (EMA {ema_period})",
+                line=dict(color="skyblue", width=2, dash="dot"),
+                opacity=0.9,
+            ),
+            secondary_y=False,
+        )
+
+    # Add lagged Global Liquidity Index if enabled
+    if show_lag and "Liquidity Index (Lag)" in df_plot.columns:
         fig.add_trace(
             go.Scatter(
                 x=df_plot.index,
@@ -158,6 +210,18 @@ def _plot_global_liquidity(df: pd.DataFrame, beginning_date: pd.Timestamp, lag_w
             ),
             secondary_y=False,
         )
+        # Add EMA of lagged series if EMA is also enabled
+        if show_ema and f"Liquidity Index (Lag EMA {ema_period})" in df_plot.columns:
+            fig.add_trace(
+                go.Scatter(
+                    x=df_plot.index,
+                    y=df_plot[f"Liquidity Index (Lag EMA {ema_period})"],
+                    name=f"Liquidity Index (Lag {lag_weeks}w EMA {ema_period})",
+                    line=dict(color="lightgreen", width=2, dash="dot"),
+                    opacity=0.9,
+                ),
+                secondary_y=False,
+            )
 
     # Merge default and custom symbols
     if custom_symbols is None:
@@ -166,27 +230,27 @@ def _plot_global_liquidity(df: pd.DataFrame, beginning_date: pd.Timestamp, lag_w
         colors = []
     merged_asset_config = get_asset_config_with_custom(asset_config, custom_symbols, colors)
     tickers = list(merged_asset_config.keys())
-    
+
     # Load all asset histories at once using the simplified function
     assets_hist = st_get_tickers_close_prices(tickers, period="max")
-    
+
     if assets_hist.empty:
         st.info("Asset price data could not be loaded (yfinance returned no data).")
     else:
         # Filter assets data to the plotting range
-        assets_mask = (assets_hist.index >= start_date) & (assets_hist.index <= max_date)
+        assets_mask = (assets_hist.index >= start_date) & (assets_hist.index <= end_date)
         assets_plot = assets_hist.loc[assets_mask]
-        
+
         # Plot each asset
         for ticker in tickers:
             if ticker in assets_plot.columns:
                 asset_data = assets_plot[ticker].dropna()
-                
+
                 if not asset_data.empty:
                     # Normalize by earliest price in the plotting range
                     base_price = asset_data.iloc[0]
                     asset_norm = asset_data / base_price
-                    
+
                     config = merged_asset_config[ticker]
                     fig.add_trace(
                         go.Scatter(
@@ -199,12 +263,13 @@ def _plot_global_liquidity(df: pd.DataFrame, beginning_date: pd.Timestamp, lag_w
                         secondary_y=True,
                     )
 
-    # Add vertical line at today - lag (where lagged series aligns with today)
-    if lag_days > 0:
+    # Add vertical line at today - lag (where lagged series aligns with today) if enabled
+    if show_lag and lag_days > 0:
+        # Adjust by 7 days to match the corrected lag shift
         lag_reference_date = end_date - pd.Timedelta(days=lag_days)
         # Convert to datetime for Plotly compatibility
         lag_reference_datetime = pd.Timestamp(lag_reference_date).to_pydatetime()
-        
+
         fig.add_shape(
             type="line",
             x0=lag_reference_datetime,
@@ -215,7 +280,7 @@ def _plot_global_liquidity(df: pd.DataFrame, beginning_date: pd.Timestamp, lag_w
             line=dict(color="gray", width=2, dash="dot"),
             opacity=0.7,
         )
-        
+
         # Add annotation for the vertical line
         fig.add_annotation(
             x=lag_reference_datetime,
@@ -273,54 +338,54 @@ def _add_dominance_to_subplot(
     lookback_days = lookback_weeks * 7
     start_date = beginning_date - pd.Timedelta(days=lookback_days)
     end_date = pd.Timestamp.today()
-    
+
     # Load ETF data
     tickers = [ticker1, ticker2]
     etf_data = st_get_tickers_close_prices(tickers, period="max")
-    
+
     if etf_data.empty or ticker1 not in etf_data.columns or ticker2 not in etf_data.columns:
         return
-    
+
     # Filter to the date range (need extra days for the 5-day lookback)
     mask = (etf_data.index >= start_date - pd.Timedelta(days=5)) & (etf_data.index <= end_date)
     etf_filtered = etf_data.loc[mask].copy()
-    
+
     if etf_filtered.empty:
         return
-    
+
     # Calculate 5-day ratio: price[t] / price[t-5] for each ETF
     ticker1_5day_ratio = etf_filtered[ticker1] / etf_filtered[ticker1].shift(5)
     ticker2_5day_ratio = etf_filtered[ticker2] / etf_filtered[ticker2].shift(5)
-    
+
     # Calculate Dominance: (ticker1 5-day ratio) / (ticker2 5-day ratio)
     dominance_raw = ticker1_5day_ratio / ticker2_5day_ratio
-    
+
     # Replace inf/nan values with NaN for cleaner processing
-    dominance_raw = dominance_raw.replace([float('inf'), float('-inf')], pd.NA)
-    
+    dominance_raw = dominance_raw.replace([float("inf"), float("-inf")], pd.NA)
+
     # Apply 14-day exponential smoothing (EMA)
     dominance = dominance_raw.ewm(span=10, adjust=False).mean()
-    
+
     # Filter to the actual plotting range (after we have enough data for calculations)
     dominance_plot = dominance.loc[dominance.index >= start_date].dropna()
-    
+
     # Prepare normalized price data for secondary axis
     etf_plot = etf_filtered.loc[etf_filtered.index >= start_date]
-    
+
     # Get first non-null values for normalization
     ticker1_first = etf_plot[ticker1].dropna().iloc[0] if not etf_plot[ticker1].dropna().empty else None
     ticker2_first = etf_plot[ticker2].dropna().iloc[0] if not etf_plot[ticker2].dropna().empty else None
-    
+
     if ticker1_first is None or ticker2_first is None or ticker1_first == 0 or ticker2_first == 0:
         return
-    
+
     ticker1_normalized = etf_plot[ticker1] / ticker1_first
     ticker2_normalized = etf_plot[ticker2] / ticker2_first
-    
+
     # Drop NaN values for cleaner plotting
     ticker1_normalized = ticker1_normalized.dropna()
     ticker2_normalized = ticker2_normalized.dropna()
-    
+
     # Add reference line at y=1 (needed for fill) - primary axis
     reference_line = pd.Series(1.0, index=dominance_plot.index)
     fig.add_trace(
@@ -329,51 +394,51 @@ def _add_dominance_to_subplot(
             y=reference_line.values,
             line=dict(width=0),
             showlegend=False,
-            hoverinfo='skip',
+            hoverinfo="skip",
         ),
         row=row,
         col=col,
         secondary_y=False,
     )
-    
+
     # Add shading
     above_one = dominance_plot.copy()
     above_one[above_one < 1] = 1
     below_one = dominance_plot.copy()
     below_one[below_one > 1] = 1
-    
+
     # Add fill for area above 1
     fig.add_trace(
         go.Scatter(
             x=dominance_plot.index,
             y=above_one,
-            fill='tonexty',
+            fill="tonexty",
             fillcolor=fill_color_above,
             line=dict(width=0),
             showlegend=False,
-            hoverinfo='skip',
+            hoverinfo="skip",
         ),
         row=row,
         col=col,
         secondary_y=False,
     )
-    
+
     # Add fill for area below 1
     fig.add_trace(
         go.Scatter(
             x=dominance_plot.index,
             y=below_one,
-            fill='tonexty',
+            fill="tonexty",
             fillcolor=fill_color_below,
             line=dict(width=0),
             showlegend=False,
-            hoverinfo='skip',
+            hoverinfo="skip",
         ),
         row=row,
         col=col,
         secondary_y=False,
     )
-    
+
     # Add the main line trace - primary axis
     fig.add_trace(
         go.Scatter(
@@ -388,7 +453,7 @@ def _add_dominance_to_subplot(
         col=col,
         secondary_y=False,
     )
-    
+
     # Add normalized ticker1 price curve - secondary axis
     if not ticker1_normalized.empty:
         fig.add_trace(
@@ -404,7 +469,7 @@ def _add_dominance_to_subplot(
             col=col,
             secondary_y=True,
         )
-    
+
     # Add normalized ticker2 price curve - secondary axis
     if not ticker2_normalized.empty:
         fig.add_trace(
@@ -420,7 +485,7 @@ def _add_dominance_to_subplot(
             col=col,
             secondary_y=True,
         )
-    
+
     # Add horizontal line at y=1
     fig.add_hline(
         y=1.0,
@@ -429,146 +494,157 @@ def _add_dominance_to_subplot(
         row=row,
         col=col,
     )
-    
+
     # Update axes for this subplot
     fig.update_xaxes(title_text="Date", row=row, col=col)
     fig.update_yaxes(title_text=yaxis_title, row=row, col=col, secondary_y=False)
     fig.update_yaxes(title_text="Normalized Price", row=row, col=col, secondary_y=True)
 
 
-def _calculate_dominance_pct_change(ticker1: str, ticker2: str, beginning_date: pd.Timestamp, lookback_weeks: int = 15) -> float:
-    """Calculate the latest percent change in dominance ratio."""
-    lookback_days = lookback_weeks * 7
-    start_date = beginning_date - pd.Timedelta(days=lookback_days)
+def _calculate_price_pct_change_for_period(ticker: str, days_back: int) -> float:
+    """Calculate percent change in price over a specific number of days."""
     end_date = pd.Timestamp.today()
-    
-    # Load ETF data
-    tickers = [ticker1, ticker2]
-    etf_data = st_get_tickers_close_prices(tickers, period="max")
-    
-    if etf_data.empty or ticker1 not in etf_data.columns or ticker2 not in etf_data.columns:
+
+    # Load price data with max period to ensure we have enough history (at least 1 year)
+    price_data = st_get_tickers_close_prices([ticker], period="max")
+    if price_data.empty or ticker not in price_data.columns:
         return 0.0
-    
-    # Filter to the date range
-    mask = (etf_data.index >= start_date - pd.Timedelta(days=5)) & (etf_data.index <= end_date)
-    etf_filtered = etf_data.loc[mask].copy()
-    
-    if etf_filtered.empty:
+
+    # Filter to get data up to end_date
+    mask = price_data.index <= end_date
+    price_filtered = price_data.loc[mask].copy()
+
+    if price_filtered.empty:
         return 0.0
-    
-    # Calculate 5-day ratio: price[t] / price[t-5] for each ETF
-    ticker1_5day_ratio = etf_filtered[ticker1] / etf_filtered[ticker1].shift(5)
-    ticker2_5day_ratio = etf_filtered[ticker2] / etf_filtered[ticker2].shift(5)
-    
-    # Calculate Dominance: (ticker1 5-day ratio) / (ticker2 5-day ratio)
-    dominance_raw = ticker1_5day_ratio / ticker2_5day_ratio
-    dominance_raw = dominance_raw.replace([float('inf'), float('-inf')], pd.NA)
-    
-    # Apply exponential smoothing
-    dominance = dominance_raw.ewm(span=10, adjust=False).mean()
-    dominance_plot = dominance.loc[dominance.index >= start_date].dropna()
-    
-    if dominance_plot.empty or len(dominance_plot) < 2:
+
+    # For 1 day change, use last 2 prices
+    if days_back <= 1:
+        if len(price_filtered) < 2:
+            return 0.0
+
+        latest = price_filtered[ticker].iloc[-1]
+        previous = price_filtered[ticker].iloc[-2]
+
+        if pd.isna(latest) or pd.isna(previous) or previous == 0:
+            return 0.0
+
+        pct_change = ((latest - previous) / previous) * 100
+        return pct_change
+
+    # For longer periods, find price from days_back ago
+    if len(price_filtered) < days_back + 1:
         return 0.0
-    
-    # Calculate percent change: (latest - previous) / previous * 100
-    latest = dominance_plot.iloc[-1]
-    previous = dominance_plot.iloc[-2] if len(dominance_plot) > 1 else dominance_plot.iloc[0]
-    
+
+    latest = price_filtered[ticker].iloc[-1]
+    target_date = end_date - pd.Timedelta(days=days_back)
+    # Sort the index first to ensure proper chronological order
+    sorted_prices = price_filtered.sort_index()
+    past_prices = sorted_prices[sorted_prices.index <= target_date]
+
+    if past_prices.empty:
+        return 0.0
+
+    previous = past_prices[ticker].iloc[-1]
+
     if pd.isna(latest) or pd.isna(previous) or previous == 0:
         return 0.0
-    
+
     pct_change = ((latest - previous) / previous) * 100
+    print(ticker, days_back, pct_change)
     return pct_change
 
 
-def _add_dominance_pie_chart(
-    fig,
-    row: int,
-    col: int,
-    beginning_date: pd.Timestamp,
-    dominance_plots: list,
-    lookback_weeks: int = 15,
-):
-    """Add a pie chart showing latest percent changes in dominance ratios."""
-    # Calculate percent changes for all dominance pairs
-    labels = []
-    values = []
-    colors_list = []
-    
-    for plot in dominance_plots:
-        if plot["row"] == row and plot["col"] == col:
-            continue  # Skip the plot that would be in this position
-        
-        pct_change = _calculate_dominance_pct_change(
-            plot["ticker1"],
-            plot["ticker2"],
-            beginning_date,
-            lookback_weeks,
-        )
-        
-        # Only include non-zero values
-        if abs(pct_change) > 0.01:  # Filter out very small changes
-            # Use absolute value for pie chart size, but keep sign for label
-            labels.append(f"{plot['dominance_name'].replace(' Dominance', '')}")
-            values.append(abs(pct_change))
-            # Use the ticker1 color for the pie slice
-            colors_list.append(plot.get("ticker1_color", "lightblue"))
-    
-    # Only add pie chart if we have data
-    if values and sum(values) > 0:
-        # For pie charts in subplots, we need to use domain coordinates
-        # Manual calculation for 3x2 grid with vertical_spacing=0.08 and horizontal_spacing=0.1
-        # Column 2: x from ~0.55 to 1.0 (accounting for 0.1 horizontal spacing)
-        # Row 3 (bottom): y from ~0.0 to ~0.28 (accounting for 0.08 vertical spacing)
-        # With 3 rows and 2 vertical gaps of 0.08, each row gets (1 - 0.16) / 3 = 0.28 height
-        x_domain = [0.55, 0.98]
-        y_domain = [0.02, 0.28]
-        
-        fig.add_trace(
-            go.Pie(
-                labels=labels,
-                values=values,
-                marker=dict(colors=colors_list),
-                textinfo="label+percent",
-                hole=0.3,  # Donut chart
-                showlegend=False,
-                textposition="outside",
-                domain=dict(x=x_domain, y=y_domain),
-            ),
-        )
+def _plot_dominance_pie_charts(dominance_plots: list):
+    """Plot multiple pie charts showing price percent changes for different time periods."""
+    time_periods = [
+        ("1 Day", 1),
+        ("1 Week", 7),
+        ("1 Month", 30),
+        ("3 Months", 90),
+        ("1 Year", 365),
+    ]
+
+    # Define the assets to track with their display names and colors
+    assets = {
+        "VTI": {"name": "US", "color": "lightblue"},
+        "CNYA": {"name": "China", "color": "coral"},
+        "SPEU": {"name": "EU", "color": "royalblue"},
+        "BTC-USD": {"name": "Bitcoin", "color": "purple"},
+        "GC=F": {"name": "Gold", "color": "gold"},
+    }
+
+    # Create Streamlit columns for the pie charts
+    cols = st.columns(5)
+
+    for col_idx, (period_name, days_back) in enumerate(time_periods):
+        with cols[col_idx]:
+            st.markdown(f"**{period_name} Change**")
+
+            labels = []
+            values = []
+            colors_list = []
+
+            for ticker, info in assets.items():
+                pct_change = _calculate_price_pct_change_for_period(ticker, days_back)
+
+                # Include all non-zero values
+                if pct_change > 0.001 and not pd.isna(pct_change):
+                    labels.append(info["name"])
+                    values.append(abs(pct_change))
+                    colors_list.append(info["color"])
+
+            # Create and display pie chart if we have data
+            if values and sum(values) > 0:
+                fig = go.Figure(
+                    data=[
+                        go.Pie(
+                            labels=labels,
+                            values=values,
+                            marker=dict(colors=colors_list),
+                            textinfo="label+percent",
+                            hole=0.3,  # Donut chart
+                            showlegend=False,
+                            textposition="outside",
+                        )
+                    ]
+                )
+
+                fig.update_layout(
+                    height=350,
+                    margin=dict(l=20, r=20, t=20, b=20),
+                )
+
+                st.plotly_chart(fig, config={"displayModeBar": False}, use_container_width=True)
+            else:
+                st.info("No data available")
 
 
 def _plot_all_dominance_subplots(beginning_date: pd.Timestamp, lookback_weeks: int = 15, dominance_plots: list = None):
     """Create a 3x2 subplot grid with all dominance plots."""
     if dominance_plots is None:
         dominance_plots = []
-    
-    # Build subplot titles, replacing row 3 col 2 with pie chart title
-    subplot_titles = []
-    for plot in dominance_plots:
-        if plot["row"] == 3 and plot["col"] == 2:
-            continue
-        else:
-            subplot_titles.append(plot["title"])
-    
+
+    # Build subplot titles in row-major order (row 1 col 1, row 1 col 2, row 2 col 1, etc.)
+    # Sort plots by row first, then by col
+    sorted_plots = sorted(dominance_plots, key=lambda p: (p["row"], p["col"]))
+    subplot_titles = [plot["title"] for plot in sorted_plots]
+
     # Create subplots: 3 rows, 2 columns, each with secondary y-axis
-    # Row 3 col 2 will be a pie chart, but we'll add it manually after
     fig = make_subplots(
         rows=3,
         cols=2,
-        specs=[[{"secondary_y": True}, {"secondary_y": True}],
-               [{"secondary_y": True}, {"secondary_y": True}],
-               [{"secondary_y": True}, {"secondary_y": False}]],
+        specs=[
+            [{"secondary_y": True}, {"secondary_y": True}],
+            [{"secondary_y": True}, {"secondary_y": True}],
+            [{"secondary_y": True}, {"secondary_y": True}],
+        ],
         subplot_titles=tuple(subplot_titles),
         vertical_spacing=0.08,
         horizontal_spacing=0.1,
     )
-    
-    # Add all dominance plots (skip row 3 col 2)
+
+    # Add all dominance plots
     for plot in dominance_plots:
-        if plot["row"] == 3 and plot["col"] == 2:
-            continue  # Skip this one, we'll add pie chart instead
         _add_dominance_to_subplot(
             fig,
             row=plot["row"],
@@ -586,17 +662,7 @@ def _plot_all_dominance_subplots(beginning_date: pd.Timestamp, lookback_weeks: i
             fill_color_below=plot.get("fill_color_below", "rgba(144, 238, 144, 0.5)"),
             lookback_weeks=lookback_weeks,
         )
-    
-    # Add pie chart at row 3, col 2
-    _add_dominance_pie_chart(
-        fig,
-        row=3,
-        col=2,
-        beginning_date=beginning_date,
-        dominance_plots=dominance_plots,
-        lookback_weeks=lookback_weeks,
-    )
-    
+
     # Update layout
     fig.update_layout(
         height=1200,
@@ -604,7 +670,7 @@ def _plot_all_dominance_subplots(beginning_date: pd.Timestamp, lookback_weeks: i
         showlegend=True,
         legend=dict(orientation="h", yanchor="bottom", y=-0.05, xanchor="center", x=0.5),
     )
-    
+
     st.plotly_chart(fig, config={"displayModeBar": False})
 
 
@@ -615,19 +681,19 @@ def main():
     # Load Hydra config so we can reuse global dashboard styling
     with hydra.initialize(version_base=None, config_path="../../conf"):
         config = hydra.compose(config_name="main")
-    beginning_date, lag_weeks, custom_symbols = setup_page_and_sidebar(
+    beginning_date, lag_weeks, custom_symbols, show_ema, ema_period, show_lag = setup_page_and_sidebar(
         config["style_conf"],
         add_to_sidebar=lambda: _add_macro_sidebar(config["macro"]),
     )
 
     # Load asset configuration and lookback_weeks from YAML
     macro_config = config.get("macro", {})
-    
+
     # Convert OmegaConf DictConfig to regular Python dict to avoid struct mode issues
     assets_raw = macro_config.get("assets", {})
     asset_config = OmegaConf.to_container(assets_raw, resolve=True) if assets_raw else {}
     lookback_weeks = macro_config.get("lookback_weeks", 15)
-    
+
     # Load colors from style_conf
     style_conf = config.get("style_conf", {})
     colors = list(style_conf.get("colors", []))
@@ -640,22 +706,37 @@ def main():
     )
 
     df = st_load_global_liquidity()
-    _plot_global_liquidity(df, beginning_date=beginning_date, lag_weeks=lag_weeks, asset_config=asset_config, custom_symbols=custom_symbols, lookback_weeks=lookback_weeks, colors=colors)
-    
+    _plot_global_liquidity(
+        df,
+        beginning_date=beginning_date,
+        lag_weeks=lag_weeks,
+        asset_config=asset_config,
+        custom_symbols=custom_symbols,
+        lookback_weeks=lookback_weeks,
+        colors=colors,
+        show_ema=show_ema,
+        ema_period=ema_period,
+        show_lag=show_lag,
+    )
+
     st.markdown("---")
-    st.title("🌍 Region Dominance")
+    st.title("Dominance Shifts")
+    st.markdown("Percent change in price over different time periods. ")
+
+    # Load dominance plots configuration (needed for pie charts)
+    dominance_plots_list = macro_config.get("dominance_plots", {})
+    dominance_plots = OmegaConf.to_container(dominance_plots_list, resolve=True) if dominance_plots_list else []
+
+    _plot_dominance_pie_charts(dominance_plots)
+
+    st.markdown("---")
     st.markdown(
         "**Region Dominance** metrics are calculated using daily data: the ratio of a regional ETF's 5-day price ratio "
         "to a benchmark ETF's 5-day price ratio, smoothed with a 14-day exponential moving average. "
         "A ratio > 1 indicates the regional market is outperforming the benchmark. "
         "Each plot shows the dominance ratio (primary axis) and normalized price curves (secondary axis)."
     )
-    
-    # Load dominance plots configuration
-    print(macro_config)
-    dominance_plots_list = macro_config.get("dominance_plots", {})
-    dominance_plots = OmegaConf.to_container(dominance_plots_list, resolve=True) if dominance_plots_list else []
-    
+
     _plot_all_dominance_subplots(beginning_date=beginning_date, lookback_weeks=lookback_weeks, dominance_plots=dominance_plots)
 
 
@@ -663,8 +744,8 @@ if __name__ == "__main__":
     # Handle Hydra initialization - clear if already initialized
     if hydra.core.global_hydra.GlobalHydra().is_initialized():
         hydra.core.global_hydra.GlobalHydra.instance().clear()
-    
+
     main()
 
 
-# 11-27-25 23:03 line count 610 # 11-27-25 23:14 line count 570
+# 11-27-25 23:03 line count 610 # 11-27-25 23:14 line count 570 # 11-28-25 11:23 671

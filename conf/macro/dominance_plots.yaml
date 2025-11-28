@@ -11,11 +11,11 @@ dominance_plots:
     ticker2_color: lightgreen
   - row: 2
     col: 1
-    ticker1: FXI
+    ticker1: CNYA
     ticker2: VT
-    title: "China Dominance: FXI / VT"
+    title: "China Dominance: CNYA / VT"
     dominance_name: "China Dominance"
-    ticker1_label: FXI
+    ticker1_label: CNYA
     ticker2_label: VT
     ticker1_color: coral
     ticker2_color: lightgreen

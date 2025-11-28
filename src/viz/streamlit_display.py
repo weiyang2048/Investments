@@ -6,7 +6,7 @@ import yaml
 from pyhere import here
 
 def rg0_centered(value,center=0):
-    return [int(255 * abs(value - center)) if value <= center else 0, int(255 * (value - center)) if value > center else 0, 0]
+    return [max(int(255 * abs(value - center)),100) if value <= center else 0, max(int(255 * (value - center)),100) if value > center else 0, 100]
 
 def highlight_row(row, df=None):
     """Apply conditional formatting to DataFrame rows based on row type."""
