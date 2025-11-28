@@ -20,7 +20,7 @@ lenses:
     Defiance: ${get_keys:tickers.defiance}
 
 yaml_suffix_map:
-  F.yaml: "@"
+  f.yaml: "@"
   hs.yaml: "#"
   rs.yaml: "%"
   Y.yaml: "!"
