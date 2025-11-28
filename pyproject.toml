@@ -42,7 +42,7 @@ dependencies = [
     "loguru>=0.7.3",
     "pyhere>=1.0.3",
     "fear-and-greed>=0.4",
-    "liquidity>=0.3.2",
+    "liquidity",
     "nbformat>=4.2.0",
 ]
 

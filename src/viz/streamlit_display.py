@@ -5,8 +5,10 @@ import numpy as np
 import yaml
 from pyhere import here
 
-def rg0_centered(value,center=0):
-    return [max(int(255 * abs(value - center)),100) if value <= center else 0, max(int(255 * (value - center)),100) if value > center else 0, 100]
+
+def rg0_centered(value, center=0):
+    return [max(int(255 * abs(value - center)), 100) if value <= center else 0, max(int(255 * (value - center)), 100) if value > center else 0, 100]
+
 
 def highlight_row(row, df=None):
     """Apply conditional formatting to DataFrame rows based on row type."""
@@ -14,10 +16,60 @@ def highlight_row(row, df=None):
     min_value_abs, max_value_abs = abs(row.min()), abs(row.max())
     normalize_value_centered = [value / max_value_abs if value > 0 else value / min_value_abs for value in row]
     result = []
+    if row.name in ["p", "ema50", "ema200"]:
+        if df is not None and "p" in df.index and "ema50" in df.index:
+            for col in row_original.index:
+                p_val = df.loc["p", col] if "p" in df.index else None
+                ema50_val = df.loc["ema50", col] if "ema50" in df.index else None
+                ema200_val = df.loc["ema200", col] if "ema200" in df.index and row.name == "ema200" else None
 
-    if row.name in ["a", "rsi_delta"]:  # * accelerations
+                if pd.isnull(row_original[col]):
+                    result.append("")
+                    continue
+
+                if row.name in ["ema50"]:
+                    if p_val < ema50_val:
+                        color = "background-color: rgb(220, 20, 60); color: white; font-weight: bold"  # crimson
+                    else:
+                        color = "background-color: white; color: black; font-weight: bold"
+                elif row.name == "ema200":
+                    # ema200: green if ema200 < ema50, else violet if ema200 > ema50
+                    if pd.isnull(ema200_val) or pd.isnull(ema50_val):
+                        result.append("")
+                        continue
+                    if ema200_val <= ema50_val:
+                        color = "background-color: white; color: black; font-weight: bold"
+                    else:
+                        color = "background-color: rgb(148, 0, 211); color: white; font-weight: bold"
+
+                else:
+                    color = "background-color: white; color: black; font-weight: bold"
+                result.append(color)
+            return result
+    elif row.name in ["a", "rsi_delta"]:  # * accelerations
         for value, normalized_value in zip(row, normalize_value_centered):
             color = f"color: rgb({','.join(map(str, rg0_centered(normalized_value, center=0)))}); background-color: black; font-weight: bold;"
+            result.append(color)
+        return result
+    elif row.name == "rsi":
+        for value in row_original:
+            if pd.isnull(value):
+                result.append("")
+                continue
+            rsi_value = float(value)
+            distance = abs(rsi_value - 50)
+            intensity = min(distance / 50.0, 1.0)
+
+            if rsi_value>70:
+                color = f"color: white; background-color: rgb(0, 255, 0); font-weight: bold"
+            elif rsi_value > 50.0:
+                green = int(100 + intensity * 155)
+                color = f"background-color: white; color: rgb(0, {green}, 0); font-weight: bold"
+            elif rsi_value > 30:
+                red = int(100 + intensity * 155)
+                color = f"background-color: white; color: rgb({red}, 0, 0); font-weight: bold"
+            else:
+                color = "color: black; background-color: rgba(255, 0, 0); font-weight: bold"
             result.append(color)
         return result
 
@@ -85,65 +137,7 @@ def highlight_row(row, df=None):
             result.append(color)
         return result
 
-    elif row.name in ["p", "ema50", "ema200"]:
-        if df is not None and "p" in df.index and "ema50" in df.index:
-            for col in row_original.index:
-                p_val = df.loc["p", col] if "p" in df.index else None
-                ema50_val = df.loc["ema50", col] if "ema50" in df.index else None
-                ema200_val = df.loc["ema200", col] if "ema200" in df.index and row.name == "ema200" else None
-
-                if pd.isnull(row_original[col]):
-                    result.append("")
-                    continue
-
-                if row.name in ["ema50"]:
-                    if p_val < ema50_val:
-                        color = "background-color: rgb(220, 20, 60); color: white; font-weight: bold"  # crimson
-                    else:
-                        color = "background-color: white; color: black; font-weight: bold"
-                elif row.name == "ema200":
-                    # ema200: green if ema200 < ema50, else violet if ema200 > ema50
-                    if pd.isnull(ema200_val) or pd.isnull(ema50_val):
-                        result.append("")
-                        continue
-                    if ema200_val <= ema50_val:
-                        color = "background-color: white; color: black; font-weight: bold"
-                    else:
-                        color = "background-color: rgb(148, 0, 211); color: white; font-weight: bold"
-
-                else:
-                    color = "background-color: white; color: black; font-weight: bold"
-                result.append(color)
-        else:
-            for value in row_original:
-                result.append("" if pd.isnull(value) else "background-color: rgba(200, 200, 200, 0.3); color: black; font-weight: bold")
-        return result
-
-    elif row.name == "rsi":
-        for value in row_original:
-            if pd.isnull(value):
-                result.append("")
-                continue
-            rsi_value = float(value)
-            distance = abs(rsi_value - 50)
-            intensity = min(distance / 50.0, 1.0)
-
-            if rsi_value > 50.0:
-                green = int(100 + intensity * 155)
-                color = f"background-color: white; color: rgb(0, {green}, 0); font-weight: bold"
-            elif rsi_value < 50.0:
-                red = int(100 + intensity * 155)
-                color = f"background-color: white; color: rgb({red}, 0, 0); font-weight: bold"
-            else:
-                color = "background-color: white; color: black; font-weight: bold"
-            result.append(color)
-        return result
-
-    # elif row.name == "rsi_delta":
-    #     for value, value in zip(row, normalize_value_centered):
-    #         color = f"color: rgb({','.join(map(str, rg0_centered(value, center=0)))}); background-color: black; font-weight: bold;"
-    #         result.append(color)
-    #     return result
+ 
 
     elif row.name == "macd":
         for value in row_original:
