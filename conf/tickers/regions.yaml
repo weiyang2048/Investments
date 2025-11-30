@@ -1,4 +1,10 @@
 
+# small holdings
+TOPT:
+  name: iShares Trust Top 20 US Stocks ETF
+  color: midnightblue
+
+# momentum
 SPMO:
   name: Invesco S&P 500 Momentum ETF
   color: rgba(100,100,200,1)
