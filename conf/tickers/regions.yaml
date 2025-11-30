@@ -3,7 +3,13 @@
 TOPT:
   name: iShares Trust Top 20 US Stocks ETF
   color: midnightblue
-
+PIEQ:
+  name: Principal Exchange-Traded Funds International Equity ETF
+  color: seagreen
+# Large holdings
+VXUS:
+  name: Vanguard Total International Stock Index Fund ETF
+  color: seagreen
 # momentum
 SPMO:
   name: Invesco S&P 500 Momentum ETF
@@ -47,16 +53,18 @@ TRAMX:
   line_style: solid
 FLN:
   name: "First Trust Latin America AlphaDEX Fund"
+  color: olivedrab
 FEP:
   name: "First Trust Europe AlphaDEX Fund"
+  color: royalblue
 AFK:
   name: iShares MSCI Africa ETF
   region: Africa
-  color: rgba(128,0,128,1) # purple
+  color: sandybrown
 ASEA:
   name: Global X FTSE Southeast Asia ETF
   region: Southeast Asia
-  color: rgba(255,90,90,0.25)
+  color: rgb(255,90,90)
 
 # @@ Countries
 # Asia
@@ -233,7 +241,9 @@ EWC:
   name: iShares MSCI Canada ETF
   region: Canada
   color: rgba(255,0,0,1) # red
-
+VOO:
+  name: Vanguard S&P 500 ETF
+  color: midnightblue
 # Oceania
 EWA:
   name: iShares MSCI Australia ETF

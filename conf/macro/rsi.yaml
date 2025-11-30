@@ -1,10 +1,9 @@
 period: "2y"
 rsi_period: 14
 normalize: true
-default_visible_count: 10
 height: 1500
 line_width: 2
-accelerators_top_n: 8
+accelerators_top_n: 10
 opacity: 0.7
 reference_lines:
   - y: 30
@@ -20,87 +19,26 @@ reference_lines:
     line_color: "green"
     opacity: 0.5
 
+use_alternative_tickers: False
 tickers:
-  US:
-    ticker: TOPT
-    color: "midnightblue"
-  xUS:
-    ticker: PIEQ
-    color: "seagreen"
-  Crypto:
-    ticker: IBIT
-    color: "purple"
-  Metals:
-    ticker: IAUM
-    color: "goldenrod"
-  Treasuries:
-    ticker: TLT
-    color: "gray"
-  Asia:
-    ticker: AIA
-    color: "crimson"
-  Europe:
-    ticker: FEP
-    color: "royalblue"
-  SouthAmerica:
-    ticker: FLN
-    color: "darkgreen"
-  Africa:
-    ticker: AFK
-    color: "sandybrown"
-  SoutheastAsia:
-    ticker: ASEA
-    color: "darkorange"
-  Financial:
-    ticker: IXG
-    color: "gold"
-  Industrial:
-    ticker: EXI
-    color: "orange"
-  Technology:
-    ticker: IXN
-    color: "green"
-  Utilities:
-    ticker: JXI
-    color: "brown"
-  Communication:
-    ticker: IXP
-    color: "lightblue"
-  Healthcare:
-    ticker: IXJ
-    color: "pink"
-  Materials:
-    ticker: MXI
-    color: "darkgray"
-  ConsumerStaples:
-    ticker: KXI
-    color: "lightgreen"
-  ConsumerDiscretionary:
-    ticker: RXI
-    color: "orange"
-  Energy:
-    ticker: IXC
-    color: "darkred"
-
-champion: US
-challengers:
-  - xUS
-  - Europe
-  - SoutheastAsia
-  - SouthAmerica
-  - Africa
-  - Asia
-  - Treasuries
-  - Metals
-  - Crypto
-  - Utilities
-  - Financial
-  - Industrial
-  - Technology
-  - Communication
-  - Healthcare
-  - Materials
-  - ConsumerStaples
-  - ConsumerDiscretionary
-  - Energy
-  - REET
+  US: [VOO, TOPT]
+  xUS: [VXUS, PIEQ]
+  Europe: FEP
+  SoutheastAsia: ASEA
+  SouthAmerica: FLN
+  Africa: AFK
+  Asia: AIA
+  Treasuries: TLT
+  Metals: [GLTR, GOEX]
+  Crypto: [GDLC, BKCH]
+  Utilities: [JXI, AIPO]
+  Energy: IXC
+  ConsumerStaples: KXI
+  Financial: [IXG, ARKF]
+  Industrial: [EXI, SHLD]
+  Technology: [IXN, MAGS]
+  ConsumerDiscretionary: [RXI, EBIZ]
+  Communication: IXP
+  Healthcare: [IXJ, ARKG]
+  Materials: [MXI, DMAT]
+  RealEstate: REET

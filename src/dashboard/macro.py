@@ -25,6 +25,21 @@ from src.data.FearGreed import FearGreed
 from src.data.TICKER import TICKERS
 
 
+def _is_light_color(color: str) -> bool:
+    """Determine if a color is light (returns True) or dark (returns False).
+    
+    Converts color to RGB and calculates luminance to determine if text should be dark or light.
+    """
+    try:
+        rgb = to_rgb(color)  # Returns tuple of floats in 0-1 range
+        # Calculate relative luminance (perceived brightness)
+        # Using standard formula: 0.299*R + 0.587*G + 0.114*B
+        luminance = 0.299 * rgb[0] + 0.587 * rgb[1] + 0.114 * rgb[2]
+        return luminance > 0.5  # Light if luminance > 0.5
+    except (ValueError, TypeError):
+        return True  # Default to light (use dark text)
+
+
 def _color_to_rgba(color: str, opacity: float = 0.5) -> str:
     """Convert color name or hex to rgba format with opacity.
 
@@ -274,6 +289,15 @@ def _add_macro_sidebar(macro_config: dict, rsi_config: dict):
     )
 
     st.sidebar.markdown("<hr>", unsafe_allow_html=True)
+    st.sidebar.header("RSI Settings")
+    use_alternative_tickers = st.sidebar.checkbox(
+        "Use Alternative Tickers",
+        value=rsi_config.get("use_alternative_tickers", False),
+        help="When enabled, use the second ticker in lists (e.g., [TOPT, VOO] uses VOO). Otherwise uses the first ticker.",
+        key="use_alternative_tickers_input",
+    )
+
+    st.sidebar.markdown("<hr>", unsafe_allow_html=True)
     st.sidebar.header("GLI Settings")
 
     lookback_weeks = macro_config.get("lookback_weeks", 15)
@@ -332,7 +356,7 @@ def _add_macro_sidebar(macro_config: dict, rsi_config: dict):
     )
     custom_symbols = parse_custom_symbols(custom_symbols_text)
 
-    return beginning_date, int(lag_weeks), custom_symbols, int(ema_period), show_lag, int(accelerators_top_n)
+    return beginning_date, int(lag_weeks), custom_symbols, int(ema_period), show_lag, int(accelerators_top_n), use_alternative_tickers
 
 
 def _prepare_liquidity_data(
@@ -650,25 +674,33 @@ def _plot_dominance_pie_charts(
     if ticker_to_display is None:
         ticker_to_display = {}
         if isinstance(tickers_config, dict):
-            for display_name, ticker_config in tickers_config.items():
-                if isinstance(ticker_config, dict) and "ticker" in ticker_config:
-                    actual_ticker = ticker_config.get("ticker")
-                    ticker_to_display[actual_ticker] = display_name
+            for display_name, ticker_value in tickers_config.items():
+                # Support both formats: simple string or dict with ticker key
+                if isinstance(ticker_value, dict) and "ticker" in ticker_value:
+                    actual_ticker = ticker_value.get("ticker")
+                elif isinstance(ticker_value, str):
+                    actual_ticker = ticker_value
                 else:
-                    ticker_to_display[display_name] = display_name
+                    actual_ticker = display_name
+                ticker_to_display[actual_ticker] = display_name
 
     for idx, ticker in enumerate(available_tickers):
         # Get display name for this ticker (for config lookup)
         display_name = ticker_to_display.get(ticker, ticker)
 
-        # Get name and color from ticker config if available
+        # Get name from ticker config if available
         if isinstance(tickers_config, dict) and display_name in tickers_config:
-            ticker_config = tickers_config[display_name]
-            name = ticker_config.get("name", display_name)
-            color = ticker_config.get("color", ticker_colors.get(ticker, default_colors[idx % len(default_colors)]))
+            ticker_value = tickers_config[display_name]
+            # Support both formats: simple string or dict with name key
+            if isinstance(ticker_value, dict):
+                name = ticker_value.get("name", display_name)
+            else:
+                name = display_name
         else:
             name = display_name
-            color = ticker_colors.get(ticker, default_colors[idx % len(default_colors)])
+        
+        # Get color from ticker_colors dict (which is populated from main ticker configs)
+        color = ticker_colors.get(ticker, default_colors[idx % len(default_colors)])
 
         assets[ticker] = {"name": name, "color": color}
 
@@ -683,6 +715,7 @@ def _plot_dominance_pie_charts(
             values = []
             colors_list = []
             text_labels = []
+            hover_templates = []
 
             for ticker, info in assets.items():
                 # Use pre-calculated values for 1d and 1w if available, otherwise calculate
@@ -699,6 +732,8 @@ def _plot_dominance_pie_charts(
                     colors_list.append(info["color"])
                     # Show actual percent change value
                     text_labels.append(f"{info['name']}<br>{pct_change:.1f}%")
+                    # Custom hover template: Name, Ticker, Percentage
+                    hover_templates.append(f"<b>{info['name']}</b><br>Ticker: {ticker}<br>Change: {pct_change:.1f}%<extra></extra>")
 
             # Create and display pie chart if we have data
             if values and sum(values) > 0:
@@ -713,6 +748,8 @@ def _plot_dominance_pie_charts(
                             textfont=dict(size=14, family="Arial Black"),
                             showlegend=False,
                             textposition="inside",
+                            hovertemplate="%{customdata}",
+                            customdata=hover_templates,
                         )
                     ]
                 )
@@ -737,7 +774,7 @@ def main():
     # Load RSI configuration for sidebar
     rsi_config = config.get("macro", {}).get("rsi", {})
 
-    beginning_date, lag_weeks, custom_symbols, ema_period, show_lag, accelerators_top_n = setup_page_and_sidebar(
+    beginning_date, lag_weeks, custom_symbols, ema_period, show_lag, accelerators_top_n, use_alternative_tickers = setup_page_and_sidebar(
         config["style_conf"],
         add_to_sidebar=lambda: _add_macro_sidebar(config["macro"], rsi_config),
     )
@@ -805,19 +842,33 @@ def main():
         ticker_to_display = {}  # Maps actual ticker (e.g., "VTI") to display name (e.g., "US")
         actual_ticker_list = []
 
+        # Use alternative tickers from sidebar (passed as parameter)
         if isinstance(tickers_config, dict):
-            for display_name, ticker_config in tickers_config.items():
-                # Check if config has a 'ticker' field (new pattern) or use display_name as ticker (old pattern)
-                if isinstance(ticker_config, dict) and "ticker" in ticker_config:
-                    actual_ticker = ticker_config.get("ticker")
-                    display_to_ticker[display_name] = actual_ticker
-                    ticker_to_display[actual_ticker] = display_name
-                    actual_ticker_list.append(actual_ticker)
+            for display_name, ticker_value in tickers_config.items():
+                # Support multiple formats:
+                # 1. Simple format: US: TOPT (ticker_value is a string)
+                # 2. List format: US: [TOPT, VOO] (ticker_value is a list)
+                # 3. Dict format: US: {ticker: TOPT} (ticker_value is a dict)
+                
+                if isinstance(ticker_value, list):
+                    # If list and use_alternative_tickers is True, use second item; otherwise use first
+                    if use_alternative_tickers and len(ticker_value) >= 2:
+                        actual_ticker = ticker_value[1]
+                    elif len(ticker_value) >= 1:
+                        actual_ticker = ticker_value[0]
+                    else:
+                        actual_ticker = display_name
+                elif isinstance(ticker_value, dict) and "ticker" in ticker_value:
+                    actual_ticker = ticker_value.get("ticker")
+                elif isinstance(ticker_value, str):
+                    actual_ticker = ticker_value
                 else:
-                    # Old pattern: display name is the ticker
-                    display_to_ticker[display_name] = display_name
-                    ticker_to_display[display_name] = display_name
-                    actual_ticker_list.append(display_name)
+                    # Fallback: display name is the ticker
+                    actual_ticker = display_name
+                
+                display_to_ticker[display_name] = actual_ticker
+                ticker_to_display[actual_ticker] = display_name
+                actual_ticker_list.append(actual_ticker)
         else:
             # Fallback to list format for backwards compatibility
             actual_ticker_list = tickers_config if isinstance(tickers_config, list) else ["VTI", "VXUS", "IBIT", "IAUM"]
@@ -825,16 +876,24 @@ def main():
                 display_to_ticker[t] = t
                 ticker_to_display[t] = t
 
-        # Get champion and challengers from config
-        champion_display = rsi_config.get("champion", "US")
+        # Get champion and challengers from tickers config
+        # First ticker is champion, rest are challengers
+        if isinstance(tickers_config, dict) and len(tickers_config) > 0:
+            ticker_items = list(tickers_config.items())
+            champion_display = ticker_items[0][0]  # First display name
+            challenger_displays = [item[0] for item in ticker_items[1:]]  # Rest are challengers
+        else:
+            # Fallback
+            champion_display = "US"
+            challenger_displays = []
+        
         champion = display_to_ticker.get(champion_display, champion_display)
-        challengers_list = rsi_config.get("challengers", [])
         challenger_tickers = set()
         num_cols = 3  # Always use 3 columns
 
         # Convert challengers list to list of dicts with row/col positions
         challengers = []
-        for idx, challenger_display in enumerate(challengers_list):
+        for idx, challenger_display in enumerate(challenger_displays):
             # Resolve display name to actual ticker
             actual_challenger = display_to_ticker.get(challenger_display, challenger_display)
             challenger_tickers.add(actual_challenger)
@@ -873,21 +932,25 @@ def main():
         pct_change_1w = ticker_obj.calculate_price_pct_change(7) if not ticker_obj.prices.empty else {}
 
         # Build ticker color dictionary
+        # Get colors from main ticker configuration (regions.yaml, sectors.yaml, etc.)
         ticker_colors = {}
         default_colors = ["#1f77b4", "#2ca02c", "purple", "goldenrod"]
+        
+        # Access main ticker configs (merged from all ticker yaml files)
+        main_tickers_config_raw = config.get("tickers", {})
+        # Convert to regular dict if needed (OmegaConf DictConfig)
+        main_tickers_config = OmegaConf.to_container(main_tickers_config_raw, resolve=True) if main_tickers_config_raw else {}
 
         # Populate colors for all tickers
         for ticker_symbol in all_tickers:
             if not ticker_symbol:
                 continue
-            # Get display name for config lookup
-            display_name = ticker_to_display.get(ticker_symbol, ticker_symbol)
-            # Get color from config
-            if isinstance(tickers_config, dict) and display_name in tickers_config:
-                ticker_config = tickers_config[display_name]
-                color = ticker_config.get("color", default_colors[0])
-            else:
-                color = default_colors[0]
+            # Look up color by actual ticker symbol in main ticker configs
+            color = default_colors[0]  # Default fallback
+            if isinstance(main_tickers_config, dict) and ticker_symbol in main_tickers_config:
+                ticker_info = main_tickers_config[ticker_symbol]
+                if isinstance(ticker_info, dict):
+                    color = ticker_info.get("color", default_colors[0])
             ticker_colors[ticker_symbol] = color
 
         # Table of Contents
@@ -927,8 +990,12 @@ def main():
 
                 # Get name from config if available
                 if isinstance(tickers_config, dict) and display_name in tickers_config:
-                    ticker_config = tickers_config[display_name]
-                    name = ticker_config.get("name", display_name)
+                    ticker_value = tickers_config[display_name]
+                    # Support both formats: simple string or dict with name key
+                    if isinstance(ticker_value, dict):
+                        name = ticker_value.get("name", display_name)
+                    else:
+                        name = display_name
                 else:
                     name = display_name
 
@@ -944,7 +1011,43 @@ def main():
                 )
 
             accel_df = pd.DataFrame(accel_data)
-            st.dataframe(accel_df, use_container_width=True, hide_index=True)
+            
+            # Sort by 1W % (descending - highest first)
+            # Extract numeric value from "1W %" column for sorting
+            accel_df["1W %_sort"] = accel_df["1W %"].str.replace("%", "").astype(float)
+            accel_df = accel_df.sort_values("1W %_sort", ascending=False).drop(columns=["1W %_sort"])
+            
+            # Style the dataframe: Name with ticker color background, Ticker with ticker color text
+            def style_row(row):
+                """Apply background color to Name, text color to Ticker."""
+                ticker = row["Ticker"]
+                color = ticker_colors.get(ticker, "#1f77b4")
+                
+                # Convert color to RGB format for CSS
+                try:
+                    rgb = to_rgb(color)
+                    bg_color = f"rgb({int(rgb[0]*255)}, {int(rgb[1]*255)}, {int(rgb[2]*255)})"
+                    text_color = f"rgb({int(rgb[0]*255)}, {int(rgb[1]*255)}, {int(rgb[2]*255)})"
+                except (ValueError, TypeError):
+                    bg_color = color  # Use as-is if conversion fails
+                    text_color = color
+                
+                # Determine text color for Name column based on background brightness
+                name_text_color = "black" if _is_light_color(color) else "white"
+                
+                # Return style: Name with background color, Ticker with text color, others no styling
+                styles = []
+                for col in accel_df.columns:
+                    if col == "Name":
+                        styles.append(f"background-color: {bg_color}; color: {name_text_color}; font-weight: bold")
+                    elif col == "Ticker":
+                        styles.append(f"color: {text_color}; font-weight: bold")
+                    else:
+                        styles.append("font-weight: bold")  # No background color, just bold text
+                return styles
+            
+            styled_df = accel_df.style.apply(style_row, axis=1)
+            st.dataframe(styled_df, use_container_width=True, hide_index=True)
         else:
             st.subheader("Accelerators")
             st.info("No accelerators found (no tickers meet all criteria)")
@@ -1010,19 +1113,29 @@ def main():
             labels = []
             colors_list = []
             text_labels = []
+            hover_templates = []
 
             for ticker_symbol in latest_rsi_sorted.index:
                 display_name = ticker_to_display.get(ticker_symbol, ticker_symbol)
                 # Get name from config if available
                 if isinstance(tickers_config, dict) and display_name in tickers_config:
-                    ticker_config = tickers_config[display_name]
-                    name = ticker_config.get("name", display_name)
+                    ticker_value = tickers_config[display_name]
+                    # Support both formats: simple string or dict with name key
+                    if isinstance(ticker_value, dict):
+                        name = ticker_value.get("name", display_name)
+                    else:
+                        name = display_name
                 else:
                     name = display_name
                 labels.append(name)
                 colors_list.append(ticker_colors.get(ticker_symbol, default_colors[0]))
                 # Combine name, actual ticker symbol, and RSI value for text inside bar
                 text_labels.append(f"{name}<br>{ticker_symbol}<br>{latest_rsi_sorted[ticker_symbol]:.1f}")
+                # Get RSI delta for this ticker
+                delta_value = rsi_delta_sorted[ticker_symbol]
+                delta_sign = "+" if delta_value >= 0 else ""
+                # Custom hover template: Name, Ticker, RSI value, RSI delta (no tuple)
+                hover_templates.append(f"<b>{name}</b><br>Ticker: {ticker_symbol}<br>RSI: {latest_rsi_sorted[ticker_symbol]:.1f}<br>RSI Δ: {delta_sign}{delta_value:.1f}<extra></extra>")
 
             # Create bar chart with secondary y-axis for delta arrows
             bar_fig = make_subplots(specs=[[{"secondary_y": False}]])
@@ -1038,6 +1151,8 @@ def main():
                     textfont=dict(size=14, weight="bold", family="Arial Black"),
                     insidetextanchor="middle",
                     name="RSI",
+                    hovertemplate="%{customdata}",
+                    customdata=hover_templates,
                 ),
                 secondary_y=False,
             )

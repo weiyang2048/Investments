@@ -11,17 +11,22 @@ PPLT:
   name: abrdn Physical Platinum Shares ETF
   color: gray
   line_style: solid
-
+GLTR:
+  name: abrdn Physical Precious Metals Basket Shares ETF
+  color: gold
 # Digital Commodities
+IBIT:
+  name: iShares Bitcoin Trust
+  color: violet
 BTC:
   name: Grayscale Bitcoin Mini Trust
   color: goldenrod
-  line_style: dashdot
 ETH:
   name: Grayscale Ethereum Mini Trust
   color: cornsilk
-  line_style: dashdot
-
+GDLC:
+  name: Grayscale Digital Large Cap Fund LLC
+  color: violet
 # Miners
 GOEX:
   name: Global X Gold Explorers ETF
@@ -37,5 +42,5 @@ COPX:
   line_style: dash
 BKCH:
   name: Global X Blockchain ETF
-  color: magenta
+  color: purple
   line_style: dash

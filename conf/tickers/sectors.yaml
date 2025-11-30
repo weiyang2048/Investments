@@ -1,7 +1,10 @@
 # ! Technology
 IXN:
   name: iShares Global Tech ETF
-  color: rgba(0,200,0,1) # matching the Technology color from README
+  color: forestgreen # matching the Technology color from README
+MAGS:
+  name: LISTED FD TR ROUNDHILL MAGNIF
+  color: forestgreen
 PTF:
   name: Invesco DWA Technology Momentum ETF
   color: rgba(0,200,0,1)
@@ -22,7 +25,7 @@ AIQ:
   color: rgba(150,255,0,1)
 AIPO:
   name: Defiance AI & Power Infrastructure ETF
-  color: rgba(0,191,255,1) # deepskyblue
+  color: yellowgreen # deepskyblue
 BOTZ:
   name: Global X Robotics & Artificial Intelligence ETF
 DTCR:
@@ -51,7 +54,7 @@ SIXG:
 # ! Blockchain & Finance
 IXG:
   name: iShares Global Financials ETF
-  color: gold
+  color: goldenrod
 PFI:
   name: Invesco Dorsey Wright Financial Momentum ETF
   color: goldenrod
@@ -60,22 +63,23 @@ EUFN:
   color: gold
 BKCH:
   name: Global X Blockchain ETF
-  color: magenta
+  color: purple
 FDIG:
   name: FIDELITY CRYPTO INDUSTRY DIGITAL PAYMENTS ETF
 ARKF:
   name: ARK Fintech Innovation ETF
-  color: rgba(34,139,34,1) # forestgreen
+  color: goldenrod # forestgreen
 FINX:
   name: Global X FinTech ETF
 XLRE:
   name: Real Estate Select Sector SPDR Fund
 REET:
   name: iShares Global REIT ETF
+  color: darkgray
 # ! Industrials & Aerospace & Defense
 EXI:
   name: iShares Global Industrials ETF
-  color: rgba(255,150,0,1)
+  color: rgba(150,0,0,1)
 PRN:
   name: Invesco DWA Industrials Momentum ETF
   color: rgba(255,150,0,1)
@@ -112,7 +116,7 @@ XBI:
   name: SPDR S&P Biotech ETF
 ARKG:
   name: ARK Genomic Revolution ETF
-  color: turquoise
+  color: deeppink
 GNOM:
   name: Global X Genomics & Biotechnology ETF
 
@@ -120,7 +124,7 @@ GNOM:
 # ! Direct to consumer
 RXI:
   name: iShares Global Consumer Discretionary ETF
-  color: rgba(100, 150,255, 1) # lightblue
+  color: darkorange # lightblue
 KXI:
   name: iShares Global Consumer Staples ETF
   color: rgba(100, 200,255, 1)
@@ -132,6 +136,7 @@ PSL:
   color: darkgreen
 EBIZ:
   name: Global X E-commerce ETF
+  color: darkorange
 XRT:
   name: SPDR S&P Retail ETF
 
@@ -152,7 +157,7 @@ RNRG:
   name: Global X Renewable Energy Producers ETF
 JXI:
   name: iShares Global Utilities ETF
-  color: rgba(255,255,0,1) # yellow
+  color: yellowgreen # yellow
 PUI:
   name: Invesco Dorsey Wright Utilities Momentum ETF
   color: darkblue
@@ -160,7 +165,7 @@ PUI:
 # ! Commodities & Materials
 MXI:
   name: iShares Global Materials ETF
-  color: darkgray
+  color: rosybrown
 PYZ:
   name: Invesco Dorsey Wright Basic Materials Momentum ETF
   color: saddlebrown
