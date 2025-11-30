@@ -21,7 +21,6 @@ from src.configurations.yaml import register_resolvers
 from src.dashboard.create_page import setup_page_and_sidebar
 
 from src.data.GLI import st_load_global_liquidity
-from src.data.P import st_get_tickers_close_prices
 from src.data.FearGreed import FearGreed
 from src.data.TICKER import TICKERS
 
@@ -62,17 +61,18 @@ def _color_to_rgba(color: str, opacity: float = 0.5) -> str:
 def _add_vs_pair_plot(
     fig: go.Figure,
     rsi_df: pd.DataFrame,
-    pair_config: dict,
+    challenger_config: dict,
+    champion: str,
     ticker_colors: dict,
     rsi_config: dict,
     default_colors: list,
     price_df: pd.DataFrame = None,
 ):
-    """Add a vs pair plot (two tickers with difference curve) to the figure."""
-    row = pair_config.get("row")
-    col = pair_config.get("col")
-    ticker1 = pair_config.get("ticker1")
-    ticker2 = pair_config.get("ticker2")
+    """Add a challenger vs champion plot (two tickers with difference curve) to the figure."""
+    row = challenger_config.get("row")
+    col = challenger_config.get("col")
+    ticker1 = challenger_config.get("ticker")  # Challenger
+    ticker2 = champion  # Champion is always the same
 
     if not ticker1 or not ticker2 or ticker1 not in rsi_df.columns or ticker2 not in rsi_df.columns:
         return
@@ -148,9 +148,8 @@ def _add_vs_pair_plot(
                 price_series = price_df[ticker_symbol].dropna()
                 
                 # Align price data with RSI data index
-                price_aligned = price_series.reindex(rsi_df.index, method='ffill')
-                price_aligned = price_aligned.dropna()
-                price_normalized = price_aligned * 30 - 25  # Scale to 0-10 range
+                price_aligned = price_series.reindex(rsi_df.index, method='ffill').dropna()
+                price_normalized = price_aligned * 30 - 25
              
                 fig.add_trace(
                     go.Scatter(
@@ -161,7 +160,6 @@ def _add_vs_pair_plot(
                         line=dict(
                             color=color,
                             width=2,
-                            # dash="do",
                         ),
                         opacity=0.7,
                         showlegend=False,
@@ -216,7 +214,7 @@ def _add_vs_pair_plot(
     )
 
     # Add the difference curve line
-    diff_name = pair_config.get("diff_name", f"{ticker1} - {ticker2}")
+    diff_name = challenger_config.get("diff_name", f"{ticker1} - {ticker2}")
     fig.add_trace(
         go.Scatter(
             x=rsi_df.index,
@@ -262,9 +260,21 @@ def get_asset_config_with_custom(default_config: dict, custom_symbols: list, col
     return config
 
 
-def _add_macro_sidebar(macro_config: dict):
+def _add_macro_sidebar(macro_config: dict, rsi_config: dict):
     """Sidebar controls for the macro / liquidity view."""
-    st.sidebar.header("Macro Settings")
+    st.sidebar.header("Accelerators")
+    accelerators_top_n = st.sidebar.number_input(
+        "Top N Performers",
+        min_value=1,
+        max_value=20,
+        value=rsi_config.get("accelerators_top_n", 7),
+        step=1,
+        help="Number of top performers to consider for 1 day and 1 week changes.",
+        key="accelerators_top_n_input",
+    )
+    
+    st.sidebar.markdown("<hr>", unsafe_allow_html=True)
+    st.sidebar.header("GLI Settings")
 
     lookback_weeks = macro_config.get("lookback_weeks", 15)
 
@@ -289,25 +299,17 @@ def _add_macro_sidebar(macro_config: dict):
     # Calculate beginning_date based on selected period
     beginning_date = pd.Timestamp.today() - period_options[selected_period]
 
-    st.sidebar.markdown("<hr>", unsafe_allow_html=True)
-    st.sidebar.markdown("**Lag / Look-ahead**")
-    show_lag = st.sidebar.checkbox(
-        "Show Lag",
-        value=True,
-        help="Display a lagged version of the Global Liquidity Index to visualize lead/lag effects.",
-    )
+    # Always show lag
+    show_lag = True
     lag_weeks = st.sidebar.slider(
         "Lag / Look-ahead (weeks)",
         min_value=0,
         max_value=52,
         value=lookback_weeks,
         step=1,
-        disabled=not show_lag,
         help="Shift the index forward in time by this many weeks to visualize a look-ahead effect.",
     )
 
-    st.sidebar.markdown("<hr>", unsafe_allow_html=True)
-    st.sidebar.markdown("**EMA Smoothing**")
     # Single global smoothing control, used for GLI EMA and overlays
     smoothing_span = st.sidebar.slider(
         "Smoothing window (EMA span)",
@@ -319,10 +321,8 @@ def _add_macro_sidebar(macro_config: dict):
         key="smoothing_span",
     )
     # Always show EMA; reuse smoothing_span as EMA period
-    show_ema = True
     ema_period = int(smoothing_span)
 
-    st.sidebar.markdown("<hr>", unsafe_allow_html=True)
     st.sidebar.markdown("**Custom Symbols**")
     custom_symbols_text = st.sidebar.text_input(
         "Add Custom Symbols",
@@ -332,7 +332,7 @@ def _add_macro_sidebar(macro_config: dict):
     )
     custom_symbols = parse_custom_symbols(custom_symbols_text)
 
-    return beginning_date, int(lag_weeks), custom_symbols, show_ema, int(ema_period), show_lag
+    return beginning_date, int(lag_weeks), custom_symbols, int(ema_period), show_lag, int(accelerators_top_n)
 
 
 def _prepare_liquidity_data(
@@ -340,7 +340,6 @@ def _prepare_liquidity_data(
     beginning_date: pd.Timestamp,
     lookback_weeks: int,
     lag_weeks: int,
-    show_ema: bool,
     ema_period: int,
     show_lag: bool,
 ) -> tuple[pd.DataFrame, pd.Timestamp, pd.Timestamp]:
@@ -360,13 +359,11 @@ def _prepare_liquidity_data(
 
     if "Liquidity Index" in df_extended.columns:
         df_extended["Liquidity Index"] = df_extended["Liquidity Index"].interpolate(method="time")
-        if show_ema:
-            df_extended[f"Liquidity Index (EMA {ema_period})"] = df_extended["Liquidity Index"].ewm(span=ema_period, adjust=False).mean()
+        df_extended[f"Liquidity Index (EMA {ema_period})"] = df_extended["Liquidity Index"].ewm(span=ema_period, adjust=False).mean()
 
     if show_lag and lag_days > 0:
         df_extended["Liquidity Index (Lag)"] = df_extended["Liquidity Index"].shift(lag_days)
-        if show_ema:
-            df_extended[f"Liquidity Index (Lag EMA {ema_period})"] = df_extended["Liquidity Index (Lag)"].ewm(span=ema_period, adjust=False).mean()
+        df_extended[f"Liquidity Index (Lag EMA {ema_period})"] = df_extended["Liquidity Index (Lag)"].ewm(span=ema_period, adjust=False).mean()
 
     df_plot = df_extended.loc[df_extended.index <= end_date]
     return df_plot, start_date, end_date
@@ -378,7 +375,6 @@ def _add_liquidity_traces(
     start_date: pd.Timestamp,
     end_date: pd.Timestamp,
     lag_weeks: int,
-    show_ema: bool,
     ema_period: int,
     show_lag: bool,
 ):
@@ -394,7 +390,7 @@ def _add_liquidity_traces(
         secondary_y=False,
     )
 
-    if show_ema and f"Liquidity Index (EMA {ema_period})" in df_plot.columns:
+    if f"Liquidity Index (EMA {ema_period})" in df_plot.columns:
         fig.add_trace(
             go.Scatter(
                 x=df_plot.index,
@@ -418,7 +414,7 @@ def _add_liquidity_traces(
             secondary_y=False,
         )
 
-        if show_ema and f"Liquidity Index (Lag EMA {ema_period})" in df_plot.columns:
+        if f"Liquidity Index (Lag EMA {ema_period})" in df_plot.columns:
             fig.add_trace(
                 go.Scatter(
                     x=df_plot.index,
@@ -439,7 +435,10 @@ def _add_asset_overlays(
 ):
     """Load, normalize, and plot asset overlays."""
     tickers = list(merged_asset_config.keys())
-    assets_hist = st_get_tickers_close_prices(tickers, period="max")
+    
+    # Use TICKERS class to get price data
+    ticker_obj = TICKERS(tickers, period="max", normalize=False)
+    assets_hist = ticker_obj.prices
 
     if assets_hist.empty:
         st.info("Asset price data could not be loaded (yfinance returned no data).")
@@ -534,19 +533,18 @@ def _plot_global_liquidity(
     custom_symbols: list = None,
     lookback_weeks: int = 15,
     colors: list = None,
-    show_ema: bool = True,
     ema_period: int = 25,
     show_lag: bool = True,
 ):
     """Create and render the Global Liquidity plot with asset overlays (normalized)."""
     # Prepare data
-    df_plot, start_date, end_date = _prepare_liquidity_data(df, beginning_date, lookback_weeks, lag_weeks, show_ema, ema_period, show_lag)
+    df_plot, start_date, end_date = _prepare_liquidity_data(df, beginning_date, lookback_weeks, lag_weeks, ema_period, show_lag)
 
     # Create figure
     fig = make_subplots(specs=[[{"secondary_y": True}]])
 
     # Add liquidity traces
-    _add_liquidity_traces(fig, df_plot, start_date, end_date, lag_weeks, show_ema, ema_period, show_lag)
+    _add_liquidity_traces(fig, df_plot, start_date, end_date, lag_weeks, ema_period, show_lag)
 
     # Merge asset configs
     custom_symbols = custom_symbols or []
@@ -706,8 +704,7 @@ def _plot_dominance_pie_charts(price_data: pd.DataFrame, ticker_colors: dict, ti
                             marker=dict(colors=colors_list),
                             text=text_labels,
                             textinfo="text",
-                            textfont=dict(size=14, family="Arial Black",),
-                            # hole=0.1,  # Donut chart
+                            textfont=dict(size=14, family="Arial Black"),
                             showlegend=False,
                             textposition="inside",
                         )
@@ -722,8 +719,6 @@ def _plot_dominance_pie_charts(price_data: pd.DataFrame, ticker_colors: dict, ti
                 st.plotly_chart(fig, config={"displayModeBar": False}, use_container_width=True)
             else:
                 st.info("No data available")
-
-            # horizontal space between pie charts
 def main():
     """Main entry point for the macro / Global Liquidity page."""
     register_resolvers()
@@ -731,9 +726,13 @@ def main():
     # Load Hydra config so we can reuse global dashboard styling
     with hydra.initialize(version_base=None, config_path="../../conf"):
         config = hydra.compose(config_name="main")
-    beginning_date, lag_weeks, custom_symbols, show_ema, ema_period, show_lag = setup_page_and_sidebar(
+    
+    # Load RSI configuration for sidebar
+    rsi_config = config.get("macro", {}).get("rsi", {})
+    
+    beginning_date, lag_weeks, custom_symbols, ema_period, show_lag, accelerators_top_n = setup_page_and_sidebar(
         config["style_conf"],
-        add_to_sidebar=lambda: _add_macro_sidebar(config["macro"]),
+        add_to_sidebar=lambda: _add_macro_sidebar(config["macro"], rsi_config),
     )
 
     # Load asset configuration and lookback_weeks from YAML
@@ -742,10 +741,6 @@ def main():
     # Convert OmegaConf DictConfig to regular Python dict to avoid struct mode issues
     assets_raw = macro_config.get("assets", {})
     asset_config = OmegaConf.to_container(assets_raw, resolve=True) if assets_raw else {}
-    
-    # Initially show only BTC-USD (GLI, GLI lagged, and EMAs are always shown)
-    # asset_config = {k: v for k, v in all_asset_config.items(}
-    
     lookback_weeks = macro_config.get("lookback_weeks", 15)
 
     # Load colors from style_conf
@@ -793,10 +788,6 @@ def main():
     )
 
     # Markets Strength (US Market RSI)
-
-    # Load RSI configuration from YAML
-    rsi_config = config.get("macro", {}).get("rsi", {})
-
     with st.spinner("Loading market RSI data..."):
         # Extract ticker configuration (support both dict and list formats for backwards compatibility)
         tickers_config = rsi_config.get("tickers", {})
@@ -827,23 +818,21 @@ def main():
                 display_to_ticker[t] = t
                 ticker_to_display[t] = t
 
-        # Get vs_pairs from config and extract all required tickers
-        vs_pairs = rsi_config.get("vs_pairs", [])
-        vs_pair_tickers = set()
-        for pair in vs_pairs:
-            ticker1 = pair.get("ticker1")
-            ticker2 = pair.get("ticker2")
-            # Resolve display names to actual tickers
-            actual_ticker1 = display_to_ticker.get(ticker1, ticker1)
-            actual_ticker2 = display_to_ticker.get(ticker2, ticker2)
-            vs_pair_tickers.add(actual_ticker1)
-            vs_pair_tickers.add(actual_ticker2)
-            # Update vs_pairs with actual ticker symbols
-            pair["ticker1"] = actual_ticker1
-            pair["ticker2"] = actual_ticker2
+        # Get champion and challengers from config
+        champion_display = rsi_config.get("champion", "US")
+        champion = display_to_ticker.get(champion_display, champion_display)
+        challengers = rsi_config.get("challengers", [])
+        challenger_tickers = set()
+        for challenger in challengers:
+            challenger_ticker = challenger.get("ticker")
+            # Resolve display name to actual ticker
+            actual_challenger = display_to_ticker.get(challenger_ticker, challenger_ticker)
+            challenger_tickers.add(actual_challenger)
+            # Update challenger config with actual ticker symbol
+            challenger["ticker"] = actual_challenger
 
-        # Ensure all tickers from vs_pairs are included
-        all_tickers = list(set(actual_ticker_list + list(vs_pair_tickers)))
+        # Ensure all tickers (champion and challengers) are included
+        all_tickers = list(set(actual_ticker_list + [champion] + list(challenger_tickers)))
 
         # Load price and RSI data once - used for both Dominance Shifts and RSI plots
         ticker_obj = TICKERS(all_tickers, period=rsi_config.get("period", "360d"), normalize=rsi_config.get("normalize", True))
@@ -866,13 +855,10 @@ def main():
                 rsi_delta = pd.Series(0.0, index=latest_rsi.index)
         
         # Pre-calculate 1 day and 1 week percent changes once - reused in Summary and Dominance charts
-        # Use TICKERS method which calculates for all tickers and caches results
         pct_change_1d = ticker_obj.calculate_price_pct_change(1) if not ticker_obj.prices.empty else {}
         pct_change_1w = ticker_obj.calculate_price_pct_change(7) if not ticker_obj.prices.empty else {}
-        # - Dominance Shifts pie charts
-        # - RSI vs plots price overlays
 
-        # Build ticker color dictionary (needed for Dominance Shifts and RSI plots)
+        # Build ticker color dictionary
         ticker_colors = {}
         default_colors = ["#1f77b4", "#2ca02c", "purple", "goldenrod"]
 
@@ -905,14 +891,14 @@ def main():
         
         # Calculate Summary: Accelerators
         # Get accelerators from TICKERS object
-        accelerators = ticker_obj.get_accelerators(rsi_period=rsi_config.get("rsi_period", 14), top_n=7)
+        accelerators = ticker_obj.get_accelerators(rsi_period=rsi_config.get("rsi_period", 14), top_n=accelerators_top_n)
         
         # Display Summary section
         st.markdown('<a id="summary"></a>', unsafe_allow_html=True)
         st.title("Summary")
         if accelerators:
             st.subheader("Accelerators")
-            st.markdown("Tickers with: 1 day & 1 week change in top 7, and (positive RSI delta or RSI > 50)")
+            st.markdown(f"Tickers with: 1 day & 1 week change in top {accelerators_top_n}, and (positive RSI delta or RSI > 50)")
             
             # Create a DataFrame for display
             accel_data = []
@@ -956,27 +942,26 @@ def main():
         one_year_ago = pd.Timestamp.today() - pd.Timedelta(days=365)
         rsi_df_plot = rsi_df.loc[rsi_df.index >= one_year_ago].copy()
 
-        # Determine grid size from vs_pairs
-        max_row = max([pair.get("row", 1) for pair in vs_pairs], default=1)
-        max_col = max([pair.get("col", 1) for pair in vs_pairs], default=1)
-        min_col = min([pair.get("col", 1) for pair in vs_pairs], default=1)
-        actual_max_col = max([pair.get("col", 1) for pair in vs_pairs], default=1)  # Actual max column used (for secondary y-axis label)
+        # Determine grid size from challengers
+        max_row = max([challenger.get("row", 1) for challenger in challengers], default=1)
+        max_col = max([challenger.get("col", 1) for challenger in challengers], default=1)
+        min_col = min([challenger.get("col", 1) for challenger in challengers], default=1)
+        actual_max_col = max([challenger.get("col", 1) for challenger in challengers], default=1)
 
         # Build subplot titles in row-major order (row 1 col 1, row 1 col 2, row 2 col 1, etc.)
         # Create a map of (row, col) -> title
         title_map = {}
-        for pair in vs_pairs:
-            row = pair.get("row")
-            col = pair.get("col")
-            ticker1 = pair.get("ticker1", "")
-            ticker2 = pair.get("ticker2", "")
+        champion_display_name = ticker_to_display.get(champion, champion)
+        for challenger in challengers:
+            row = challenger.get("row")
+            col = challenger.get("col")
+            challenger_ticker = challenger.get("ticker", "")
             # Get display names for titles
-            display_name1 = ticker_to_display.get(ticker1, ticker1)
-            display_name2 = ticker_to_display.get(ticker2, ticker2)
-            title = pair.get("title", f"{display_name1} vs {display_name2} RSI")
+            challenger_display_name = ticker_to_display.get(challenger_ticker, challenger_ticker)
+            title = challenger.get("title", f"{challenger_display_name} vs {champion_display_name} RSI")
             title_map[(row, col)] = title
 
-        # Build subplot_titles list in row-major order (only for positions with vs_pairs)
+        # Build subplot_titles list in row-major order (only for positions with challengers)
         subplot_titles = []
         for row_idx in range(1, max_row + 1):
             for col_idx in range(1, max_col + 1):
@@ -992,7 +977,6 @@ def main():
         for row_idx in range(1, max_row + 1):
             row_spec = []
             for col_idx in range(1, max_col + 1):
-                # Each subplot needs secondary_y=True in specs to allow secondary y-axis traces
                 row_spec.append({"secondary_y": True})
             specs.append(row_spec)
 
@@ -1004,8 +988,8 @@ def main():
             specs=specs,
             vertical_spacing=0.05,
             horizontal_spacing=0.01,
-            shared_xaxes=True,  # Share x-axis across all subplots
-            shared_yaxes=True,  # Share primary y-axis across all subplots
+            shared_xaxes=True,
+            shared_yaxes=True,
         )
 
         # Create bar chart with latest RSI values ranked and RSI delta (before subplots)
@@ -1064,15 +1048,11 @@ def main():
                     y=latest_rsi_sorted[ticker_symbol] - delta_value,
                     text=f"{abs(delta_value):.1f}",
                     xref="x",
-                    yref="y1",  # Use secondary y-axis
+                    yref="y1",
                     xanchor="center",
                     yanchor="bottom" if delta_value > 0 else "top",
                     font=dict(color=arrow_color, size=min(max(abs(delta_value)*13,5),60), weight="bold"),
-                    # bgcolor="rgba(255,255,255,1)",
-                    # bordercolor=arrow_color,
-                    # borderwidth=1,
                     showarrow=False,
-                    # xshift=10,
                 )
 
             # Calculate secondary y-axis range to ensure 0 is visible and centered
@@ -1099,17 +1079,18 @@ def main():
 
             st.plotly_chart(bar_fig, config={"displayModeBar": True}, use_container_width=True)
         st.subheader("Markets Strength Over Time")
-        # Get price data for vs plots (filtered to same time period as RSI)
+        # Get price data for challenger plots (filtered to same time period as RSI)
         price_df_plot = None
         if hasattr(ticker_obj, 'prices') and ticker_obj.prices is not None:
             price_df_plot = ticker_obj.prices.loc[ticker_obj.prices.index >= one_year_ago].copy()
 
-        # Add all vs_pair plots
-        for pair in vs_pairs:
+        # Add all challenger vs champion plots
+        for challenger in challengers:
             _add_vs_pair_plot(
                 fig,
                 rsi_df_plot,
-                pair,
+                challenger,
+                champion,
                 ticker_colors,
                 rsi_config,
                 default_colors,
@@ -1118,9 +1099,9 @@ def main():
 
         # Add reference lines to all subplots
         for ref_line in rsi_config.get("reference_lines", []):
-            for pair in vs_pairs:
-                row = pair.get("row")
-                col = pair.get("col")
+            for challenger in challengers:
+                row = challenger.get("row")
+                col = challenger.get("col")
                 fig.add_hline(
                     y=ref_line.get("y"),
                     line_dash=ref_line.get("line_dash", "dot"),
@@ -1134,12 +1115,11 @@ def main():
         # Get all RSI values across all pairs to determine global range
         all_rsi_values = []
         all_diff_values = []
-        for pair in vs_pairs:
-            ticker1 = pair.get("ticker1")
-            ticker2 = pair.get("ticker2")
-            if ticker1 in rsi_df_plot.columns and ticker2 in rsi_df_plot.columns:
-                all_rsi_values.extend([rsi_df_plot[ticker1], rsi_df_plot[ticker2]])
-                diff = rsi_df_plot[ticker1] - rsi_df_plot[ticker2]
+        for challenger in challengers:
+            challenger_ticker = challenger.get("ticker")
+            if challenger_ticker in rsi_df_plot.columns and champion in rsi_df_plot.columns:
+                all_rsi_values.extend([rsi_df_plot[challenger_ticker], rsi_df_plot[champion]])
+                diff = rsi_df_plot[challenger_ticker] - rsi_df_plot[champion]
                 all_diff_values.append(diff)
         
         # Calculate global primary y-axis range (RSI)
@@ -1165,9 +1145,9 @@ def main():
             global_secondary_range = [-30, 30]
 
         # Update axes labels and ranges for all subplots
-        for pair in vs_pairs:
-            row = pair.get("row")
-            col = pair.get("col")
+        for challenger in challengers:
+            row = challenger.get("row")
+            col = challenger.get("col")
 
             # Only show x-axis title on bottom row when axes are shared
             x_title = "Date" if row == max_row else ""
@@ -1233,7 +1213,6 @@ def main():
         custom_symbols=custom_symbols,
         lookback_weeks=lookback_weeks,
         colors=colors,
-        show_ema=show_ema,
         ema_period=ema_period,
         show_lag=show_lag,
     )

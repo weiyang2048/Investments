@@ -4,6 +4,7 @@ normalize: true
 default_visible_count: 10
 height: 1500
 line_width: 2
+accelerators_top_n: 8
 
 tickers:
   US:
@@ -21,9 +22,6 @@ tickers:
   Treasuries:
     ticker: TLT
     color: "gray"
-  Utilities:
-    ticker: XLU
-    color: "brown"
   Asia:
     ticker: AIA
     color: "crimson"
@@ -40,84 +38,98 @@ tickers:
     ticker: ASEA
     color: "darkorange"
   Financial:
-    ticker: XLF
+    ticker: IXG
     color: "gold"
   Industrial:
-    ticker: XLI
+    ticker: EXI
     color: "orange"
   Technology:
-    ticker: MAGS
+    ticker: IXN
     color: "green"
+  Utilities:
+    ticker: JXI
+    color: "brown"
   Communication:
-    ticker: XLC
+    ticker: IXP
     color: "lightblue"
   Healthcare:
-    ticker: XLV
+    ticker: IXJ
     color: "pink"
+  Materials:
+    ticker: MXI
+    color: "darkgray"
+  ConsumerStaples:
+    ticker: KXI
+    color: "lightgreen"
+  ConsumerDiscretionary:
+    ticker: RXI
+    color: "orange"
+  Energy:
+    ticker: IXC
+    color: "darkred"
 
-vs_pairs:
-
+champion: US
+challengers:
   - row: 1
     col: 1
-    ticker1: US
-    ticker2: xUS
+    ticker: xUS
   - row: 1
     col: 2
-    ticker1: US
-    ticker2: Europe
+    ticker: Europe
   - row: 2
     col: 2
-    ticker1: US
-    ticker2: Africa
+    ticker: Africa
   - row: 2
     col: 3
-    ticker1: US
-    ticker2: Asia
+    ticker: Asia
   - row: 1
     col: 3
-    ticker1: US
-    ticker2: SoutheastAsia
+    ticker: SoutheastAsia
   - row: 2
     col: 1
-    ticker1: US
-    ticker2: SouthAmerica
+    ticker: SouthAmerica
   - row: 3
     col: 1
-    ticker1: US
-    ticker2: Treasuries
+    ticker: Treasuries
   - row: 3
     col: 2
-    ticker1: US
-    ticker2: Metals
+    ticker: Metals
   - row: 3
     col: 3
-    ticker1: US
-    ticker2: Crypto
+    ticker: Crypto
   - row: 4
     col: 1
-    ticker1: US
-    ticker2: Utilities
+    ticker: Utilities
   - row: 4
     col: 2
-    ticker1: US
-    ticker2: Financial
+    ticker: Financial
   - row: 4
     col: 3
-    ticker1: US
-    ticker2: Industrial
+    ticker: Industrial
   - row: 5
     col: 1
-    ticker1: US
-    ticker2: Technology
+    ticker: Technology
   - row: 5
     col: 2
-    ticker1: US
-    ticker2: Communication
+    ticker: Communication
   - row: 5
     col: 3
-    ticker1: US
-    ticker2: Healthcare
-
+    ticker: Healthcare
+  - row: 6
+    col: 1
+    ticker: Materials
+  - row: 6
+    col: 2
+    ticker: ConsumerStaples
+  - row: 6
+    col: 3
+    ticker: ConsumerDiscretionary
+  - row: 7
+    col: 1
+    ticker: Energy
+  - row: 7
+    col: 2
+    ticker: REET
 opacity: 0.7
 title: "Market Average RSI"
 yaxis_title: "RSI"
@@ -134,5 +146,3 @@ reference_lines:
     line_dash: "dot"
     line_color: "green"
     opacity: 0.5
-    
-

@@ -70,7 +70,8 @@ FINX:
   name: Global X FinTech ETF
 XLRE:
   name: Real Estate Select Sector SPDR Fund
-
+REET:
+  name: iShares Global REIT ETF
 # ! Industrials & Aerospace & Defense
 EXI:
   name: iShares Global Industrials ETF
