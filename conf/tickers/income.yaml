@@ -30,7 +30,13 @@ GAEM:
      name: Simplify Gamma Emerging Market Bond ETF 5
 CAS:
      name: Simplify China A Shares PLUS Income ETF
-
+XXV:
+     name: Simplify Target 25 Distribution ETF
+# ! yield max
+BIGY:
+     name: YieldMax Target 12 Big 50 Option Income ETF
+SOXY:
+     name: YieldMax® Target 12™ Semiconductor Option Income ETF
 # ! Amplify ETFs
 DIVO:
   name: Amplify CWP Enhanced Dividend Income ETF

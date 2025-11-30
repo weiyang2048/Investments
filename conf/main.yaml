@@ -5,7 +5,7 @@ lenses:
     Income: ${get_keys:tickers.income}
     SWING: ${union:[LOUP,  TQQQ, IBLC,BLOK,  BKCH, MAXI, YGLD, GDX,MAGS, TESL]}
     Crypto: ["BTC-USD", "ETH-USD", "SOL-USD", "BNB-USD", "MON-USD","LTC-USD","BAT-USD","CRO-USD", "DOGE-USD", "XRP-USD", "ADA-USD"]
-    HODL: ${union:${get_keys:tickers.H},[MAGS, TLT,EMBX]}
+    HODL: ${union:${get_keys:tickers.H},[BIGY, SOXY, MAGS, TLT,EMBX]}
     F: ${get_keys:tickers.f}
     rs: ${union:${get_keys:tickers.rs},[MAGS]}
     Y: ${get_keys:tickers.Y}

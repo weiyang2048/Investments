@@ -176,6 +176,43 @@ def highlight_row(row, df=None):
             result.append(color)
         return result
 
+    elif row.name == "yield":
+        # Use Blues color gradient for yield values
+        # Normalize yield values to 0-1 range for color mapping
+        valid_values = [v for v in row_original if pd.notnull(v) and v is not None]
+        if not valid_values:
+            return [""] * len(row)
+        
+        min_yield = min(valid_values) if valid_values else 0
+        max_yield = max(valid_values) if valid_values else 0
+        range_yield = max_yield - min_yield if max_yield > min_yield else 1
+        
+        for value in row_original:
+            if pd.isnull(value) or value is None:
+                result.append("")
+                continue
+            
+            # Normalize value to 0-1 range
+            normalized = (value - min_yield) / range_yield if range_yield > 0 else 0
+            normalized = np.clip(normalized, 0, 1)
+            
+            # Map to Blues colormap (light blue to dark blue)
+            # Blues: lighter (low values) -> darker (high values)
+            # Using RGB values that approximate matplotlib's Blues colormap
+            # Blues goes from (0.968627, 0.984314, 1.0) to (0.031373, 0.188235, 0.419608)
+            # For simplicity, we'll use a linear interpolation in RGB space
+            # Light blue: rgb(247, 251, 255) -> Dark blue: rgb(8, 48, 107)
+            r = int(247 - normalized * (247 - 8))
+            g = int(251 - normalized * (251 - 48))
+            b = int(255 - normalized * (255 - 107))
+            
+            # Use dark text on light backgrounds, light text on dark backgrounds
+            text_color = "black" if normalized < 0.5 else "white"
+            
+            color = f"background-color: rgb({r}, {g}, {b}); color: {text_color}; font-weight: bold"
+            result.append(color)
+        return result
+
     else:
         return [""] * len(row)
 
