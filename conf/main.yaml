@@ -25,7 +25,6 @@ yaml_suffix_map: {hs.yaml: "#", f.yaml: "@", rs.yaml: "%", Y.yaml: "!", H.yaml: 
 
 defaults:
   - style_conf: [shared_configs, color_line_styles]
-  - macro/dominance_plots
   - tickers: [etfs, sectors, regions, commodities, globalX, momentum, ark, defiance, sp50, sp500, sp400, sp600, income, adr50, f, rs, Y, H]
 
 macro:

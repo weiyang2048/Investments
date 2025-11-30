@@ -1,32 +1,85 @@
-period: "360d"
+period: "2y"
 rsi_period: 14
 normalize: true
+default_visible_count: 10
+height: 1200
 
 tickers:
-  VTI:
+  US:
+    ticker: TOPT
     color: "#1f77b4"
-    line_style: "solid"
-  VXUS:
-    color: "#2ca02c"
-    line_style: "solid"
-  IBIT:
+  Developed:
+    ticker: VEA
+    color: "seagreen"
+  Emerging:
+    ticker: IEMG
+    color: "coral"
+  Crypto:
+    ticker: IBIT
     color: "purple"
-    line_style: "dot"
-  IAUM:
+  Metals:
+    ticker: IAUM
     color: "goldenrod"
-    line_style: "dashdot"
-  TLT:
+  Treasuries:
+    ticker: TLT
     color: "gray"
-    line_style: "solid"
-  XLU:
+  Utilities:
+    ticker: XLU
     color: "brown"
-    line_style: "solid"
-default_visible_count: 10
+  China:
+    ticker: FLCH
+    color: "crimson"
+  Europe:
+    ticker: FEP
+    color: "lightblue"
+
+vs_pairs:
+  - row: 1
+    col: 1
+    ticker1: US
+    ticker2: Developed
+    show_individual_lines: false
+  - row: 1
+    col: 2
+    ticker1: US
+    ticker2: Emerging
+    show_individual_lines: false
+  - row: 2
+    col: 2
+    ticker1: US
+    ticker2: China
+    show_individual_lines: true
+  - row: 2
+    col: 1
+    ticker1: US
+    ticker2: Europe
+    show_individual_lines: true
+  - row: 3
+    col: 1
+    ticker1: US
+    ticker2: Treasuries
+    show_individual_lines: true
+  - row: 3
+    col: 2
+    ticker1: US
+    ticker2: Utilities
+    show_individual_lines: true
+
+  - row: 4
+    col: 2
+    ticker1: Metals
+    ticker2: Crypto
+    show_individual_lines: true
+  - row: 4
+    col: 1
+    ticker1: US
+    ticker2: Metals
+    show_individual_lines: true
+
 opacity: 0.7
 line_width: 2
 title: "Market Average RSI"
 yaxis_title: "RSI"
-height: 1000
 reference_lines:
   - y: 25
     line_dash: "dot"

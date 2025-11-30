@@ -11,6 +11,7 @@ import streamlit as st
 import pandas as pd
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
+import re
 
 import hydra
 from omegaconf import OmegaConf
@@ -22,6 +23,176 @@ from src.data.GLI import st_load_global_liquidity
 from src.data.P import st_get_tickers_close_prices
 from src.data.FearGreed import FearGreed
 from src.data.TICKER import TICKERS
+
+
+def _color_to_rgba(color: str, opacity: float = 0.2) -> str:
+    """Convert color name or hex to rgba format with opacity."""
+    # Common color name to RGB mapping
+    color_map = {
+        "red": (255, 0, 0),
+        "green": (0, 128, 0),
+        "blue": (0, 0, 255),
+        "purple": (128, 0, 128),
+        "gray": (128, 128, 128),
+        "grey": (128, 128, 128),
+        "brown": (165, 42, 42),
+        "goldenrod": (218, 165, 32),
+        "orange": (255, 165, 0),
+        "yellow": (255, 255, 0),
+        "pink": (255, 192, 203),
+        "cyan": (0, 255, 255),
+        "magenta": (255, 0, 255),
+        "black": (0, 0, 0),
+        "white": (255, 255, 255),
+        "lightblue": (173, 216, 230),
+        "lightgreen": (144, 238, 144),
+        "coral": (255, 127, 80),
+        "royalblue": (65, 105, 225),
+        "gold": (255, 215, 0),
+        "crimson": (220, 20, 60),
+        "seagreen": (46, 139, 87),
+    }
+    
+    # Check if it's a hex color
+    if color.startswith("#"):
+        # Remove # and convert hex to RGB
+        hex_color = color.lstrip("#")
+        if len(hex_color) == 6:
+            r = int(hex_color[0:2], 16)
+            g = int(hex_color[2:4], 16)
+            b = int(hex_color[4:6], 16)
+            return f"rgba({r}, {g}, {b}, {opacity})"
+        elif len(hex_color) == 3:
+            r = int(hex_color[0] * 2, 16)
+            g = int(hex_color[1] * 2, 16)
+            b = int(hex_color[2] * 2, 16)
+            return f"rgba({r}, {g}, {b}, {opacity})"
+    
+    # Check if it's already rgba
+    if color.startswith("rgba("):
+        return color
+    
+    # Check if it's rgb
+    rgb_match = re.match(r"rgb\((\d+),\s*(\d+),\s*(\d+)\)", color)
+    if rgb_match:
+        r, g, b = rgb_match.groups()
+        return f"rgba({r}, {g}, {b}, {opacity})"
+    
+    # Check color map
+    color_lower = color.lower()
+    if color_lower in color_map:
+        r, g, b = color_map[color_lower]
+        return f"rgba({r}, {g}, {b}, {opacity})"
+    
+    # Default fallback
+    return f"rgba(128, 128, 128, {opacity})"
+
+
+def _add_vs_pair_plot(
+    fig: go.Figure,
+    rsi_df: pd.DataFrame,
+    pair_config: dict,
+    ticker_colors: dict,
+    rsi_config: dict,
+    default_colors: list,
+):
+    """Add a vs pair plot (two tickers with difference curve) to the figure."""
+    row = pair_config.get("row")
+    col = pair_config.get("col")
+    ticker1 = pair_config.get("ticker1")
+    ticker2 = pair_config.get("ticker2")
+    show_individual_lines = pair_config.get("show_individual_lines", True)
+    
+    if not ticker1 or not ticker2 or ticker1 not in rsi_df.columns or ticker2 not in rsi_df.columns:
+        return
+    
+    # Add individual RSI lines
+    # When show_individual_lines is False, still show them but with lower opacity
+    for ticker_symbol in [ticker1, ticker2]:
+        color = ticker_colors.get(ticker_symbol, default_colors[0])
+        # Use lower opacity when show_individual_lines is False
+        line_opacity = 0.5 if show_individual_lines else 0.3
+        fig.add_trace(
+            go.Scatter(
+                x=rsi_df.index,
+                y=rsi_df[ticker_symbol],
+                mode="lines",
+                name=f"{ticker_symbol} RSI",
+                line=dict(
+                    color=color,
+                    width=rsi_config.get("line_width", 2),
+                    dash="solid",
+                ),
+                opacity=line_opacity,
+                showlegend=False,
+            ),
+            row=row,
+            col=col,
+        )
+    
+    # Calculate difference
+    diff = rsi_df[ticker1] - rsi_df[ticker2]
+    ticker1_color = ticker_colors.get(ticker1, default_colors[0])
+    ticker2_color = ticker_colors.get(ticker2, default_colors[0])
+    
+    # Create positive and negative parts for fill
+    diff_positive = diff.copy()
+    diff_positive[diff_positive < 0] = 0
+    diff_negative = diff.copy()
+    diff_negative[diff_negative > 0] = 0
+    
+    # Add fill for positive area (ticker1 > ticker2) - use ticker1 color
+    fig.add_trace(
+        go.Scatter(
+            x=diff.index,
+            y=diff_positive,
+            fill="tozeroy",
+            fillcolor=_color_to_rgba(ticker1_color),
+            line=dict(width=0),
+            showlegend=False,
+            hoverinfo="skip",
+        ),
+        row=row,
+        col=col,
+        secondary_y=True,
+    )
+    
+    # Add fill for negative area (ticker1 < ticker2) - use ticker2 color
+    fig.add_trace(
+        go.Scatter(
+            x=diff.index,
+            y=diff_negative,
+            fill="tozeroy",
+            fillcolor=_color_to_rgba(ticker2_color),
+            line=dict(width=0),
+            showlegend=False,
+            hoverinfo="skip",
+        ),
+        row=row,
+        col=col,
+        secondary_y=True,
+    )
+    
+    # Add the difference curve line
+    diff_name = pair_config.get("diff_name", f"{ticker1} - {ticker2}")
+    fig.add_trace(
+        go.Scatter(
+            x=rsi_df.index,
+            y=diff,
+            mode="lines",
+            name=diff_name,
+            line=dict(
+                color="black",
+                width=rsi_config.get("line_width", 2),
+                dash="solid",
+            ),
+            opacity=1.0,
+            showlegend=False,
+        ),
+        row=row,
+        col=col,
+        secondary_y=True,
+    )
 
 
 def parse_custom_symbols(symbols_text: str) -> list:
@@ -356,199 +527,13 @@ def _plot_global_liquidity(
     st.plotly_chart(fig, config={"displayModeBar": False})
 
 
-def _add_dominance_to_subplot(
-    fig,
-    row: int,
-    col: int,
-    beginning_date: pd.Timestamp,
-    ticker1: str,
-    ticker2: str,
-    dominance_name: str,
-    yaxis_title: str,
-    ticker1_label: str,
-    ticker2_label: str,
-    ticker1_color: str = "lightblue",
-    ticker2_color: str = "lightgreen",
-    fill_color_above: str = "rgba(11, 11, 255, 1)",
-    fill_color_below: str = "rgba(144, 238, 144, 0.5)",
-    lookback_weeks: int = 15,
-):
-    """Add a dominance plot to a subplot figure."""
-    lookback_days = lookback_weeks * 7
-    start_date = beginning_date - pd.Timedelta(days=lookback_days)
-    end_date = pd.Timestamp.today()
-
-    # Load ETF data
-    tickers = [ticker1, ticker2]
-    etf_data = st_get_tickers_close_prices(tickers, period="max")
-
-    if etf_data.empty or ticker1 not in etf_data.columns or ticker2 not in etf_data.columns:
-        return
-
-    # Filter to the date range (need extra days for the 5-day lookback)
-    mask = (etf_data.index >= start_date - pd.Timedelta(days=5)) & (etf_data.index <= end_date)
-    etf_filtered = etf_data.loc[mask].copy()
-
-    if etf_filtered.empty:
-        return
-
-    # Calculate 5-day ratio: price[t] / price[t-5] for each ETF
-    ticker1_5day_ratio = etf_filtered[ticker1] / etf_filtered[ticker1].shift(5)
-    ticker2_5day_ratio = etf_filtered[ticker2] / etf_filtered[ticker2].shift(5)
-
-    # Calculate Dominance: (ticker1 5-day ratio) / (ticker2 5-day ratio)
-    dominance_raw = ticker1_5day_ratio / ticker2_5day_ratio
-
-    # Replace inf/nan values with NaN for cleaner processing
-    dominance_raw = dominance_raw.replace([float("inf"), float("-inf")], pd.NA)
-
-    # Apply 14-day exponential smoothing (EMA)
-    dominance = dominance_raw.ewm(span=10, adjust=False).mean()
-
-    # Filter to the actual plotting range (after we have enough data for calculations)
-    dominance_plot = dominance.loc[dominance.index >= start_date].dropna()
-
-    # Prepare normalized price data for secondary axis
-    etf_plot = etf_filtered.loc[etf_filtered.index >= start_date]
-
-    # Get first non-null values for normalization
-    ticker1_first = etf_plot[ticker1].dropna().iloc[0] if not etf_plot[ticker1].dropna().empty else None
-    ticker2_first = etf_plot[ticker2].dropna().iloc[0] if not etf_plot[ticker2].dropna().empty else None
-
-    if ticker1_first is None or ticker2_first is None or ticker1_first == 0 or ticker2_first == 0:
-        return
-
-    ticker1_normalized = etf_plot[ticker1] / ticker1_first
-    ticker2_normalized = etf_plot[ticker2] / ticker2_first
-
-    # Drop NaN values for cleaner plotting
-    ticker1_normalized = ticker1_normalized.dropna()
-    ticker2_normalized = ticker2_normalized.dropna()
-
-    # Add reference line at y=1 (needed for fill) - primary axis
-    reference_line = pd.Series(1.0, index=dominance_plot.index)
-    fig.add_trace(
-        go.Scatter(
-            x=reference_line.index,
-            y=reference_line.values,
-            line=dict(width=0),
-            showlegend=False,
-            hoverinfo="skip",
-        ),
-        row=row,
-        col=col,
-        secondary_y=False,
-    )
-
-    # Add shading
-    above_one = dominance_plot.copy()
-    above_one[above_one < 1] = 1
-    below_one = dominance_plot.copy()
-    below_one[below_one > 1] = 1
-
-    # Add fill for area above 1
-    fig.add_trace(
-        go.Scatter(
-            x=dominance_plot.index,
-            y=above_one,
-            fill="tonexty",
-            fillcolor=fill_color_above,
-            line=dict(width=0),
-            showlegend=False,
-            hoverinfo="skip",
-        ),
-        row=row,
-        col=col,
-        secondary_y=False,
-    )
-
-    # Add fill for area below 1
-    fig.add_trace(
-        go.Scatter(
-            x=dominance_plot.index,
-            y=below_one,
-            fill="tonexty",
-            fillcolor=fill_color_below,
-            line=dict(width=0),
-            showlegend=False,
-            hoverinfo="skip",
-        ),
-        row=row,
-        col=col,
-        secondary_y=False,
-    )
-
-    # Add the main line trace - primary axis
-    fig.add_trace(
-        go.Scatter(
-            x=dominance_plot.index,
-            y=dominance_plot,
-            name=f"{dominance_name}",
-            line=dict(color="black", width=2),
-            mode="lines",
-            showlegend=(row == 1 and col == 1),  # Only show legend for first plot
-        ),
-        row=row,
-        col=col,
-        secondary_y=False,
-    )
-
-    # Add normalized ticker1 price curve - secondary axis
-    if not ticker1_normalized.empty:
-        fig.add_trace(
-            go.Scatter(
-                x=ticker1_normalized.index,
-                y=ticker1_normalized,
-                name=f"{ticker1_label} (normalized)",
-                line=dict(color=ticker1_color, width=1),
-                mode="lines",
-                showlegend=(row == 1 and col == 1),
-            ),
-            row=row,
-            col=col,
-            secondary_y=True,
-        )
-
-    # Add normalized ticker2 price curve - secondary axis
-    if not ticker2_normalized.empty:
-        fig.add_trace(
-            go.Scatter(
-                x=ticker2_normalized.index,
-                y=ticker2_normalized,
-                name=f"{ticker2_label} (normalized)",
-                line=dict(color=ticker2_color, width=1),
-                mode="lines",
-                showlegend=(row == 1 and col == 1),
-            ),
-            row=row,
-            col=col,
-            secondary_y=True,
-        )
-
-    # Add horizontal line at y=1
-    fig.add_hline(
-        y=1.0,
-        line_color="gray",
-        opacity=0.5,
-        row=row,
-        col=col,
-    )
-
-    # Update axes for this subplot
-    fig.update_xaxes(title_text="Date", row=row, col=col)
-    fig.update_yaxes(title_text=yaxis_title, row=row, col=col, secondary_y=False)
-    fig.update_yaxes(title_text="Normalized Price", row=row, col=col, secondary_y=True)
-
-
-def _calculate_price_pct_change_for_period(ticker: str, days_back: int) -> float:
-    """Calculate percent change in price over a specific number of days."""
-    end_date = pd.Timestamp.today()
-
-    # Load price data with max period to ensure we have enough history (at least 1 year)
-    price_data = st_get_tickers_close_prices([ticker], period="max")
+def _calculate_price_pct_change_for_period(price_data: pd.DataFrame, ticker: str, days_back: int) -> float:
+    """Calculate percent change in price over a specific number of days using provided price data."""
     if price_data.empty or ticker not in price_data.columns:
         return 0.0
 
+    end_date = pd.Timestamp.today()
+    
     # Filter to get data up to end_date
     mask = price_data.index <= end_date
     price_filtered = price_data.loc[mask].copy()
@@ -571,10 +556,10 @@ def _calculate_price_pct_change_for_period(ticker: str, days_back: int) -> float
         return pct_change
 
     # For longer periods, find price from days_back ago
-    if len(price_filtered) < days_back + 1:
+    latest = price_filtered[ticker].iloc[-1] if len(price_filtered) > 0 else None
+    if latest is None or pd.isna(latest):
         return 0.0
-
-    latest = price_filtered[ticker].iloc[-1]
+    
     target_date = end_date - pd.Timedelta(days=days_back)
     # Sort the index first to ensure proper chronological order
     sorted_prices = price_filtered.sort_index()
@@ -592,7 +577,7 @@ def _calculate_price_pct_change_for_period(ticker: str, days_back: int) -> float
     return pct_change
 
 
-def _plot_dominance_pie_charts(dominance_plots: list):
+def _plot_dominance_pie_charts(price_data: pd.DataFrame, ticker_colors: dict, tickers_config: dict, ticker_to_display: dict = None):
     """Plot multiple pie charts showing price percent changes for different time periods."""
     time_periods = [
         ("1 Day", 1),
@@ -602,14 +587,36 @@ def _plot_dominance_pie_charts(dominance_plots: list):
         ("1 Year", 365),
     ]
 
-    # Define the assets to track with their display names and colors
-    assets = {
-        "VTI": {"name": "US", "color": "lightblue"},
-        "CNYA": {"name": "China", "color": "coral"},
-        "SPEU": {"name": "EU", "color": "royalblue"},
-        "BTC-USD": {"name": "Bitcoin", "color": "purple"},
-        "GC=F": {"name": "Gold", "color": "gold"},
-    }
+    # Get tickers from price_data and build asset info from ticker config
+    available_tickers = list(price_data.columns)
+    assets = {}
+    default_colors = ["#1f77b4", "#2ca02c", "purple", "goldenrod"]
+    
+    # Create reverse mapping if not provided
+    if ticker_to_display is None:
+        ticker_to_display = {}
+        if isinstance(tickers_config, dict):
+            for display_name, ticker_config in tickers_config.items():
+                if isinstance(ticker_config, dict) and "ticker" in ticker_config:
+                    actual_ticker = ticker_config.get("ticker")
+                    ticker_to_display[actual_ticker] = display_name
+                else:
+                    ticker_to_display[display_name] = display_name
+    
+    for idx, ticker in enumerate(available_tickers):
+        # Get display name for this ticker (for config lookup)
+        display_name = ticker_to_display.get(ticker, ticker)
+        
+        # Get name and color from ticker config if available
+        if isinstance(tickers_config, dict) and display_name in tickers_config:
+            ticker_config = tickers_config[display_name]
+            name = ticker_config.get("name", display_name)
+            color = ticker_config.get("color", ticker_colors.get(ticker, default_colors[idx % len(default_colors)]))
+        else:
+            name = display_name
+            color = ticker_colors.get(ticker, default_colors[idx % len(default_colors)])
+        
+        assets[ticker] = {"name": name, "color": color}
 
     # Create Streamlit columns for the pie charts
     cols = st.columns(5)
@@ -623,7 +630,7 @@ def _plot_dominance_pie_charts(dominance_plots: list):
             colors_list = []
 
             for ticker, info in assets.items():
-                pct_change = _calculate_price_pct_change_for_period(ticker, days_back)
+                pct_change = _calculate_price_pct_change_for_period(price_data, ticker, days_back)
 
                 # Include all non-zero values
                 if pct_change > 0.001 and not pd.isna(pct_change):
@@ -640,9 +647,10 @@ def _plot_dominance_pie_charts(dominance_plots: list):
                             values=values,
                             marker=dict(colors=colors_list),
                             textinfo="label+percent",
+                            textfont=dict(size=14, family="Arial Black", color="black"),
                             hole=0.3,  # Donut chart
                             showlegend=False,
-                            textposition="outside",
+                            textposition="inside",
                         )
                     ]
                 )
@@ -655,61 +663,6 @@ def _plot_dominance_pie_charts(dominance_plots: list):
                 st.plotly_chart(fig, config={"displayModeBar": False}, use_container_width=True)
             else:
                 st.info("No data available")
-
-
-def _plot_all_dominance_subplots(beginning_date: pd.Timestamp, lookback_weeks: int = 15, dominance_plots: list = None):
-    """Create a 3x2 subplot grid with all dominance plots."""
-    if dominance_plots is None:
-        dominance_plots = []
-
-    # Build subplot titles in row-major order (row 1 col 1, row 1 col 2, row 2 col 1, etc.)
-    # Sort plots by row first, then by col
-    sorted_plots = sorted(dominance_plots, key=lambda p: (p["row"], p["col"]))
-    subplot_titles = [plot["title"] for plot in sorted_plots]
-
-    # Create subplots: 3 rows, 2 columns, each with secondary y-axis
-    fig = make_subplots(
-        rows=3,
-        cols=2,
-        specs=[
-            [{"secondary_y": True}, {"secondary_y": True}],
-            [{"secondary_y": True}, {"secondary_y": True}],
-            [{"secondary_y": True}, {"secondary_y": True}],
-        ],
-        subplot_titles=tuple(subplot_titles),
-        vertical_spacing=0.08,
-        horizontal_spacing=0.1,
-    )
-
-    # Add all dominance plots
-    for plot in dominance_plots:
-        _add_dominance_to_subplot(
-            fig,
-            row=plot["row"],
-            col=plot["col"],
-            beginning_date=beginning_date,
-            ticker1=plot["ticker1"],
-            ticker2=plot["ticker2"],
-            dominance_name=plot["dominance_name"],
-            yaxis_title="Ratio",
-            ticker1_label=plot["ticker1_label"],
-            ticker2_label=plot["ticker2_label"],
-            ticker1_color=plot["ticker1_color"],
-            ticker2_color=plot["ticker2_color"],
-            fill_color_above=plot.get("fill_color_above", "rgba(11, 11, 255, 1)"),
-            fill_color_below=plot.get("fill_color_below", "rgba(144, 238, 144, 0.5)"),
-            lookback_weeks=lookback_weeks,
-        )
-
-    # Update layout
-    fig.update_layout(
-        height=1200,
-        hovermode="x unified",
-        showlegend=True,
-        legend=dict(orientation="h", yanchor="bottom", y=-0.05, xanchor="center", x=0.5),
-    )
-
-    st.plotly_chart(fig, config={"displayModeBar": False})
 
 
 def main():
@@ -789,14 +742,50 @@ def main():
     with st.spinner("Loading market RSI data..."):
         # Extract ticker configuration (support both dict and list formats for backwards compatibility)
         tickers_config = rsi_config.get("tickers", {})
+        
+        # Create mapping from display name to actual ticker symbol
+        # Also extract actual ticker symbols for data fetching
+        display_to_ticker = {}  # Maps display name (e.g., "US") to actual ticker (e.g., "VTI")
+        ticker_to_display = {}  # Maps actual ticker (e.g., "VTI") to display name (e.g., "US")
+        actual_ticker_list = []
+        
         if isinstance(tickers_config, dict):
-            ticker_list = list(tickers_config.keys())
+            for display_name, ticker_config in tickers_config.items():
+                # Check if config has a 'ticker' field (new pattern) or use display_name as ticker (old pattern)
+                if isinstance(ticker_config, dict) and "ticker" in ticker_config:
+                    actual_ticker = ticker_config.get("ticker")
+                    display_to_ticker[display_name] = actual_ticker
+                    ticker_to_display[actual_ticker] = display_name
+                    actual_ticker_list.append(actual_ticker)
+                else:
+                    # Old pattern: display name is the ticker
+                    display_to_ticker[display_name] = display_name
+                    ticker_to_display[display_name] = display_name
+                    actual_ticker_list.append(display_name)
         else:
             # Fallback to list format for backwards compatibility
-            ticker_list = tickers_config if isinstance(tickers_config, list) else ["VTI", "VXUS", "IBIT", "IAUM"]
+            actual_ticker_list = tickers_config if isinstance(tickers_config, list) else ["VTI", "VXUS", "IBIT", "IAUM"]
+            for t in actual_ticker_list:
+                display_to_ticker[t] = t
+                ticker_to_display[t] = t
         
-        # Ensure TLT and XLU are included for the plots
-        all_tickers = list(set(ticker_list + ["VTI", "TLT", "IAUM", "IBIT", "XLU"]))
+        # Get vs_pairs from config and extract all required tickers
+        vs_pairs = rsi_config.get("vs_pairs", [])
+        vs_pair_tickers = set()
+        for pair in vs_pairs:
+            ticker1 = pair.get("ticker1")
+            ticker2 = pair.get("ticker2")
+            # Resolve display names to actual tickers
+            actual_ticker1 = display_to_ticker.get(ticker1, ticker1)
+            actual_ticker2 = display_to_ticker.get(ticker2, ticker2)
+            vs_pair_tickers.add(actual_ticker1)
+            vs_pair_tickers.add(actual_ticker2)
+            # Update vs_pairs with actual ticker symbols
+            pair["ticker1"] = actual_ticker1
+            pair["ticker2"] = actual_ticker2
+        
+        # Ensure all tickers from vs_pairs are included
+        all_tickers = list(set(actual_ticker_list + list(vs_pair_tickers)))
         
         ticker = TICKERS(
             all_tickers,
@@ -810,250 +799,86 @@ def main():
         if smoothing_span > 1:
             rsi_df = rsi_df.ewm(span=smoothing_span, adjust=False).mean()
 
-        # Create subplot figure: 3 rows, 2 columns
-        # Row 1: All RSI lines (spans both columns)
-        # Row 2, Col 1: VTI and TLT
-        # Row 2, Col 2: IAUM and IBIT
-        # Row 3, Col 1: VTI vs IAUM
-        # Row 3, Col 2: VTI vs XLU
+        # Filter to only show last 1 year of data for plotting
+        one_year_ago = pd.Timestamp.today() - pd.Timedelta(days=365)
+        rsi_df_plot = rsi_df.loc[rsi_df.index >= one_year_ago].copy()
+
+        # Get vs_pairs configuration
+        vs_pairs = rsi_config.get("vs_pairs", [])
+        
+        # Determine grid size from vs_pairs
+        max_row = max([pair.get("row", 1) for pair in vs_pairs], default=1)
+        max_col = max([pair.get("col", 1) for pair in vs_pairs], default=1)
+        
+        # Build subplot titles in row-major order (row 1 col 1, row 1 col 2, row 2 col 1, etc.)
+        # Create a map of (row, col) -> title
+        title_map = {}
+        for pair in vs_pairs:
+            row = pair.get("row")
+            col = pair.get("col")
+            ticker1 = pair.get("ticker1", "")
+            ticker2 = pair.get("ticker2", "")
+            # Get display names for titles
+            display_name1 = ticker_to_display.get(ticker1, ticker1)
+            display_name2 = ticker_to_display.get(ticker2, ticker2)
+            title = pair.get("title", f"{display_name1} vs {display_name2} RSI")
+            title_map[(row, col)] = title
+        
+        # Build subplot_titles list in row-major order (only for positions with vs_pairs)
+        subplot_titles = []
+        for row_idx in range(1, max_row + 1):
+            for col_idx in range(1, max_col + 1):
+                title = title_map.get((row_idx, col_idx))
+                if title:
+                    subplot_titles.append(title)
+                else:
+                    # Empty string for positions without pairs (shouldn't happen with our config)
+                    subplot_titles.append("")
+        
+        # Build specs: all positions need secondary_y=True in specs to support secondary y-axis
+        specs = []
+        for row_idx in range(1, max_row + 1):
+            row_spec = []
+            for col_idx in range(1, max_col + 1):
+                # Each subplot needs secondary_y=True in specs to allow secondary y-axis traces
+                row_spec.append({"secondary_y": True})
+            specs.append(row_spec)
+        
+        # Create the figure with subplots
         fig = make_subplots(
-            rows=3,
-            cols=2,
-            subplot_titles=(
-                rsi_config.get("title", "Market Average RSI"),
-                "VTI vs TLT RSI",
-                "IAUM vs IBIT RSI",
-                "VTI vs IAUM RSI",
-                "VTI vs XLU RSI"
-            ),
-            specs=[
-                [{"colspan": 2}, None],
-                [{"secondary_y": False}, {"secondary_y": False}],
-                [{"secondary_y": False}, {"secondary_y": False}]
-            ],
-            vertical_spacing=0.1,
-            horizontal_spacing=0.05,
+            rows=max_row,
+            cols=max_col,
+            subplot_titles=subplot_titles,
+            specs=specs,
+            vertical_spacing=0.08,
+            horizontal_spacing=0.06,
         )
 
-        # Plot individual RSIs in first row (all tickers)
-        # Store color and line_style for each ticker to reuse in second row
+        # Build ticker color dictionary
         ticker_colors = {}
-        ticker_line_styles = {}
-        default_visible_tickers = ["VTI", "VXUS"]  # Only VTI and VXUS visible by default
         default_colors = ["#1f77b4", "#2ca02c", "purple", "goldenrod"]
-        default_line_styles = ["solid", "dash", "dot", "dashdot"]
         
-        for idx, col in enumerate(rsi_df.columns):
-            is_visible = col in default_visible_tickers
-            
-            # Get color and line_style from ticker config, with fallbacks
-            if isinstance(tickers_config, dict) and col in tickers_config:
-                ticker_config = tickers_config[col]
-                color = ticker_config.get("color", default_colors[idx % len(default_colors)])
-                line_style = ticker_config.get("line_style", default_line_styles[idx % len(default_line_styles)])
+        # Get all unique tickers from vs_pairs
+        all_vs_tickers = set()
+        for pair in vs_pairs:
+            all_vs_tickers.add(pair.get("ticker1"))
+            all_vs_tickers.add(pair.get("ticker2"))
+        
+        # Populate colors for all tickers used in vs_pairs
+        for ticker_symbol in all_vs_tickers:
+            if not ticker_symbol:
+                continue
+            # Get display name for config lookup
+            display_name = ticker_to_display.get(ticker_symbol, ticker_symbol)
+            # Get color from config
+            if isinstance(tickers_config, dict) and display_name in tickers_config:
+                ticker_config = tickers_config[display_name]
+                color = ticker_config.get("color", default_colors[0])
             else:
-                # Fallback for backwards compatibility
-                color = default_colors[idx % len(default_colors)]
-                line_style = default_line_styles[idx % len(default_line_styles)]
-            
-            # Store color and line_style for reuse
-            ticker_colors[col] = color
-            ticker_line_styles[col] = line_style
-            
-            fig.add_trace(
-                go.Scatter(
-                    x=rsi_df.index,
-                    y=rsi_df[col],
-                    mode="lines",
-                    name=f"{col} RSI",
-                    line=dict(
-                        color=color, 
-                        width=rsi_config.get("line_width", 2), 
-                        dash=line_style
-                    ),
-                    opacity=rsi_config.get("opacity", 0.7),
-                    visible="legendonly" if not is_visible else True,
-                    showlegend=True,
-                ),
-                row=1,
-                col=1,
-            )
+                color = default_colors[0]
+            ticker_colors[ticker_symbol] = color
 
-        # Add VTI and TLT to second row, first column
-        for ticker_symbol in ["VTI", "TLT"]:
-            if ticker_symbol in rsi_df.columns:
-                # Use the same color and line_style as in first row
-                color = ticker_colors.get(ticker_symbol, default_colors[0])
-                line_style = ticker_line_styles.get(ticker_symbol, default_line_styles[0])
-                fig.add_trace(
-                    go.Scatter(
-                        x=rsi_df.index,
-                        y=rsi_df[ticker_symbol],
-                        mode="lines",
-                        name=f"{ticker_symbol} RSI",
-                        line=dict(
-                            color=color,
-                            width=rsi_config.get("line_width", 2),
-                            dash=line_style,
-                        ),
-                        opacity=rsi_config.get("opacity", 0.7),
-                        showlegend=False,
-                    ),
-                    row=2,
-                    col=1,
-                )
-
-        # Add IAUM and IBIT to second row, second column
-        for ticker_symbol in ["IAUM", "IBIT"]:
-            if ticker_symbol in rsi_df.columns:
-                # Use the same color and line_style as in first row
-                color = ticker_colors.get(ticker_symbol, default_colors[0])
-                line_style = ticker_line_styles.get(ticker_symbol, default_line_styles[0])
-                fig.add_trace(
-                    go.Scatter(
-                        x=rsi_df.index,
-                        y=rsi_df[ticker_symbol],
-                        mode="lines",
-                        name=f"{ticker_symbol} RSI",
-                        line=dict(
-                            color=color,
-                            width=rsi_config.get("line_width", 2),
-                            dash=line_style,
-                        ),
-                        opacity=rsi_config.get("opacity", 0.7),
-                        showlegend=False,
-                    ),
-                    row=2,
-                    col=2,
-                )
-
-        # Add VTI vs IAUM to third row, first column
-        for ticker_symbol in ["VTI", "IAUM"]:
-            if ticker_symbol in rsi_df.columns:
-                # Use the same color and line_style as in first row
-                color = ticker_colors.get(ticker_symbol, default_colors[0])
-                line_style = ticker_line_styles.get(ticker_symbol, default_line_styles[0])
-                fig.add_trace(
-                    go.Scatter(
-                        x=rsi_df.index,
-                        y=rsi_df[ticker_symbol],
-                        mode="lines",
-                        name=f"{ticker_symbol} RSI",
-                        line=dict(
-                            color=color,
-                            width=rsi_config.get("line_width", 2),
-                            dash=line_style,
-                        ),
-                        opacity=rsi_config.get("opacity", 0.7),
-                        showlegend=False,
-                    ),
-                    row=3,
-                    col=1,
-                )
-
-        # Add VTI vs XLU to third row, second column
-        for ticker_symbol in ["VTI", "XLU"]:
-            if ticker_symbol in rsi_df.columns:
-                # Use the same color and line_style as in first row
-                color = ticker_colors.get(ticker_symbol, default_colors[0])
-                line_style = ticker_line_styles.get(ticker_symbol, default_line_styles[0])
-                fig.add_trace(
-                    go.Scatter(
-                        x=rsi_df.index,
-                        y=rsi_df[ticker_symbol],
-                        mode="lines",
-                        name=f"{ticker_symbol} RSI",
-                        line=dict(
-                            color=color,
-                            width=rsi_config.get("line_width", 2),
-                            dash=line_style,
-                        ),
-                        opacity=rsi_config.get("opacity", 0.7),
-                        showlegend=False,
-                    ),
-                    row=3,
-                    col=2,
-                )
-
-        # Add reference lines from config to all subplots
-        for ref_line in rsi_config.get("reference_lines", []):
-            # Add to first row
-            fig.add_hline(
-                y=ref_line.get("y"),
-                line_dash=ref_line.get("line_dash", "dot"),
-                line_color=ref_line.get("line_color", "gray"),
-                opacity=ref_line.get("opacity", 0.5),
-                annotation_text=ref_line.get("annotation_text", ""),
-                annotation_font_color=ref_line.get("annotation_font_color", "black"),
-                row=1,
-                col=1,
-            )
-            # Add to second row, first column
-            fig.add_hline(
-                y=ref_line.get("y"),
-                line_dash=ref_line.get("line_dash", "dot"),
-                line_color=ref_line.get("line_color", "gray"),
-                opacity=ref_line.get("opacity", 0.5),
-                row=2,
-                col=1,
-            )
-            # Add to second row, second column
-            fig.add_hline(
-                y=ref_line.get("y"),
-                line_dash=ref_line.get("line_dash", "dot"),
-                line_color=ref_line.get("line_color", "gray"),
-                opacity=ref_line.get("opacity", 0.5),
-                row=2,
-                col=2,
-            )
-            # Add to third row, first column
-            fig.add_hline(
-                y=ref_line.get("y"),
-                line_dash=ref_line.get("line_dash", "dot"),
-                line_color=ref_line.get("line_color", "gray"),
-                opacity=ref_line.get("opacity", 0.5),
-                row=3,
-                col=1,
-            )
-            # Add to third row, second column
-            fig.add_hline(
-                y=ref_line.get("y"),
-                line_dash=ref_line.get("line_dash", "dot"),
-                line_color=ref_line.get("line_color", "gray"),
-                opacity=ref_line.get("opacity", 0.5),
-                row=3,
-                col=2,
-            )
-
-        # Update layout
-        fig.update_layout(
-            height=rsi_config.get("height", 2500),
-            hovermode="x unified",
-            showlegend=True,
-            legend=dict(orientation="h", yanchor="top", y=1, xanchor="center", x=0.5),
-            plot_bgcolor="white",
-        )
-        
-        # Move subplot titles slightly higher
-        for annotation in fig.layout.annotations:
-            if annotation.text:  # Only update subplot title annotations
-                annotation.y += 0.01  # Move titles up by 2% of the plot height
-        
-        # Update axes labels and remove default grid for all subplots
-        fig.update_xaxes(title_text="Date", showgrid=False, row=1, col=1)
-        fig.update_xaxes(title_text="Date", showgrid=False, row=2, col=1)
-        fig.update_xaxes(title_text="Date", showgrid=False, row=2, col=2)
-        fig.update_xaxes(title_text="Date", showgrid=False, row=3, col=1)
-        fig.update_xaxes(title_text="Date", showgrid=False, row=3, col=2)
-        fig.update_yaxes(title_text=rsi_config.get("yaxis_title", "RSI"), showgrid=False, row=1, col=1)
-        fig.update_yaxes(title_text=rsi_config.get("yaxis_title", "RSI"), showgrid=False, row=2, col=1)
-        fig.update_yaxes(title_text=rsi_config.get("yaxis_title", "RSI"), showgrid=False, row=2, col=2)
-        fig.update_yaxes(title_text=rsi_config.get("yaxis_title", "RSI"), showgrid=False, row=3, col=1)
-        fig.update_yaxes(title_text=rsi_config.get("yaxis_title", "RSI"), showgrid=False, row=3, col=2)
-
-        st.plotly_chart(fig, config={"displayModeBar": False}, use_container_width=True)
-
-        # Create pie chart with latest RSI values
+        # Create pie chart with latest RSI values (before subplots)
         if not rsi_df_original.empty:
             latest_rsi = rsi_df_original.iloc[-1].dropna()
             
@@ -1066,18 +891,120 @@ def main():
                         colors=[ticker_colors.get(ticker, default_colors[0]) for ticker in latest_rsi.index]
                     ),
                     textinfo="label+percent",
+                    textfont=dict(size=18, family="Arial Black", color="black"),
                     hole=0.3,  # Donut chart
                     showlegend=False,
                 )
             ])
             
             pie_fig.update_layout(
-                title="Latest RSI Values Distribution",
-                height=400,
-                margin=dict(l=20, r=20, t=50, b=20),
+                title="Current RSI Values",
+                title_font=dict(size=24, family="Arial Black"),
+                height=600,
+                margin=dict(l=40, r=40, t=80, b=40),
             )
             
-            st.plotly_chart(pie_fig, config={"displayModeBar": False}, use_container_width=True)
+            st.plotly_chart(pie_fig, config={"displayModeBar": True}, use_container_width=True)
+            st.markdown("---")
+
+        # Add all vs_pair plots
+        for pair in vs_pairs:
+            _add_vs_pair_plot(
+                fig,
+                rsi_df_plot,
+                pair,
+                ticker_colors,
+                rsi_config,
+                default_colors,
+            )
+
+        # Add reference lines to all subplots
+        for ref_line in rsi_config.get("reference_lines", []):
+            for pair in vs_pairs:
+                row = pair.get("row")
+                col = pair.get("col")
+                # Only show annotation on first subplot
+                annotation_text = ref_line.get("annotation_text", "") if (row == 1 and col == 1) else ""
+                fig.add_hline(
+                    y=ref_line.get("y"),
+                    line_dash=ref_line.get("line_dash", "dot"),
+                    line_color=ref_line.get("line_color", "gray"),
+                    opacity=ref_line.get("opacity", 0.5),
+                    annotation_text=annotation_text,
+                    annotation_font_color=ref_line.get("annotation_font_color", "black") if annotation_text else None,
+                    row=row,
+                    col=col,
+                )
+
+        # Update axes labels for all subplots
+        for pair in vs_pairs:
+            row = pair.get("row")
+            col = pair.get("col")
+            ticker1 = pair.get("ticker1")
+            ticker2 = pair.get("ticker2")
+            
+            fig.update_xaxes(title_text="Date", showgrid=False, row=row, col=col)
+            fig.update_yaxes(title_text=rsi_config.get("yaxis_title", "RSI"), showgrid=False, row=row, col=col, secondary_y=False)
+            
+            # Align secondary y-axis so that RSI=50 aligns with Difference=0
+            # Get RSI data range to calculate primary axis span
+            if ticker1 in rsi_df_plot.columns and ticker2 in rsi_df_plot.columns:
+                # Get combined RSI range
+                rsi_combined = pd.concat([rsi_df_plot[ticker1], rsi_df_plot[ticker2]])
+                rsi_min = rsi_combined.min()
+                rsi_max = rsi_combined.max()
+                rsi_span = rsi_max - rsi_min
+                
+                # Set primary axis range to be symmetric around 50
+                primary_range = [max(0, 50 - rsi_span/2 * 1.5), min(100, 50 + rsi_span/2 * 1.5)]
+                
+                # Set secondary axis range to match primary scale, centered at 0
+                secondary_span = rsi_span * 1.1
+                secondary_range = [-secondary_span / 2, secondary_span / 2]
+                
+                # Update primary axis range
+                fig.update_yaxes(
+                    range=primary_range,
+                    row=row,
+                    col=col,
+                    secondary_y=False
+                )
+            else:
+                # Default range for secondary axis
+                secondary_range = [-30, 30]
+            
+            fig.update_yaxes(
+                title_text="Difference",
+                showgrid=False,
+                row=row,
+                col=col,
+                secondary_y=True,
+                range=secondary_range
+            )
+            fig.add_hline(y=0, line_dash="dot", line_color="gray", opacity=0.5, row=row, col=col, secondary_y=True)
+
+        # Update layout
+        fig.update_layout(
+            height=rsi_config.get("height", 2500),
+            hovermode="x unified",
+            showlegend=True,
+            legend=dict(orientation="h", yanchor="top", y=1.02, xanchor="center", x=0.5),
+            plot_bgcolor="white",
+        )
+        
+        # Move subplot titles slightly higher
+        for annotation in fig.layout.annotations:
+            if annotation.text:
+                annotation.y += 0.01
+
+        st.plotly_chart(fig, config={"displayModeBar": False}, use_container_width=True)
+
+    st.markdown("---")
+    st.title("Dominance Shifts")
+    st.markdown("Percent change in price over different time periods. ")
+
+    # Plot dominance pie charts using the same tickers and price data from RSI section
+    _plot_dominance_pie_charts(ticker.prices, ticker_colors, tickers_config, ticker_to_display)
 
     st.markdown("---")
 
@@ -1103,25 +1030,7 @@ def main():
         show_lag=show_lag,
     )
 
-    st.markdown("---")
-    st.title("Dominance Shifts")
-    st.markdown("Percent change in price over different time periods. ")
 
-    # Load dominance plots configuration (needed for pie charts)
-    dominance_plots_list = macro_config.get("dominance_plots", {})
-    dominance_plots = OmegaConf.to_container(dominance_plots_list, resolve=True) if dominance_plots_list else []
-
-    _plot_dominance_pie_charts(dominance_plots)
-
-    st.markdown("---")
-    st.markdown(
-        "**Region Dominance** metrics are calculated using daily data: the ratio of a regional ETF's 5-day price ratio "
-        "to a benchmark ETF's 5-day price ratio, smoothed with a 14-day exponential moving average. "
-        "A ratio > 1 indicates the regional market is outperforming the benchmark. "
-        "Each plot shows the dominance ratio (primary axis) and normalized price curves (secondary axis)."
-    )
-
-    _plot_all_dominance_subplots(beginning_date=beginning_date, lookback_weeks=lookback_weeks, dominance_plots=dominance_plots)
 
 
 if __name__ == "__main__":

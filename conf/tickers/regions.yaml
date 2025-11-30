@@ -56,8 +56,8 @@ ASEA:
 # @@ Countries
 # Asia
 
-FCA:
-  name: "First Trust China AlphaDEX Fund"
+FLCH:
+  name: "Franklin FTSE China ETF"
   color: rgba(255,0,0,1) # red
 
 EIDO:
