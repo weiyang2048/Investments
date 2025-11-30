@@ -59,14 +59,14 @@ dominance_plots:
     fill_color_below: "rgba(144, 238, 144, 0.5)"
   - row: 3
     col: 2
-    ticker1: BTC-USD
-    ticker2: "GC=F"
-    title: "Digital Dominance: BTC-USD / GC=F"
-    dominance_name: "Digital Dominance"
-    ticker1_label: BTC-USD
-    ticker2_label: "GC=F"
-    ticker1_color: purple
-    ticker2_color: gold
-    fill_color_above: "rgba(128, 0, 128, 1)"
-    fill_color_below: "rgba(255, 215, 0, 0.5)"
+    ticker1: SPY
+    ticker2: TLT
+    title: "Risk-On/Risk-Off: SPY / TLT"
+    dominance_name: "Risk-On/Risk-Off"
+    ticker1_label: SPY
+    ticker2_label: TLT
+    ticker1_color: blue
+    ticker2_color: white
+    fill_color_above: "rgba(0, 0, 255, 0.3)"
+    fill_color_below: "rgba(255, 255, 255, 0.3)"
 

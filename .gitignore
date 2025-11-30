@@ -10,3 +10,4 @@ uv.lock
 outputs/
 conf/account_mapping.json
 Portfolio_Positions.csv
+.complexipy_cache/77a192b715d9b859a5e927817651c54e.json

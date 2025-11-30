@@ -15,9 +15,7 @@ ARKK:
 ARKW:
   name: ARK Next Generation Internet ETF
   color: rgba(30,144,255,1) # dodgerblue
-IZRL:
-  name: ARK Israel Innovative Technology ETF
-  color: rgba(0,100,200,1) # blue
+
 # ! AI
 AIQ:
   name: Global X Artificial Intelligence & Technology ETF
@@ -165,9 +163,6 @@ MXI:
 PYZ:
   name: Invesco Dorsey Wright Basic Materials Momentum ETF
   color: saddlebrown
-PRNT:
-  name: The 3D Printing ETF
-  color: rgba(128,0,128,1) # purple
 XME:
   name: SPDR S&P Metals & Mining ETF
 LIT:

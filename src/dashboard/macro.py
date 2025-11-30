@@ -21,6 +21,7 @@ from src.dashboard.create_page import setup_page_and_sidebar
 from src.data.GLI import st_load_global_liquidity
 from src.data.P import st_get_tickers_close_prices
 from src.data.FearGreed import FearGreed
+from src.data.TICKER import TICKERS
 
 
 def parse_custom_symbols(symbols_text: str) -> list:
@@ -43,7 +44,7 @@ def get_asset_config_with_custom(default_config: dict, custom_symbols: list, col
     for idx, symbol in enumerate(custom_symbols):
         if symbol not in config:
             color = colors[idx % len(colors)]
-            config[symbol] = {"name": symbol, "color": color}
+            config[symbol] = {"name": symbol, "color": color, "opacity": 0.7}  # Default opacity for custom symbols
 
     return config
 
@@ -93,21 +94,20 @@ def _add_macro_sidebar(macro_config: dict):
     )
 
     st.sidebar.markdown("<hr>", unsafe_allow_html=True)
-    st.sidebar.markdown("**EMA Smoothing**")
-    show_ema = st.sidebar.checkbox(
-        "Show EMA",
-        value=True,
-        help="Display an exponential moving average of the Global Liquidity Index.",
+    st.sidebar.markdown("**EMA / RSI Smoothing**")
+    # Single global smoothing control, used for GLI EMA and RSI / overlays
+    smoothing_span = st.sidebar.slider(
+        "Smoothing window (EMA span)",
+        min_value=1,
+        max_value=50,
+        value=5,
+        step=1,
+        help="Apply an EMA smoothing window to the Global Liquidity EMA and RSI / overlay series (1 = no smoothing, higher = smoother).",
+        key="smoothing_span",
     )
-    ema_period = st.sidebar.slider(
-        "EMA Period (days)",
-        min_value=5,
-        max_value=200,
-        value=10,
-        step=5,
-        disabled=not show_ema,
-        help="Number of days for the exponential moving average calculation.",
-    )
+    # Always show EMA; reuse smoothing_span as EMA period
+    show_ema = True
+    ema_period = int(smoothing_span)
 
     st.sidebar.markdown("<hr>", unsafe_allow_html=True)
     st.sidebar.markdown("**Custom Symbols**")
@@ -120,6 +120,197 @@ def _add_macro_sidebar(macro_config: dict):
     custom_symbols = parse_custom_symbols(custom_symbols_text)
 
     return beginning_date, int(lag_weeks), custom_symbols, show_ema, int(ema_period), show_lag
+
+
+def _prepare_liquidity_data(
+    df: pd.DataFrame,
+    beginning_date: pd.Timestamp,
+    lookback_weeks: int,
+    lag_weeks: int,
+    show_ema: bool,
+    ema_period: int,
+    show_lag: bool,
+) -> tuple[pd.DataFrame, pd.Timestamp, pd.Timestamp]:
+    """Prepare liquidity data: calculate date range, reindex, interpolate, and add EMA/lag columns."""
+    lookback_days = lookback_weeks * 7
+    start_date = beginning_date - pd.Timedelta(days=lookback_days + 7)
+    end_date = pd.Timestamp.today()
+    lag_days = lag_weeks * 7
+
+    date_range_full = pd.date_range(
+        start=start_date.normalize() if hasattr(start_date, "normalize") else pd.Timestamp(start_date).normalize(),
+        end=end_date.normalize() if hasattr(end_date, "normalize") else pd.Timestamp(end_date).normalize(),
+        freq="D",
+    )
+
+    df_extended = df.reindex(date_range_full, method=None)
+
+    if "Liquidity Index" in df_extended.columns:
+        df_extended["Liquidity Index"] = df_extended["Liquidity Index"].interpolate(method="time")
+        if show_ema:
+            df_extended[f"Liquidity Index (EMA {ema_period})"] = df_extended["Liquidity Index"].ewm(span=ema_period, adjust=False).mean()
+
+    if show_lag and lag_days > 0:
+        df_extended["Liquidity Index (Lag)"] = df_extended["Liquidity Index"].shift(lag_days)
+        if show_ema:
+            df_extended[f"Liquidity Index (Lag EMA {ema_period})"] = df_extended["Liquidity Index (Lag)"].ewm(span=ema_period, adjust=False).mean()
+
+    df_plot = df_extended.loc[df_extended.index <= end_date]
+    return df_plot, start_date, end_date
+
+
+def _add_liquidity_traces(
+    fig: go.Figure,
+    df_plot: pd.DataFrame,
+    start_date: pd.Timestamp,
+    end_date: pd.Timestamp,
+    lag_weeks: int,
+    show_ema: bool,
+    ema_period: int,
+    show_lag: bool,
+):
+    """Add all liquidity index traces to the figure."""
+    fig.add_trace(
+        go.Scatter(
+            x=df_plot.index,
+            y=df_plot["Liquidity Index"],
+            name=f"Global Liquidity Index ({start_date.date()} to {end_date.date()})",
+            line=dict(color="royalblue", width=2),
+            opacity=0.75,
+        ),
+        secondary_y=False,
+    )
+
+    if show_ema and f"Liquidity Index (EMA {ema_period})" in df_plot.columns:
+        fig.add_trace(
+            go.Scatter(
+                x=df_plot.index,
+                y=df_plot[f"Liquidity Index (EMA {ema_period})"],
+                name=f"Liquidity Index (EMA {ema_period})",
+                line=dict(color="skyblue", width=2, dash="dot"),
+                opacity=0.9,
+            ),
+            secondary_y=False,
+        )
+
+    if show_lag and "Liquidity Index (Lag)" in df_plot.columns:
+        fig.add_trace(
+            go.Scatter(
+                x=df_plot.index,
+                y=df_plot["Liquidity Index (Lag)"],
+                name=f"Liquidity Index (Lag {lag_weeks}w)",
+                line=dict(color="green", width=2, dash="dash"),
+                opacity=1.0,
+            ),
+            secondary_y=False,
+        )
+
+        if show_ema and f"Liquidity Index (Lag EMA {ema_period})" in df_plot.columns:
+            fig.add_trace(
+                go.Scatter(
+                    x=df_plot.index,
+                    y=df_plot[f"Liquidity Index (Lag EMA {ema_period})"],
+                    name=f"Liquidity Index (Lag {lag_weeks}w EMA {ema_period})",
+                    line=dict(color="lightgreen", width=2, dash="dot"),
+                    opacity=0.9,
+                ),
+                secondary_y=False,
+            )
+
+
+def _add_asset_overlays(
+    fig: go.Figure,
+    merged_asset_config: dict,
+    start_date: pd.Timestamp,
+    end_date: pd.Timestamp,
+):
+    """Load, normalize, and plot asset overlays."""
+    tickers = list(merged_asset_config.keys())
+    assets_hist = st_get_tickers_close_prices(tickers, period="max")
+
+    if assets_hist.empty:
+        st.info("Asset price data could not be loaded (yfinance returned no data).")
+        return
+
+    assets_mask = (assets_hist.index >= start_date) & (assets_hist.index <= end_date)
+    assets_plot = assets_hist.loc[assets_mask]
+    smooth_span = st.session_state.get("smoothing_span", 1)
+
+    for ticker in tickers:
+        if ticker not in assets_plot.columns:
+            continue
+
+        asset_data = assets_plot[ticker].dropna()
+        if asset_data.empty:
+            continue
+
+        if smooth_span > 1:
+            asset_data = asset_data.ewm(span=smooth_span, adjust=False).mean()
+
+        asset_norm = asset_data / asset_data.iloc[0]
+        config = merged_asset_config[ticker]
+        asset_opacity = config.get("opacity", 1.0)
+
+        fig.add_trace(
+            go.Scatter(
+                x=asset_data.index,
+                y=asset_norm,
+                name=f"{config['name']} (price / first price)",
+                line=dict(color=config["color"], width=2),
+                opacity=asset_opacity,
+            ),
+            secondary_y=True,
+        )
+
+
+def _add_lag_reference_line(fig: go.Figure, end_date: pd.Timestamp, lag_weeks: int, lag_days: int):
+    """Add vertical reference line showing where lagged series aligns with today."""
+    lag_reference_date = end_date - pd.Timedelta(days=lag_days)
+    lag_reference_datetime = pd.Timestamp(lag_reference_date).to_pydatetime()
+
+    fig.add_shape(
+        type="line",
+        x0=lag_reference_datetime,
+        x1=lag_reference_datetime,
+        y0=0,
+        y1=1,
+        yref="paper",
+        line=dict(color="gray", width=2, dash="dot"),
+        opacity=0.7,
+    )
+
+    fig.add_annotation(
+        x=lag_reference_datetime,
+        y=1,
+        yref="paper",
+        text=f"Today - {lag_weeks}w",
+        showarrow=False,
+        xanchor="center",
+        yanchor="bottom",
+        font=dict(color="black"),
+        bgcolor="rgba(255,255,255,0.8)",
+        bordercolor="gray",
+        borderwidth=1,
+    )
+
+
+def _configure_liquidity_layout(fig: go.Figure, merged_asset_config: dict):
+    """Configure axes labels and layout."""
+    fig.update_xaxes(title_text="Date")
+    fig.update_yaxes(title_text="Global Liquidity Index", secondary_y=False)
+
+    asset_names = [merged_asset_config[t]["name"] for t in merged_asset_config.keys()]
+    asset_label = ", ".join(asset_names[:5])
+    if len(asset_names) > 5:
+        asset_label += f", ... ({len(asset_names)} total)"
+    fig.update_yaxes(title_text=f"{asset_label} (normalized price)", secondary_y=True)
+
+    fig.update_layout(
+        height=500,
+        hovermode="x unified",
+        showlegend=True,
+        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
+    )
 
 
 def _plot_global_liquidity(
@@ -135,185 +326,32 @@ def _plot_global_liquidity(
     show_lag: bool = True,
 ):
     """Create and render the Global Liquidity plot with asset overlays (normalized)."""
-    # Calculate date range: beginning_date - lookback_weeks to now
-
-    lookback_days = lookback_weeks * 7
-    start_date = beginning_date - pd.Timedelta(days=lookback_days + 7)
-    end_date = pd.Timestamp.today()  # Always plot to now
-
-    lag_days = lag_weeks * 7
-
-    # Build extended date range so the lagged curve can extend into the future
-
-    # Create date range with date-only (no time component) to match df.index format
-    date_range_full = pd.date_range(
-        start=start_date.normalize() if hasattr(start_date, "normalize") else pd.Timestamp(start_date).normalize(),
-        end=end_date.normalize() if hasattr(end_date, "normalize") else pd.Timestamp(end_date).normalize(),
-        freq="D",
+    # Prepare data
+    df_plot, start_date, end_date = _prepare_liquidity_data(
+        df, beginning_date, lookback_weeks, lag_weeks, show_ema, ema_period, show_lag
     )
 
-    # Reindex to full daily date_range_full and interpolate missing days
-    # Use method=None to allow explicit interpolation control
-    df_extended = df.reindex(date_range_full, method=None)
-
-    # Interpolate missing values using time-based interpolation
-    # This fills gaps in the data by interpolating between known values
-    if "Liquidity Index" in df_extended.columns:
-        df_extended["Liquidity Index"] = df_extended["Liquidity Index"].interpolate(method="time")
-        # Calculate EMA of the Liquidity Index if enabled
-        if show_ema:
-            df_extended[f"Liquidity Index (EMA {ema_period})"] = df_extended["Liquidity Index"].ewm(span=ema_period, adjust=False).mean()
-
-    # Create the lagged series if enabled
-    if show_lag and lag_days > 0:
-        df_extended["Liquidity Index (Lag)"] = df_extended["Liquidity Index"].shift(lag_days)
-        # Calculate EMA of the lagged series if EMA is also enabled
-        if show_ema:
-            df_extended[f"Liquidity Index (Lag EMA {ema_period})"] = df_extended["Liquidity Index (Lag)"].ewm(span=ema_period, adjust=False).mean()
-    # Only keep the plotting window (start_date to max_date with lag)
-    df_plot = df_extended.loc[df_extended.index <= end_date]
-    # Create plotly figure with secondary y-axis
+    # Create figure
     fig = make_subplots(specs=[[{"secondary_y": True}]])
 
-    # Add unlagged Global Liquidity Index with increased opacity for visibility
-    fig.add_trace(
-        go.Scatter(
-            x=df_plot.index,
-            y=df_plot["Liquidity Index"],
-            name=f"Global Liquidity Index ({start_date.date()} to {end_date.date()})",
-            line=dict(color="royalblue", width=2),
-            opacity=0.75,
-        ),
-        secondary_y=False,
-    )
-    # Add EMA of Global Liquidity Index if enabled
-    if show_ema and f"Liquidity Index (EMA {ema_period})" in df_plot.columns:
-        fig.add_trace(
-            go.Scatter(
-                x=df_plot.index,
-                y=df_plot[f"Liquidity Index (EMA {ema_period})"],
-                name=f"Liquidity Index (EMA {ema_period})",
-                line=dict(color="skyblue", width=2, dash="dot"),
-                opacity=0.9,
-            ),
-            secondary_y=False,
-        )
+    # Add liquidity traces
+    _add_liquidity_traces(fig, df_plot, start_date, end_date, lag_weeks, show_ema, ema_period, show_lag)
 
-    # Add lagged Global Liquidity Index if enabled
-    if show_lag and "Liquidity Index (Lag)" in df_plot.columns:
-        fig.add_trace(
-            go.Scatter(
-                x=df_plot.index,
-                y=df_plot["Liquidity Index (Lag)"],
-                name=f"Liquidity Index (Lag {lag_weeks}w)",
-                line=dict(color="green", width=2, dash="dash"),
-                opacity=1.0,
-            ),
-            secondary_y=False,
-        )
-        # Add EMA of lagged series if EMA is also enabled
-        if show_ema and f"Liquidity Index (Lag EMA {ema_period})" in df_plot.columns:
-            fig.add_trace(
-                go.Scatter(
-                    x=df_plot.index,
-                    y=df_plot[f"Liquidity Index (Lag EMA {ema_period})"],
-                    name=f"Liquidity Index (Lag {lag_weeks}w EMA {ema_period})",
-                    line=dict(color="lightgreen", width=2, dash="dot"),
-                    opacity=0.9,
-                ),
-                secondary_y=False,
-            )
-
-    # Merge default and custom symbols
-    if custom_symbols is None:
-        custom_symbols = []
-    if colors is None:
-        colors = []
+    # Merge asset configs
+    custom_symbols = custom_symbols or []
+    colors = colors or []
     merged_asset_config = get_asset_config_with_custom(asset_config, custom_symbols, colors)
-    tickers = list(merged_asset_config.keys())
 
-    # Load all asset histories at once using the simplified function
-    assets_hist = st_get_tickers_close_prices(tickers, period="max")
+    # Add asset overlays
+    _add_asset_overlays(fig, merged_asset_config, start_date, end_date)
 
-    if assets_hist.empty:
-        st.info("Asset price data could not be loaded (yfinance returned no data).")
-    else:
-        # Filter assets data to the plotting range
-        assets_mask = (assets_hist.index >= start_date) & (assets_hist.index <= end_date)
-        assets_plot = assets_hist.loc[assets_mask]
+    # Add lag reference line
+    if show_lag and lag_weeks > 0:
+        lag_days = lag_weeks * 7
+        _add_lag_reference_line(fig, end_date, lag_weeks, lag_days)
 
-        # Plot each asset
-        for ticker in tickers:
-            if ticker in assets_plot.columns:
-                asset_data = assets_plot[ticker].dropna()
-
-                if not asset_data.empty:
-                    # Normalize by earliest price in the plotting range
-                    base_price = asset_data.iloc[0]
-                    asset_norm = asset_data / base_price
-
-                    config = merged_asset_config[ticker]
-                    fig.add_trace(
-                        go.Scatter(
-                            x=asset_data.index,
-                            y=asset_norm,
-                            name=f"{config['name']} (price / first price)",
-                            line=dict(color=config["color"], width=2),
-                            opacity=1.0,
-                        ),
-                        secondary_y=True,
-                    )
-
-    # Add vertical line at today - lag (where lagged series aligns with today) if enabled
-    if show_lag and lag_days > 0:
-        # Adjust by 7 days to match the corrected lag shift
-        lag_reference_date = end_date - pd.Timedelta(days=lag_days)
-        # Convert to datetime for Plotly compatibility
-        lag_reference_datetime = pd.Timestamp(lag_reference_date).to_pydatetime()
-
-        fig.add_shape(
-            type="line",
-            x0=lag_reference_datetime,
-            x1=lag_reference_datetime,
-            y0=0,
-            y1=1,
-            yref="paper",
-            line=dict(color="gray", width=2, dash="dot"),
-            opacity=0.7,
-        )
-
-        # Add annotation for the vertical line
-        fig.add_annotation(
-            x=lag_reference_datetime,
-            y=1,
-            yref="paper",
-            text=f"Today - {lag_weeks}w",
-            showarrow=False,
-            xanchor="center",
-            yanchor="bottom",
-            font=dict(color="black"),
-            bgcolor="rgba(255,255,255,0.8)",
-            bordercolor="gray",
-            borderwidth=1,
-        )
-
-    # Set axis labels
-    fig.update_xaxes(title_text="Date")
-    fig.update_yaxes(title_text="Global Liquidity Index", secondary_y=False)
-    # Build asset list for y-axis label
-    asset_names = [merged_asset_config[t]["name"] for t in tickers if t in merged_asset_config]
-    asset_label = ", ".join(asset_names[:5])  # Show first 5, add "..." if more
-    if len(asset_names) > 5:
-        asset_label += f", ... ({len(asset_names)} total)"
-    fig.update_yaxes(title_text=f"{asset_label} (normalized price)", secondary_y=True)
-
-    # Update layout
-    fig.update_layout(
-        height=500,
-        hovermode="x unified",
-        showlegend=True,
-        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
-    )
+    # Configure layout
+    _configure_liquidity_layout(fig, merged_asset_config)
 
     st.plotly_chart(fig, config={"displayModeBar": False})
 
@@ -551,7 +589,6 @@ def _calculate_price_pct_change_for_period(ticker: str, days_back: int) -> float
         return 0.0
 
     pct_change = ((latest - previous) / previous) * 100
-    print(ticker, days_back, pct_change)
     return pct_change
 
 
@@ -698,23 +735,23 @@ def main():
     # Load colors from style_conf
     style_conf = config.get("style_conf", {})
     colors = list(style_conf.get("colors", []))
-    
+
     # Get Fear and Greed data
     fear_greed = FearGreed()
     traditional_data = fear_greed.get_fear_and_greed()
     crypto_data = fear_greed.get_crypto_fear_and_greed()
-    
+
     stock_value = traditional_data["value"]
     stock_desc = traditional_data["description"]
     crypto_value = crypto_data["value"] if crypto_data["value"] is not None else "N/A"
     crypto_desc = crypto_data["description"] if crypto_data["value"] is not None else "Error"
-    
+
     # Calculate colors for both metrics
     normalized_stock = stock_value / 100.0
     red_stock = int(255 * (1 - normalized_stock))
     green_stock = int(255 * normalized_stock)
     color_hex_stock = f"#{red_stock:02x}{green_stock:02x}{50:02x}"
-    
+
     if crypto_data["value"] is not None:
         normalized_crypto = crypto_data["value"] / 100.0
         red_crypto = int(255 * (1 - normalized_crypto))
@@ -722,7 +759,7 @@ def main():
         color_hex_crypto = f"#{red_crypto:02x}{green_crypto:02x}{50:02x}"
     else:
         color_hex_crypto = "#808080"
-    
+
     # Add TradingView Economic Calendar and Fear & Greed Index on the same line
     st.markdown(
         f"""
@@ -738,10 +775,313 @@ def main():
         """,
         unsafe_allow_html=True,
     )
-    
-    st.title("GLI : Global Liquidity Index")
-    
 
+    # Market Strength Indicator (US Market RSI)
+    st.title("Market Strength Indicator")
+    st.markdown("RSI (Relative Strength Index) for US and International markets")
+
+    # Load RSI configuration from YAML
+    rsi_config = config.get("macro", {}).get("rsi", {})
+
+    # Use global smoothing span from sidebar (fallback to default if missing)
+    smoothing_span = st.session_state.get("smoothing_span", 5)
+
+    with st.spinner("Loading market RSI data..."):
+        # Extract ticker configuration (support both dict and list formats for backwards compatibility)
+        tickers_config = rsi_config.get("tickers", {})
+        if isinstance(tickers_config, dict):
+            ticker_list = list(tickers_config.keys())
+        else:
+            # Fallback to list format for backwards compatibility
+            ticker_list = tickers_config if isinstance(tickers_config, list) else ["VTI", "VXUS", "IBIT", "IAUM"]
+        
+        # Ensure TLT and XLU are included for the plots
+        all_tickers = list(set(ticker_list + ["VTI", "TLT", "IAUM", "IBIT", "XLU"]))
+        
+        ticker = TICKERS(
+            all_tickers,
+            period=rsi_config.get("period", "360d"),
+            normalize=rsi_config.get("normalize", True)
+        )
+        ticker.get_rsi()
+        rsi_df = ticker.rsis[rsi_config.get("rsi_period", 14)]
+        rsi_df_original = rsi_df.copy()
+        # Apply optional EMA smoothing to RSI
+        if smoothing_span > 1:
+            rsi_df = rsi_df.ewm(span=smoothing_span, adjust=False).mean()
+
+        # Create subplot figure: 3 rows, 2 columns
+        # Row 1: All RSI lines (spans both columns)
+        # Row 2, Col 1: VTI and TLT
+        # Row 2, Col 2: IAUM and IBIT
+        # Row 3, Col 1: VTI vs IAUM
+        # Row 3, Col 2: VTI vs XLU
+        fig = make_subplots(
+            rows=3,
+            cols=2,
+            subplot_titles=(
+                rsi_config.get("title", "Market Average RSI"),
+                "VTI vs TLT RSI",
+                "IAUM vs IBIT RSI",
+                "VTI vs IAUM RSI",
+                "VTI vs XLU RSI"
+            ),
+            specs=[
+                [{"colspan": 2}, None],
+                [{"secondary_y": False}, {"secondary_y": False}],
+                [{"secondary_y": False}, {"secondary_y": False}]
+            ],
+            vertical_spacing=0.1,
+            horizontal_spacing=0.05,
+        )
+
+        # Plot individual RSIs in first row (all tickers)
+        # Store color and line_style for each ticker to reuse in second row
+        ticker_colors = {}
+        ticker_line_styles = {}
+        default_visible_tickers = ["VTI", "VXUS"]  # Only VTI and VXUS visible by default
+        default_colors = ["#1f77b4", "#2ca02c", "purple", "goldenrod"]
+        default_line_styles = ["solid", "dash", "dot", "dashdot"]
+        
+        for idx, col in enumerate(rsi_df.columns):
+            is_visible = col in default_visible_tickers
+            
+            # Get color and line_style from ticker config, with fallbacks
+            if isinstance(tickers_config, dict) and col in tickers_config:
+                ticker_config = tickers_config[col]
+                color = ticker_config.get("color", default_colors[idx % len(default_colors)])
+                line_style = ticker_config.get("line_style", default_line_styles[idx % len(default_line_styles)])
+            else:
+                # Fallback for backwards compatibility
+                color = default_colors[idx % len(default_colors)]
+                line_style = default_line_styles[idx % len(default_line_styles)]
+            
+            # Store color and line_style for reuse
+            ticker_colors[col] = color
+            ticker_line_styles[col] = line_style
+            
+            fig.add_trace(
+                go.Scatter(
+                    x=rsi_df.index,
+                    y=rsi_df[col],
+                    mode="lines",
+                    name=f"{col} RSI",
+                    line=dict(
+                        color=color, 
+                        width=rsi_config.get("line_width", 2), 
+                        dash=line_style
+                    ),
+                    opacity=rsi_config.get("opacity", 0.7),
+                    visible="legendonly" if not is_visible else True,
+                    showlegend=True,
+                ),
+                row=1,
+                col=1,
+            )
+
+        # Add VTI and TLT to second row, first column
+        for ticker_symbol in ["VTI", "TLT"]:
+            if ticker_symbol in rsi_df.columns:
+                # Use the same color and line_style as in first row
+                color = ticker_colors.get(ticker_symbol, default_colors[0])
+                line_style = ticker_line_styles.get(ticker_symbol, default_line_styles[0])
+                fig.add_trace(
+                    go.Scatter(
+                        x=rsi_df.index,
+                        y=rsi_df[ticker_symbol],
+                        mode="lines",
+                        name=f"{ticker_symbol} RSI",
+                        line=dict(
+                            color=color,
+                            width=rsi_config.get("line_width", 2),
+                            dash=line_style,
+                        ),
+                        opacity=rsi_config.get("opacity", 0.7),
+                        showlegend=False,
+                    ),
+                    row=2,
+                    col=1,
+                )
+
+        # Add IAUM and IBIT to second row, second column
+        for ticker_symbol in ["IAUM", "IBIT"]:
+            if ticker_symbol in rsi_df.columns:
+                # Use the same color and line_style as in first row
+                color = ticker_colors.get(ticker_symbol, default_colors[0])
+                line_style = ticker_line_styles.get(ticker_symbol, default_line_styles[0])
+                fig.add_trace(
+                    go.Scatter(
+                        x=rsi_df.index,
+                        y=rsi_df[ticker_symbol],
+                        mode="lines",
+                        name=f"{ticker_symbol} RSI",
+                        line=dict(
+                            color=color,
+                            width=rsi_config.get("line_width", 2),
+                            dash=line_style,
+                        ),
+                        opacity=rsi_config.get("opacity", 0.7),
+                        showlegend=False,
+                    ),
+                    row=2,
+                    col=2,
+                )
+
+        # Add VTI vs IAUM to third row, first column
+        for ticker_symbol in ["VTI", "IAUM"]:
+            if ticker_symbol in rsi_df.columns:
+                # Use the same color and line_style as in first row
+                color = ticker_colors.get(ticker_symbol, default_colors[0])
+                line_style = ticker_line_styles.get(ticker_symbol, default_line_styles[0])
+                fig.add_trace(
+                    go.Scatter(
+                        x=rsi_df.index,
+                        y=rsi_df[ticker_symbol],
+                        mode="lines",
+                        name=f"{ticker_symbol} RSI",
+                        line=dict(
+                            color=color,
+                            width=rsi_config.get("line_width", 2),
+                            dash=line_style,
+                        ),
+                        opacity=rsi_config.get("opacity", 0.7),
+                        showlegend=False,
+                    ),
+                    row=3,
+                    col=1,
+                )
+
+        # Add VTI vs XLU to third row, second column
+        for ticker_symbol in ["VTI", "XLU"]:
+            if ticker_symbol in rsi_df.columns:
+                # Use the same color and line_style as in first row
+                color = ticker_colors.get(ticker_symbol, default_colors[0])
+                line_style = ticker_line_styles.get(ticker_symbol, default_line_styles[0])
+                fig.add_trace(
+                    go.Scatter(
+                        x=rsi_df.index,
+                        y=rsi_df[ticker_symbol],
+                        mode="lines",
+                        name=f"{ticker_symbol} RSI",
+                        line=dict(
+                            color=color,
+                            width=rsi_config.get("line_width", 2),
+                            dash=line_style,
+                        ),
+                        opacity=rsi_config.get("opacity", 0.7),
+                        showlegend=False,
+                    ),
+                    row=3,
+                    col=2,
+                )
+
+        # Add reference lines from config to all subplots
+        for ref_line in rsi_config.get("reference_lines", []):
+            # Add to first row
+            fig.add_hline(
+                y=ref_line.get("y"),
+                line_dash=ref_line.get("line_dash", "dot"),
+                line_color=ref_line.get("line_color", "gray"),
+                opacity=ref_line.get("opacity", 0.5),
+                annotation_text=ref_line.get("annotation_text", ""),
+                annotation_font_color=ref_line.get("annotation_font_color", "black"),
+                row=1,
+                col=1,
+            )
+            # Add to second row, first column
+            fig.add_hline(
+                y=ref_line.get("y"),
+                line_dash=ref_line.get("line_dash", "dot"),
+                line_color=ref_line.get("line_color", "gray"),
+                opacity=ref_line.get("opacity", 0.5),
+                row=2,
+                col=1,
+            )
+            # Add to second row, second column
+            fig.add_hline(
+                y=ref_line.get("y"),
+                line_dash=ref_line.get("line_dash", "dot"),
+                line_color=ref_line.get("line_color", "gray"),
+                opacity=ref_line.get("opacity", 0.5),
+                row=2,
+                col=2,
+            )
+            # Add to third row, first column
+            fig.add_hline(
+                y=ref_line.get("y"),
+                line_dash=ref_line.get("line_dash", "dot"),
+                line_color=ref_line.get("line_color", "gray"),
+                opacity=ref_line.get("opacity", 0.5),
+                row=3,
+                col=1,
+            )
+            # Add to third row, second column
+            fig.add_hline(
+                y=ref_line.get("y"),
+                line_dash=ref_line.get("line_dash", "dot"),
+                line_color=ref_line.get("line_color", "gray"),
+                opacity=ref_line.get("opacity", 0.5),
+                row=3,
+                col=2,
+            )
+
+        # Update layout
+        fig.update_layout(
+            height=rsi_config.get("height", 2500),
+            hovermode="x unified",
+            showlegend=True,
+            legend=dict(orientation="h", yanchor="top", y=1, xanchor="center", x=0.5),
+            plot_bgcolor="white",
+        )
+        
+        # Move subplot titles slightly higher
+        for annotation in fig.layout.annotations:
+            if annotation.text:  # Only update subplot title annotations
+                annotation.y += 0.01  # Move titles up by 2% of the plot height
+        
+        # Update axes labels and remove default grid for all subplots
+        fig.update_xaxes(title_text="Date", showgrid=False, row=1, col=1)
+        fig.update_xaxes(title_text="Date", showgrid=False, row=2, col=1)
+        fig.update_xaxes(title_text="Date", showgrid=False, row=2, col=2)
+        fig.update_xaxes(title_text="Date", showgrid=False, row=3, col=1)
+        fig.update_xaxes(title_text="Date", showgrid=False, row=3, col=2)
+        fig.update_yaxes(title_text=rsi_config.get("yaxis_title", "RSI"), showgrid=False, row=1, col=1)
+        fig.update_yaxes(title_text=rsi_config.get("yaxis_title", "RSI"), showgrid=False, row=2, col=1)
+        fig.update_yaxes(title_text=rsi_config.get("yaxis_title", "RSI"), showgrid=False, row=2, col=2)
+        fig.update_yaxes(title_text=rsi_config.get("yaxis_title", "RSI"), showgrid=False, row=3, col=1)
+        fig.update_yaxes(title_text=rsi_config.get("yaxis_title", "RSI"), showgrid=False, row=3, col=2)
+
+        st.plotly_chart(fig, config={"displayModeBar": False}, use_container_width=True)
+
+        # Create pie chart with latest RSI values
+        if not rsi_df_original.empty:
+            latest_rsi = rsi_df_original.iloc[-1].dropna()
+            
+            # Create pie chart
+            pie_fig = go.Figure(data=[
+                go.Pie(
+                    labels=[f"{ticker} ({value:.1f})" for ticker, value in latest_rsi.items()],
+                    values=latest_rsi.values,
+                    marker=dict(
+                        colors=[ticker_colors.get(ticker, default_colors[0]) for ticker in latest_rsi.index]
+                    ),
+                    textinfo="label+percent",
+                    hole=0.3,  # Donut chart
+                    showlegend=False,
+                )
+            ])
+            
+            pie_fig.update_layout(
+                title="Latest RSI Values Distribution",
+                height=400,
+                margin=dict(l=20, r=20, t=50, b=20),
+            )
+            
+            st.plotly_chart(pie_fig, config={"displayModeBar": False}, use_container_width=True)
+
+    st.markdown("---")
+
+    st.title("GLI : Global Liquidity Index")
 
     st.markdown(
         f"Visualize the **Global Liquidity Index** from a selected time period (minus {lookback_weeks} weeks) "
@@ -790,6 +1130,3 @@ if __name__ == "__main__":
         hydra.core.global_hydra.GlobalHydra.instance().clear()
 
     main()
-
-
-# 11-27-25 23:03 line count 610 # 11-27-25 23:14 line count 570 # 11-28-25 11:23 671

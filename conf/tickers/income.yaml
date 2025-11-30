@@ -1,248 +1,53 @@
-GPIQ:
-  name: Goldman Sachs Nasdaq-100 Premium Income ETF
+# Simplify ETFs
 
-GPIX:
-  name: Goldman Sachs S&P 500 Premium Income ETF
+MAXI:
+     name: Simplify Bitcoin Strategy PLUS Income ETF
+SVOL:
+     name: Simplify Volatility Premium ETF
+SURI:
+     name: Simplify Propel Opportunities ETF 6
+XV:
+     name: Simplify Target 15 Distribution ETF
+TESL:
+     name: Simplify Volt TSLA Revolution ETF
+SBAR:
+     name: Simplify Barrier Income ETF
+YGLD:
+     name: Simplify Gold Strategy PLUS Income ETF
+FOXY:
+     name: Simplify Currency Strategy ETF
+CDX:
+     name: Simplify High Yield ETF 1
+HIGH:
+     name: Simplify Enhanced Income ETF
+BUCK:
+     name: Simplify Treasury Option Income ETF
+AGGH:
+     name: Simplify Aggregate Bond ETF 1
+KNRG:
+     name: Simplify Kayne Anderson Energy and Infrastructure Credit ETF
+GAEM:
+     name: Simplify Gamma Emerging Market Bond ETF 5
+CAS:
+     name: Simplify China A Shares PLUS Income ETF
 
-JEPQ:
-  name: JPMorgan Nasdaq Equity Premium Income ETF
-
-JEPI:
-  name: JPMorgan Equity Premium Income ETF
-
+# ! Amplify ETFs
 DIVO:
   name: Amplify CWP Enhanced Dividend Income ETF
-
 IDVO:
   name: Amplify CWP International Enhanced Dividend Income ETF
-
+# ! Schwab ETFs
 SCHD:
   name: Schwab U.S. Dividend Equity ETF
-
 SCHY:
   name: Schwab International Dividend Equity ETF
-
 LVHD:
   name: Franklin U.S. Low Volatility High Dividend Index ETF
 
 LVHI:
   name: Franklin International Low Volatility High Dividend Index ETF
 
-YGLD:
-  name: Simplify Gold Strategy Plus Income ETF
 
-MAXI:
-  name: Simplify Bitcoin Strategy Plus Income ETF
-
-BPI:
-  name: Grayscale Bitcoin Premium Income ETF
-
-BCCC:
-  name: Global X Bitcoin Covered Call ETF
-
-# statestreet
-XLBI:
-  name: Materials Select Sector SPDR Premium Income Fund
-
-XLCI:
-  name: Communication Services Select Sector SPDR Premium Income Fund
-
-XLEI:
-  name: Energy Select Sector SPDR Premium Income Fund
-
-XLFI:
-  name: Financial Select Sector SPDR Premium Income Fund
-
-XLII:
-  name: Industrial Select Sector SPDR Premium Income Fund
-
-XLKI:
-  name: Technology Select Sector SPDR Premium Income Fund
-
-XLSI:
-  name: Consumer Staples Select Sector SPDR Premium Income Fund
-
-XLRI:
-  name: Real Estate Select Sector SPDR Premium Income Fund
-
-XLUI:
-  name: Utilities Select Sector SPDR Premium Income Fund
-
-XLVI:
-  name: Health Care Select Sector SPDR Premium Income Fund
-
-XLYI:
-  name: Consumer Discretionary Select Sector SPDR Premium Income Fund
-
-
-# https://yieldmaxetfs.com/our-etfs/
-ABNY:
-  name: YieldMax ABNB Option Income Strategy ETF
-
-AIYY:
-  name: YieldMax AI Option Income Strategy ETF
-
-AMDY:
-  name: YieldMax AMD Option Income Strategy ETF
-
-AMZY:
-  name: YieldMax AMZN Option Income Strategy ETF
-
-APLY:
-  name: YieldMax AAPL Option Income Strategy ETF
-
-BABO:
-  name: YieldMax BABA Option Income Strategy ETF
-
-BIGY:
-  name: YieldMax Target 12 Big 50 Option Income ETF
-
-BRKC:
-  name: YieldMax BRK.B Option Income Strategy ETF
-
-CHPY:
-  name: YieldMax Semiconductor Portfolio Option Income ETF
-
-CONY:
-  name: YieldMax COIN Option Income Strategy ETF
-
-CRCO:
-  name: YieldMax CRCL Option Income Strategy ETF
-
-CRSH:
-  name: YieldMax Short TSLA Option Income Strategy ETF
-
-CVNY:
-  name: YieldMax CVNA Option Income Strategy ETF
-
-DIPS:
-  name: YieldMax Short NVDA Option Income Strategy ETF
-
-DISO:
-  name: YieldMax DIS Option Income Strategy ETF
-
-DRAY:
-  name: YieldMax DKNG Option Income Strategy ETF
-
-FBY:
-  name: YieldMax META Option Income Strategy ETF
-
-FEAT:
-  name: YieldMax Dorsey Wright Featured 5 Income ETF
-
-FIAT:
-  name: YieldMax Short COIN Option Income Strategy ETF
-
-FIVY:
-  name: YieldMax Dorsey Wright Hybrid 5 Income ETF
-
-GDXY:
-  name: YieldMax Gold Miners Option Income Strategy ETF
-
-GMEY:
-  name: YieldMax GME Option Income Strategy ETF
-
-GOOY:
-  name: YieldMax GOOGL Option Income Strategy ETF
-
-GPTY:
-  name: YieldMax AI & Tech Portfolio Option Income ETF
-
-HIYY:
-  name: YieldMax HIMS Option Income Strategy ETF
-
-HOOY:
-  name: YieldMax HOOD Option Income Strategy ETF
-
-JPMO:
-  name: YieldMax JPM Option Income Strategy ETF
-
-LFGY:
-  name: YieldMax Crypto Industry & Tech Portfolio Option Income ETF
-
-MARO:
-  name: YieldMax MARA Option Income Strategy ETF
-
-MRNY:
-  name: YieldMax MRNA Option Income Strategy ETF
-
-MSFO:
-  name: YieldMax MSFT Option Income Strategy ETF
-
-MSTY:
-  name: YieldMax MSTR Option Income Strategy ETF
-
-NFLY:
-  name: YieldMax NFLX Option Income Strategy ETF
-
-NVDY:
-  name: YieldMax NVDA Option Income Strategy ETF
-
-OARK:
-  name: YieldMax Innovation Option Income Strategy ETF
-
-PLTY:
-  name: YieldMax PLTR Option Income Strategy ETF
-
-PYPY:
-  name: YieldMax PYPL Option Income Strategy ETF
-
-QDTY:
-  name: YieldMax Nasdaq 100 0DTE Covered Call Strategy ETF
-
-RBLY:
-  name: YieldMax RBLX Option Income Strategy ETF
-
-RDTY:
-  name: YieldMax R2000 0DTE Covered Call Strategy ETF
-
-RDYY:
-  name: YieldMax RDDT Option Income Strategy ETF
-
-RNTY:
-  name: YieldMax Target 12 Real Estate Option Income ETF
-
-SDTY:
-  name: YieldMax S&P 500 0DTE Covered Call Strategy ETF
-
-SLTY:
-  name: YieldMax Ultra Short Option Income Strategy ETF
-
-SMCY:
-  name: YieldMax SMCI Option Income Strategy ETF
-
-SNOY:
-  name: YieldMax SNOW Option Income Strategy ETF
-
-SOXY:
-  name: YieldMax Target 12 Semiconductor Option Income ETF
-
-TSLY:
-  name: YieldMax TSLA Option Income Strategy ETF
-
-TSMY:
-  name: YieldMax TSM Option Income Strategy ETF
-
-ULTY:
-  name: YieldMax Ultra Option Income Strategy ETF
-
-WNTR:
-  name: YieldMax MSTR Short Option Income Strategy ETF
-
-XOMO:
-  name: YieldMax XOM Option Income Strategy ETF
-
-XYZY:
-  name: YieldMax XYZ Option Income Strategy ETF
-
-YBIT:
-  name: YieldMax Bitcoin Option Income Strategy ETF
-
-YMAG:
-  name: YieldMax Magnificent 7 Fund of Option Income ETFs
-
-YMAX:
-  name: YieldMax Universe Fund of Option Income ETFs
-
-YQQQ:
-  name: YieldMax Short N100 Option Income Strategy ETF
+# ishare
+TLT:
+  name: iShares 20+ Year Treasury Bond ETF

@@ -16,10 +16,11 @@ def highlight_row(row, df=None):
     min_value_abs, max_value_abs = abs(row.min()), abs(row.max())
     normalize_value_centered = [value / max_value_abs if value > 0 else value / min_value_abs for value in row]
     result = []
-    if row.name in ["p", "ema50", "ema200"]:
+    if row.name in ["p", "ema20", "ema50", "ema200"]:
         if df is not None and "p" in df.index and "ema50" in df.index:
             for col in row_original.index:
                 p_val = df.loc["p", col] if "p" in df.index else None
+                ema20_val = df.loc["ema20", col] if "ema20" in df.index and row.name == "ema20" else None
                 ema50_val = df.loc["ema50", col] if "ema50" in df.index else None
                 ema200_val = df.loc["ema200", col] if "ema200" in df.index and row.name == "ema200" else None
 
@@ -27,8 +28,9 @@ def highlight_row(row, df=None):
                     result.append("")
                     continue
 
-                if row.name in ["ema50"]:
-                    if p_val < ema50_val:
+                if row.name in ["ema20", "ema50"]:
+                    ema_val = ema20_val if row.name == "ema20" else ema50_val
+                    if p_val < ema_val:
                         color = "background-color: rgb(220, 20, 60); color: white; font-weight: bold"  # crimson
                     else:
                         color = "background-color: white; color: black; font-weight: bold"
@@ -46,7 +48,7 @@ def highlight_row(row, df=None):
                     color = "background-color: white; color: black; font-weight: bold"
                 result.append(color)
             return result
-    elif row.name in ["a", "rsi_delta"]:  # * accelerations
+    elif row.name in ["a", "rsi_delta", "macd_delta"]:  # * accelerations
         for value, normalized_value in zip(row, normalize_value_centered):
             color = f"color: rgb({','.join(map(str, rg0_centered(normalized_value, center=0)))}); background-color: black; font-weight: bold;"
             result.append(color)

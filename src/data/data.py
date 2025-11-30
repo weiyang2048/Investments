@@ -335,6 +335,7 @@ def compute_annualized_momentum_sum(df: pd.DataFrame, window_sizes: List[int] = 
         - d0: Latest day-to-day percentage change
         - d6: 6-day percentage change (smallest window size)
         - p: Current price
+        - ema20: 20-day exponential moving average
         - ema50: 50-day exponential moving average
         - rsi: Relative Strength Index with period 9
         - drawdown: Drop from maximum price observed in the data (1 - current/max, where 1.0 = 100% drop, 0.76 = 76% drop, 0.05 = 5% drop)
@@ -358,12 +359,15 @@ def compute_annualized_momentum_sum(df: pd.DataFrame, window_sizes: List[int] = 
     pct_change_smallest_window = {}
     d0_latest_change = {}
     drawdown = {}
+    ema20_values = {}
     ema50_values = {}
     ema200_values = {}
     rsi_values = {}
     rsi1_values = {}
     rsi_delta_values = {}
     macd_values = {}
+    macd1_values = {}
+    macd_delta_values = {}
     current_prices = {}
     a = {}
     # Calculate acceleration for all window sizes except the last one
@@ -455,6 +459,14 @@ def compute_annualized_momentum_sum(df: pd.DataFrame, window_sizes: List[int] = 
         else:
             current_prices[symbol] = np.nan
 
+        # Calculate EMA20
+        if len(df[symbol]) >= 20:
+            ema20 = df[symbol].ewm(span=20, adjust=False).mean()
+            current_ema20 = ema20.iloc[-1]
+            ema20_values[symbol] = np.round(current_ema20, 2)
+        else:
+            ema20_values[symbol] = np.nan
+
         # Calculate EMA50
         if len(df[symbol]) >= 50:
             ema50 = df[symbol].ewm(span=50, adjust=False).mean()
@@ -535,8 +547,25 @@ def compute_annualized_momentum_sum(df: pd.DataFrame, window_sizes: List[int] = 
             histogram = macd_line - signal_line
             # Use the MACD histogram value (not line or signal line)
             macd_values[symbol] = np.round(histogram.iloc[-1], 2) if not pd.isna(histogram.iloc[-1]) else np.nan
+            
+            # Calculate MACD for previous day (macd1) - used for macd_delta calculation
+            if len(histogram) >= 2:
+                macd1_val = histogram.iloc[-2] if not pd.isna(histogram.iloc[-2]) else np.nan
+                macd1_values[symbol] = np.round(macd1_val, 2) if not pd.isna(macd1_val) else np.nan
+                
+                # Calculate macd_delta = macd - macd1
+                macd_val = histogram.iloc[-1] if not pd.isna(histogram.iloc[-1]) else np.nan
+                if not pd.isna(macd1_val) and not pd.isna(macd_val):
+                    macd_delta_values[symbol] = np.round(macd_val - macd1_val, 2)
+                else:
+                    macd_delta_values[symbol] = np.nan
+            else:
+                macd1_values[symbol] = np.nan
+                macd_delta_values[symbol] = np.nan
         else:
             macd_values[symbol] = np.nan
+            macd1_values[symbol] = np.nan
+            macd_delta_values[symbol] = np.nan
 
         # Calculate drawdown (drop from maximum price observed in the data)
         if len(df[symbol]) > 0:
@@ -578,11 +607,13 @@ def compute_annualized_momentum_sum(df: pd.DataFrame, window_sizes: List[int] = 
             "d0": d0_latest_change[symbol],
             f"d{min(window_sizes)}": pct_change_smallest_window[symbol],
             "p": current_prices[symbol],
+            "ema20": ema20_values[symbol],
             "ema50": ema50_values[symbol],
             "ema200": ema200_values[symbol],
             "rsi": rsi_values[symbol],
             "rsi_delta": rsi_delta_values[symbol],
             "macd": macd_values[symbol],
+            "macd_delta": macd_delta_values[symbol],
             "drawdown": drawdown[symbol],
         }
         row.update(individual_momentum[symbol])
@@ -607,8 +638,8 @@ def compute_annualized_momentum_sum(df: pd.DataFrame, window_sizes: List[int] = 
         if window in acceleration_windows:
             ordered_columns.append(f"a{window}")
 
-    # Add weighted average, acceleration, combined score, stride, streaks, average consecutive movements, average percentage movements, p, ema50, ema200, rsi, rsi_delta, macd, drawdown, and put-call ratio at the end
-    ordered_columns.extend(["m", "a", "combined_score", "stride", "s0", "s1", "avg_s+", "avg_s-", "avg%+", "avg%-", "p", "ema50", "ema200", "rsi", "rsi_delta", "macd", "drawdown"]) #, "pcr_m1"])
+    # Add weighted average, acceleration, combined score, stride, streaks, average consecutive movements, average percentage movements, p, ema20, ema50, ema200, rsi, rsi_delta, macd, macd_delta, drawdown, and put-call ratio at the end
+    ordered_columns.extend(["m", "a", "combined_score", "stride", "s0", "s1", "avg_s+", "avg_s-", "avg%+", "avg%-", "p", "ema20", "ema50", "ema200", "rsi", "rsi_delta", "macd", "macd_delta", "drawdown"]) #, "pcr_m1"])
 
     result_df = result_df[ordered_columns]
 

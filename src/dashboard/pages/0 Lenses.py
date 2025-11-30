@@ -15,6 +15,7 @@ from src.viz.streamlit_display import (
     display_table_of_contents,
     display_section_header,
 )
+import yfinance as yf
 
 pd.set_option("display.max_rows", None)
 
@@ -179,6 +180,31 @@ def _process_symbol_tab(
     with st.spinner("Computing momentum ranking..."):
         momentum_ranking, _ = _create_and_sort_momentum_data(df_pivot, look_back_days, sort_column="combined_score")
 
+    # Add yield row for Income lens
+    if symbol_type == "Income":
+        with st.spinner("Fetching dividend yields..."):
+            yields = _fetch_dividend_yields(symbols)
+            # Create yield row as a Series with same columns as momentum_ranking
+            yield_row = pd.Series(
+                {symbol: yields.get(symbol, None) for symbol in momentum_ranking.columns},
+                name="yield"
+            )
+            # Find the index of "a" row
+            if "a" in momentum_ranking.index:
+                a_index = momentum_ranking.index.get_loc("a")
+                # Insert yield row after "a"
+                momentum_ranking = pd.concat([
+                    momentum_ranking.iloc[:a_index + 1],
+                    pd.DataFrame([yield_row], index=["yield"]),
+                    momentum_ranking.iloc[a_index + 1:]
+                ])
+            else:
+                # If "a" not found, append at the beginning
+                momentum_ranking = pd.concat([
+                    pd.DataFrame([yield_row], index=["yield"]),
+                    momentum_ranking
+                ])
+
     # Display momentum ranking table first
     display_dataframe(momentum_ranking, symbol_type, "am", vmin=-0.1, vmax=1, hide_rows=["combined_score"])
     num_symbols = len(df_pivot.columns) - 1  # Subtract 1 for Date column
@@ -258,6 +284,20 @@ def _process_symbol_tab(
     # Add correlation plot for top 20 symbols by momentum in expander
 
     # Performance section removed as requested
+
+
+def _fetch_dividend_yields(symbols):
+    """Fetch dividend yields for a list of symbols using yfinance."""
+    yields = {}
+    for symbol in symbols:
+        try:
+            ticker = yf.Ticker(symbol)
+            info = ticker.info
+            dividend_yield = info.get('dividendYield')
+            yields[symbol] = dividend_yield
+        except Exception as e:
+            yields[symbol] = None
+    return yields
 
 
 def _create_and_sort_momentum_data(df_pivot, window_sizes, momentum_df=None, sort_column="combined_score"):

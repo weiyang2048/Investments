@@ -2,8 +2,7 @@ import yfinance as yf
 import pandas as pd
 import streamlit as st
 from typing import List, Union
-
-def get_tickers_close_prices(tickers: List[str], period: str = "5y") -> pd.DataFrame:
+def get_tickers_close_prices(tickers: List[str], period: str = "5y", normalize: bool = False) -> pd.DataFrame:
     """
     Fetch close prices for multiple tickers using yfinance.
     
@@ -40,6 +39,10 @@ def get_tickers_close_prices(tickers: List[str], period: str = "5y") -> pd.DataF
     if hasattr(ensembles_hist_close.index, "tz") and ensembles_hist_close.index.tz is not None:
         ensembles_hist_close = ensembles_hist_close.tz_convert(None)
     
+    ensembles_hist_close.dropna(inplace=True, how="any")
+    if normalize:
+        ensembles_hist_close = ensembles_hist_close.div(ensembles_hist_close.iloc[0], axis=1)
+
     return ensembles_hist_close
 
 @st.cache_resource(show_spinner=True)

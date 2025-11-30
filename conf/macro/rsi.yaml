@@ -1,0 +1,50 @@
+period: "360d"
+rsi_period: 14
+normalize: true
+
+tickers:
+  VTI:
+    color: "#1f77b4"
+    line_style: "solid"
+  VXUS:
+    color: "#2ca02c"
+    line_style: "solid"
+  IBIT:
+    color: "purple"
+    line_style: "dot"
+  IAUM:
+    color: "goldenrod"
+    line_style: "dashdot"
+  TLT:
+    color: "gray"
+    line_style: "solid"
+  XLU:
+    color: "brown"
+    line_style: "solid"
+default_visible_count: 10
+opacity: 0.7
+line_width: 2
+title: "Market Average RSI"
+yaxis_title: "RSI"
+height: 1000
+reference_lines:
+  - y: 25
+    line_dash: "dot"
+    line_color: "red"
+    opacity: 0.5
+    annotation_text: "Oversold (25)"
+    annotation_font_color: "black"
+  - y: 50
+    line_dash: "dot"
+    line_color: "gray"
+    opacity: 0.5
+    annotation_text: "Neutral (50)"
+    annotation_font_color: "black"
+  - y: 75
+    line_dash: "dot"
+    line_color: "green"
+    opacity: 0.5
+    annotation_text: "Overbought (75)"
+    annotation_font_color: "black"
+    
+

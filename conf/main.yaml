@@ -2,9 +2,10 @@ lenses:
   main:
     Regions: ${union:${get_keys:tickers.regions},[DYNF,CORO],[GLTR,GDLC]}
     Sectors: ${union:${get_keys:tickers.sectors},[INRO,SECT]}
-    SWING: ${union:${get_keys:tickers.ark},[LOUP, BKCH, GDX, TQQQ, IBLC,BLOK ]}
-    HODL: ${union:${get_keys:tickers.H},[MAGS]}
+    Income: ${get_keys:tickers.income}
+    SWING: ${union:[LOUP,  TQQQ, IBLC,BLOK,  BKCH, MAXI, YGLD, GDX,MAGS, TESL]}
     Crypto: ["BTC-USD", "ETH-USD", "SOL-USD", "BNB-USD", "MON-USD","LTC-USD","BAT-USD","CRO-USD", "DOGE-USD", "XRP-USD", "ADA-USD"]
+    HODL: ${union:${get_keys:tickers.H},[MAGS, TLT,EMBX]}
     F: ${get_keys:tickers.f}
     rs: ${union:${get_keys:tickers.rs},[MAGS]}
     Y: ${get_keys:tickers.Y}
@@ -14,63 +15,45 @@ lenses:
     sp400: ${get_keys:tickers.sp400}
     sp600: ${get_keys:tickers.sp600}
   etfs:
-    ARK: ${get_keys:tickers.ark}
+    # ARK: ${get_keys:tickers.ark}
     invescoMomentum: ${get_keys:tickers.momentum}
     globalX: ${get_keys:tickers.globalX}
     Defiance: ${get_keys:tickers.defiance}
 
-yaml_suffix_map:
-  f.yaml: "@"
-  hs.yaml: "#"
-  rs.yaml: "%"
-  Y.yaml: "!"
-  H.yaml: "$"
-  # Future additions can be added here, e.g.:
-  # "3.yaml": "3"
+yaml_suffix_map: {hs.yaml: "#", f.yaml: "@", rs.yaml: "%", Y.yaml: "!", H.yaml: "$"}
+
 
 defaults:
   - style_conf: [shared_configs, color_line_styles]
   - macro/dominance_plots
-  - tickers:
-      - etfs
-      - sectors
-      - regions
-      - commodities
-      - globalX
-      - momentum
-      - ark
-      - defiance
-      - sp50
-      - sp500
-      - sp400
-      - sp600
-      - income
-      - adr50
-      - f
-      - rs
-      - hs
-      - Y
-      - H
+  - tickers: [etfs, sectors, regions, commodities, globalX, momentum, ark, defiance, sp50, sp500, sp400, sp600, income, adr50, f, rs, Y, H]
 
 macro:
+  rsi: ${include:macro/rsi}
   lookback_weeks: 13
   assets:
     BTC-USD:
       name: BTC-USD
       color: violet
+      opacity: 0.5
     ^GSPC:
       name: ^GSPC
       color: lightblue
+      opacity: 0.5
     GC=F:
       name: GC=F
       color: gold
+      opacity: 0.5
     ^VIX:
       name: ^VIX
-      color: red
+      color: crimson
+      opacity: 1
     ^FTSE:
       name: ^FTSE
       color: green
+      opacity: 0.3
     000001.SS:
       name: 000001.SS
       color: coral
+      opacity: 0.3
     # - {name: BKCH, color: purple}
