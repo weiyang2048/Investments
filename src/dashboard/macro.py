@@ -291,7 +291,7 @@ def _add_macro_sidebar(macro_config: dict, rsi_config: dict):
     st.sidebar.markdown("<hr>", unsafe_allow_html=True)
     st.sidebar.header("RSI Settings")
     use_alternative_tickers = st.sidebar.checkbox(
-        "Use Alternative Tickers",
+        "Alter Tickers",
         value=rsi_config.get("use_alternative_tickers", False),
         help="When enabled, use the second ticker in lists (e.g., [TOPT, VOO] uses VOO). Otherwise uses the first ticker.",
         key="use_alternative_tickers_input",
@@ -1104,10 +1104,12 @@ def main():
 
         # Create bar chart with latest RSI values ranked and RSI delta (before subplots)
         if latest_rsi is not None and rsi_delta is not None:
-            # Sort by RSI value in descending order (ranked)
-            latest_rsi_sorted = latest_rsi.sort_values(ascending=False)
-            # Sort delta by the same order as RSI
-            rsi_delta_sorted = rsi_delta.reindex(latest_rsi_sorted.index)
+            # Sort by RSI + RSI delta in descending order (ranked)
+            combined_score = latest_rsi + rsi_delta.reindex(latest_rsi.index, fill_value=0)
+            combined_score_sorted = combined_score.sort_values(ascending=False)
+            # Reindex both RSI and delta to match the sorted order
+            latest_rsi_sorted = latest_rsi.reindex(combined_score_sorted.index)
+            rsi_delta_sorted = rsi_delta.reindex(combined_score_sorted.index)
 
             # Get display names and colors for sorted tickers
             labels = []

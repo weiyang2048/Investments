@@ -22,24 +22,27 @@ reference_lines:
 use_alternative_tickers: False
 tickers:
   US: [VOO, TOPT]
+  # --- 1st level ---
+  Treasuries: TLT
+  # --- 2nd level ---
+  ConsumerStaples: [KXI, PSL]
+  Utilities: [JXI, AIPO]
+  Healthcare: [IXJ, ARKG]
+  Metals: [GLTR, GOEX]
+  Crypto: [GDLC, BKCH]
+  # --- 3rd level ---
   xUS: [VXUS, PIEQ]
   Europe: FEP
   SoutheastAsia: ASEA
   SouthAmerica: FLN
   Africa: AFK
   Asia: AIA
-  Treasuries: TLT
-  Metals: [GLTR, GOEX]
-  Crypto: [GDLC, BKCH]
-  Utilities: [JXI, AIPO]
+  Speculative: [ARKK, QTUM]
   Energy: IXC
-  ConsumerStaples: [KXI, PSL]
-  Financial: [IXG, ARKF]
+  Materials: [MXI, DMAT]
+  Financial: [IXG, EUFN]
   Industrial: [EXI, SHLD]
   Technology: [IXN, MAGS]
-  ConsumerDiscretionary: [RXI, EBIZ]
   Communication: [IXP, SIXG]
-  Healthcare: [IXJ, ARKG]
-  Materials: [MXI, DMAT]
+  ConsumerDiscretionary: [RXI, EBIZ]
   RealEstate: REET
-  Speculative: [ARKK, QTUM]

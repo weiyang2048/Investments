@@ -144,7 +144,7 @@ XRT:
 # ! Energy And Utilities
 IXC:
   name: iShares Global Energy ETF
-  color: rgba(150,0,255,1) # orange447
+  color: yellowgreen # orange447
 PXI:
   name: Invesco Dorsey Wright Energy Momentum ETF
   color: darkred
