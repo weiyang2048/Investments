@@ -33,12 +33,13 @@ tickers:
   Crypto: [GDLC, BKCH]
   Utilities: [JXI, AIPO]
   Energy: IXC
-  ConsumerStaples: KXI
+  ConsumerStaples: [KXI, PSL]
   Financial: [IXG, ARKF]
   Industrial: [EXI, SHLD]
   Technology: [IXN, MAGS]
   ConsumerDiscretionary: [RXI, EBIZ]
-  Communication: IXP
+  Communication: [IXP, SIXG]
   Healthcare: [IXJ, ARKG]
   Materials: [MXI, DMAT]
   RealEstate: REET
+  Speculative: [ARKK, QTUM]
