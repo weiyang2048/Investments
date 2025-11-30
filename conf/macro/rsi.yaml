@@ -2,18 +2,16 @@ period: "2y"
 rsi_period: 14
 normalize: true
 default_visible_count: 10
-height: 1200
+height: 1500
+line_width: 2
 
 tickers:
   US:
     ticker: TOPT
-    color: "#1f77b4"
-  Developed:
-    ticker: VEA
+    color: 'midnightblue'
+  xUS:
+    ticker: PIEQ
     color: "seagreen"
-  Emerging:
-    ticker: IEMG
-    color: "coral"
   Crypto:
     ticker: IBIT
     color: "purple"
@@ -26,78 +24,115 @@ tickers:
   Utilities:
     ticker: XLU
     color: "brown"
-  China:
-    ticker: FLCH
+  Asia:
+    ticker: AIA
     color: "crimson"
   Europe:
     ticker: FEP
+    color: "royalblue"
+  SouthAmerica:
+    ticker: FLN
+    color: "darkgreen"
+  Africa:
+    ticker: AFK
+    color: "sandybrown"
+  SoutheastAsia:
+    ticker: ASEA
+    color: "darkorange"
+  Financial:
+    ticker: XLF
+    color: "gold"
+  Industrial:
+    ticker: XLI
+    color: "orange"
+  Technology:
+    ticker: MAGS
+    color: "green"
+  Communication:
+    ticker: XLC
     color: "lightblue"
+  Healthcare:
+    ticker: XLV
+    color: "pink"
 
 vs_pairs:
+
   - row: 1
     col: 1
     ticker1: US
-    ticker2: Developed
-    show_individual_lines: false
+    ticker2: xUS
   - row: 1
     col: 2
-    ticker1: US
-    ticker2: Emerging
-    show_individual_lines: false
-  - row: 2
-    col: 2
-    ticker1: US
-    ticker2: China
-    show_individual_lines: true
-  - row: 2
-    col: 1
     ticker1: US
     ticker2: Europe
-    show_individual_lines: true
+  - row: 2
+    col: 2
+    ticker1: US
+    ticker2: Africa
+  - row: 2
+    col: 3
+    ticker1: US
+    ticker2: Asia
+  - row: 1
+    col: 3
+    ticker1: US
+    ticker2: SoutheastAsia
+  - row: 2
+    col: 1
+    ticker1: US
+    ticker2: SouthAmerica
   - row: 3
     col: 1
     ticker1: US
     ticker2: Treasuries
-    show_individual_lines: true
   - row: 3
     col: 2
     ticker1: US
-    ticker2: Utilities
-    show_individual_lines: true
-
-  - row: 4
-    col: 2
-    ticker1: Metals
+    ticker2: Metals
+  - row: 3
+    col: 3
+    ticker1: US
     ticker2: Crypto
-    show_individual_lines: true
   - row: 4
     col: 1
     ticker1: US
-    ticker2: Metals
-    show_individual_lines: true
+    ticker2: Utilities
+  - row: 4
+    col: 2
+    ticker1: US
+    ticker2: Financial
+  - row: 4
+    col: 3
+    ticker1: US
+    ticker2: Industrial
+  - row: 5
+    col: 1
+    ticker1: US
+    ticker2: Technology
+  - row: 5
+    col: 2
+    ticker1: US
+    ticker2: Communication
+  - row: 5
+    col: 3
+    ticker1: US
+    ticker2: Healthcare
 
 opacity: 0.7
-line_width: 2
 title: "Market Average RSI"
 yaxis_title: "RSI"
 reference_lines:
-  - y: 25
+  - y: 30
     line_dash: "dot"
     line_color: "red"
     opacity: 0.5
-    annotation_text: "Oversold (25)"
-    annotation_font_color: "black"
   - y: 50
     line_dash: "dot"
     line_color: "gray"
     opacity: 0.5
-    annotation_text: "Neutral (50)"
-    annotation_font_color: "black"
-  - y: 75
+  - y: 70
     line_dash: "dot"
     line_color: "green"
     opacity: 0.5
-    annotation_text: "Overbought (75)"
-    annotation_font_color: "black"
     
 

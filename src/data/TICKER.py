@@ -12,8 +12,9 @@ class TICKERS:
     tickers = ["SPY", "QQQ"]
     ticker = TICKERS(tickers, period="486d", normalize=True)
     # ticker.prices #@ P
-    # ticker.get_ema(period=50) #@ EMA_50
-    # ticker.get_rsi() #@ RSI_14
+    # ticker.get_ema(period=50) #@ EMA_50, df
+    # ticker.get_rsi() #@ RSI_14, df
+    # ticker.calculate_price_pct_change(days_back) #@ pct_changes, dict
     """
     def __init__(self, tickers: List[str], period: str = "5y", normalize: bool = False):
         self.tickers = tickers
@@ -22,6 +23,7 @@ class TICKERS:
         self.prices = get_tickers_close_prices(tickers, period, normalize=self.normalize)
         self.emas = {}
         self.rsis = {}
+        self.pct_changes = {ticker: {} for ticker in tickers}
         for ticker in tickers:
             ticker_df = self.prices[[ticker]].copy()
             ticker_df.rename(columns={ticker: "P"}, inplace=True)
@@ -58,3 +60,153 @@ class TICKERS:
         for ticker in self.tickers:
             self.strong[ticker] = getattr(self, ticker)["Strong"]
         return self.strong
+
+    def calculate_price_pct_change(self, days_back: int) -> dict:
+        """
+        Calculate percent change in price over a specific number of days for all tickers.
+        
+        Args:
+            days_back: Number of days to look back for the percent change calculation
+            
+        Returns:
+            Dictionary mapping ticker to percent change value
+        """
+        if self.prices.empty:
+            return {}
+        
+        # Check if already calculated for all tickers
+        all_calculated = all(
+            days_back in self.pct_changes.get(ticker, {})
+            for ticker in self.tickers
+            if ticker in self.prices.columns
+        )
+        if all_calculated:
+            # Return cached values
+            return {
+                ticker: self.pct_changes[ticker][days_back]
+                for ticker in self.tickers
+                if ticker in self.prices.columns and days_back in self.pct_changes.get(ticker, {})
+            }
+        
+        end_date = min(pd.Timestamp.today(), self.prices.index.max())
+
+        # Filter to get data up to end_date
+        mask = self.prices.index <= end_date
+        price_filtered = self.prices.loc[mask].copy()
+
+        if price_filtered.empty:
+            return {}
+
+        # Calculate for all tickers at once
+        pct_changes = {}
+        
+        # For 1 day change, use last 2 prices
+        if days_back <= 1:
+            if len(price_filtered) < 2:
+                return {}
+            
+            for ticker in self.tickers:
+                if ticker not in price_filtered.columns:
+                    continue
+                
+                latest = price_filtered[ticker].iloc[-1]
+                previous = price_filtered[ticker].iloc[-2]
+                
+                if pd.isna(latest) or pd.isna(previous) or previous == 0:
+                    pct_change = 0.0
+                else:
+                    pct_change = ((latest - previous) / previous) * 100
+                
+                pct_changes[ticker] = pct_change
+                self.pct_changes[ticker][days_back] = pct_change
+        else:
+            # For longer periods, find price from days_back ago
+            target_date = end_date - pd.Timedelta(days=days_back)
+            sorted_prices = price_filtered.sort_index()
+            past_prices = sorted_prices[sorted_prices.index <= target_date]
+            
+            if past_prices.empty:
+                return {}
+            
+            for ticker in self.tickers:
+                if ticker not in price_filtered.columns:
+                    continue
+                
+                latest = price_filtered[ticker].iloc[-1]
+                if latest is None or pd.isna(latest):
+                    pct_change = 0.0
+                else:
+                    if ticker not in past_prices.columns:
+                        pct_change = 0.0
+                    else:
+                        past_price = past_prices[ticker].iloc[-1]
+                        if pd.isna(past_price) or past_price == 0:
+                            pct_change = 0.0
+                        else:
+                            pct_change = ((latest - past_price) / past_price) * 100
+                
+                pct_changes[ticker] = pct_change
+                self.pct_changes[ticker][days_back] = pct_change
+        
+        return pct_changes
+
+    def get_accelerators(self, rsi_period: int = 14, top_n: int = 7) -> List[dict]:
+        """
+        Find accelerators: tickers with 1 day & 1 week change in top N, and (positive RSI delta or RSI > 50).
+        
+        Args:
+            rsi_period: RSI period to use (default: 14)
+            top_n: Number of top performers to consider (default: 7)
+            
+        Returns:
+            List of dictionaries with accelerator information:
+            - ticker: ticker symbol
+            - rsi: current RSI value
+            - rsi_delta: change in RSI from previous period
+            - pct_1d: 1 day percent change
+            - pct_1w: 1 week percent change
+        """
+        if self.prices.empty:
+            return []
+        
+        # Ensure RSI is calculated
+        rsi_df = self.get_rsi(period=rsi_period)
+        
+        if rsi_df.empty:
+            return []
+        
+        # Calculate latest RSI and RSI delta
+        latest_rsi = rsi_df.iloc[-1].dropna()
+        
+        # Calculate RSI delta (last RSI - previous RSI)
+        if len(rsi_df) >= 2:
+            previous_rsi = rsi_df.iloc[-2].dropna()
+            rsi_delta = latest_rsi - previous_rsi.reindex(latest_rsi.index, fill_value=0)
+        else:
+            rsi_delta = pd.Series(0.0, index=latest_rsi.index)
+        
+        # Calculate 1 day and 1 week percent changes for all tickers
+        pct_change_1d = self.calculate_price_pct_change(1)
+        pct_change_1w = self.calculate_price_pct_change(7)
+        
+        # Find top N for 1 day and 1 week
+        pct_1d_series = pd.Series(pct_change_1d)
+        pct_1w_series = pd.Series(pct_change_1w)
+        top_n_1d = set(pct_1d_series.nlargest(top_n).index) if len(pct_1d_series) >= top_n else set(pct_1d_series.nlargest(len(pct_1d_series)).index)
+        top_n_1w = set(pct_1w_series.nlargest(top_n).index) if len(pct_1w_series) >= top_n else set(pct_1w_series.nlargest(len(pct_1w_series)).index)
+        
+        # Find accelerators
+        accelerators = []
+        for ticker in self.tickers:
+            if (ticker in top_n_1d and ticker in top_n_1w and 
+                ticker in latest_rsi.index and ticker in rsi_delta.index
+                and (rsi_delta[ticker] > 0 or latest_rsi[ticker] > 50)):
+                accelerators.append({
+                    "ticker": ticker,
+                    "rsi": latest_rsi[ticker],
+                    "rsi_delta": rsi_delta[ticker],
+                    "pct_1d": pct_change_1d.get(ticker, 0),
+                    "pct_1w": pct_change_1w.get(ticker, 0),
+                })
+        
+        return accelerators
