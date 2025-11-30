@@ -742,6 +742,10 @@ def main():
     # Convert OmegaConf DictConfig to regular Python dict to avoid struct mode issues
     assets_raw = macro_config.get("assets", {})
     asset_config = OmegaConf.to_container(assets_raw, resolve=True) if assets_raw else {}
+    
+    # Initially show only BTC-USD (GLI, GLI lagged, and EMAs are always shown)
+    # asset_config = {k: v for k, v in all_asset_config.items(}
+    
     lookback_weeks = macro_config.get("lookback_weeks", 15)
 
     # Load colors from style_conf

@@ -35,10 +35,10 @@ macro:
       name: BTC-USD
       color: violet
       opacity: 0.5
-    ^GSPC:
-      name: ^GSPC
-      color: lightblue
-      opacity: 0.5
+    # ^GSPC:
+    #   name: ^GSPC
+    #   color: lightblue
+    #   opacity: 0.5
     GC=F:
       name: GC=F
       color: gold
@@ -47,12 +47,12 @@ macro:
       name: ^VIX
       color: crimson
       opacity: 1
-    ^FTSE:
-      name: ^FTSE
-      color: green
-      opacity: 0.3
-    000001.SS:
-      name: 000001.SS
-      color: coral
-      opacity: 0.3
-    # - {name: BKCH, color: purple}
+    # ^FTSE:
+    #   name: ^FTSE
+    #   color: green
+    #   opacity: 0.3
+    # 000001.SS:
+    #   name: 000001.SS
+    #   color: coral
+    #   opacity: 0.3
+    # # - {name: BKCH, color: purple}
