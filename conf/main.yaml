@@ -3,8 +3,8 @@ lenses:
     Regions: ${union:${get_keys:tickers.regions},[DYNF,CORO],[GLTR,GDLC]}
     Sectors: ${union:${get_keys:tickers.sectors},[INRO,SECT]}
     # Income: ${get_keys:tickers.income}
-    SWING: ${union:[LOUP,  TQQQ, IBLC,BLOK, DAPP, BKCH, MAXI, YGLD, GDX,MAGS, TESL, COIN]}
-    Crypto: ["BTC-USD", "ETH-USD", "SOL-USD", "BNB-USD", "MON-USD","LTC-USD","BAT-USD","CRO-USD", "DOGE-USD", "XRP-USD", "ADA-USD"]
+    SWING: ${union:[LOUP,  TQQQ,  YGLD, GDX,MAGS, TESL, COIN]}
+    Crypto: ["BTC-USD", "ETH-USD", "SOL-USD", "BNB-USD", "MON-USD","LTC-USD","BAT-USD","CRO-USD", "DOGE-USD", "XRP-USD", "ADA-USD", "BCH-USD"]
     F: ${get_keys:tickers.f}
     rs: ${get_keys:tickers.rs}
     HODLLL: ${union:${get_keys:tickers.H},[IOO, QTOP, TOPT, MAGS, FNGS, PIEQ, OAIM, MAXI]}
