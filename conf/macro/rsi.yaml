@@ -23,7 +23,7 @@ use_alternative_tickers: False
 tickers:
   US: [VOO, TOPT]
   # --- 1st level ---
-  Treasuries: TLT
+  Treasuries: [TLT, BNDW]
   # --- 2nd level ---
   ConsumerStaples: [KXI, PSL]
   Utilities: [JXI, AIPO]

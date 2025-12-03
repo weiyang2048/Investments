@@ -2,13 +2,13 @@ lenses:
   main:
     Regions: ${union:${get_keys:tickers.regions},[DYNF,CORO],[GLTR,GDLC]}
     Sectors: ${union:${get_keys:tickers.sectors},[INRO,SECT]}
-    Income: ${get_keys:tickers.income}
-    SWING: ${union:[LOUP,  TQQQ, IBLC,BLOK,  BKCH, MAXI, YGLD, GDX,MAGS, TESL]}
+    # Income: ${get_keys:tickers.income}
+    SWING: ${union:[LOUP,  TQQQ, IBLC,BLOK, DAPP, BKCH, MAXI, YGLD, GDX,MAGS, TESL, COIN]}
     Crypto: ["BTC-USD", "ETH-USD", "SOL-USD", "BNB-USD", "MON-USD","LTC-USD","BAT-USD","CRO-USD", "DOGE-USD", "XRP-USD", "ADA-USD"]
-    HODL: ${union:${get_keys:tickers.H},[BIGY, SOXY, MAGS, TLT,EMBX]}
     F: ${get_keys:tickers.f}
-    rs: ${union:${get_keys:tickers.rs},[MAGS]}
-    Y: ${get_keys:tickers.Y}
+    rs: ${get_keys:tickers.rs}
+    HODLLL: ${union:${get_keys:tickers.H},[IOO, QTOP, TOPT, MAGS, FNGS, PIEQ, OAIM, MAXI]}
+    Bonds: ${get_keys:tickers.B}
   stocks:
     adr500: ${get_keys:tickers.adr50}
     sp500: ${get_keys:tickers.sp500}
@@ -20,12 +20,12 @@ lenses:
     globalX: ${get_keys:tickers.globalX}
     Defiance: ${get_keys:tickers.defiance}
 
-yaml_suffix_map: {hs.yaml: "#", f.yaml: "@", rs.yaml: "%", Y.yaml: "!", H.yaml: "$"}
+yaml_suffix_map: { f.yaml: "@", rs.yaml: "%", B.yaml: "!", H.yaml: "$"}
 
 
 defaults:
   - style_conf: [shared_configs, color_line_styles]
-  - tickers: [etfs, sectors, regions, commodities, globalX, momentum, ark, defiance, sp50, sp500, sp400, sp600, income, adr50, f, rs, Y, H]
+  - tickers: [etfs, sectors, regions, commodities, globalX, momentum, ark, defiance, sp50, sp500, sp400, sp600, income, adr50, f, rs, H]
 
 macro:
   rsi: ${include:macro/rsi}
