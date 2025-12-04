@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta
-from typing import List, Dict
+from typing import List, Dict, Tuple
 import fear_and_greed
 import pandas as pd
 import yfinance as yf
@@ -8,6 +8,7 @@ from functools import lru_cache, cache
 import streamlit as st
 import numpy as np
 import pytz
+from scipy import stats
 
 
 @st.cache_data(ttl="1h")
@@ -44,6 +45,57 @@ def _compute_momentum_for_symbol(df: pd.DataFrame, symbol: str, window: int) -> 
 
     momentum = df[symbol].rolling(window=window).apply(lambda x: x.iloc[-1] / x.iloc[0] - 1)
     return momentum.dropna()
+
+
+def calculate_sharpe_ratio_robust(returns: pd.Series, risk_free_rate: float = 0.045, 
+                                  trading_days: int = 252, min_observations: int = 60) -> Tuple[float, float]:
+    """
+    Robust Sharpe ratio calculation with confidence intervals.
+
+    Args:
+        returns: Series of daily returns
+        risk_free_rate: Annual risk-free rate (default 0.045 = 4.5%)
+        trading_days: Number of trading days per year (default 252)
+        min_observations: Minimum number of observations required (default 60)
+
+    Returns:
+        Tuple of (sharpe_ratio, se_sharpe) - both rounded to 2 decimal places, or (np.nan, np.nan) if insufficient data
+    """
+    if len(returns) < min_observations:
+        return np.nan, np.nan
+    
+    # Calculate daily risk-free rate
+    daily_rf = (1 + risk_free_rate) ** (1/trading_days) - 1
+    
+    # Excess returns
+    excess_returns = returns - daily_rf
+    
+    # Remove NaN values
+    excess_returns = excess_returns.dropna()
+    
+    if len(excess_returns) < min_observations:
+        return np.nan, np.nan
+    
+    mean_excess = excess_returns.mean()
+    std_excess = excess_returns.std(ddof=1)  # Sample standard deviation
+    
+    if std_excess <= 0:
+        return np.nan, np.nan
+    
+    # Annualized Sharpe ratio
+    sharpe_ratio = (mean_excess / std_excess) * np.sqrt(trading_days)
+    
+    # Standard error (Opdyke, 2007 robust formula)
+    skewness = stats.skew(excess_returns)
+    kurtosis = stats.kurtosis(excess_returns)
+    
+    sr_squared = sharpe_ratio ** 2
+    se_sharpe = np.sqrt(
+        (1 + sr_squared/2 - skewness * sharpe_ratio + 
+         (kurtosis - 3) * sr_squared/4) / len(excess_returns)
+    )
+    
+    return round(sharpe_ratio, 2), round(se_sharpe, 2)
 
 
 def _compute_consecutive_streaks(df: pd.DataFrame, symbol: str) -> tuple[int, int]:
@@ -156,10 +208,17 @@ def _compute_average_consecutive_movements(df: pd.DataFrame, symbol: str) -> tup
     up_streaks = [length for length, sign in streaks if sign == 1]
     down_streaks = [length for length, sign in streaks if sign == 0]
     
-    # Calculate averages
-    avg_consecutive_up = np.mean(up_streaks) if up_streaks else 0.0
-    avg_consecutive_down = np.mean(down_streaks) if down_streaks else 0.0
-    
+    # Calculate exponentially weighted moving average (EWMA) for streak lengths using maximum possible span
+    max_span_up = max(len(up_streaks), 1)
+    avg_consecutive_up = (
+        pd.Series(up_streaks).ewm(span=max_span_up, adjust=False).mean().iloc[-1]
+        if up_streaks else 0.0
+    )
+    max_span_down = max(len(down_streaks), 1)
+    avg_consecutive_down = (
+        pd.Series(down_streaks).ewm(span=max_span_down, adjust=False).mean().iloc[-1]
+        if down_streaks else 0.0
+    )
     return avg_consecutive_up, avg_consecutive_down
 
 
@@ -194,10 +253,11 @@ def _compute_average_percentage_movements(df: pd.DataFrame, symbol: str) -> tupl
     up_returns = non_zero_returns[non_zero_returns > 0]
     down_returns = non_zero_returns[non_zero_returns < 0]
     
-    # Calculate averages (convert to percentage)
-    avg_up_percentage = np.mean(up_returns) * 100 if len(up_returns) > 0 else 0.0
-    avg_down_percentage = np.mean(down_returns) * 100 if len(down_returns) > 0 else 0.0
-    
+    # Calculate exponentially weighted averages (EMA) of movements (convert to percentage) using all available data
+    max_span = max(len(up_returns), 1)
+    avg_up_percentage = up_returns.ewm(span=max_span, adjust=False).mean().iloc[-1] * 100 if len(up_returns) > 0 else 0.0
+    max_span_down = max(len(down_returns), 1)
+    avg_down_percentage = down_returns.ewm(span=max_span_down, adjust=False).mean().iloc[-1] * 100 if len(down_returns) > 0 else 0.0
     return avg_up_percentage, avg_down_percentage
 
 
@@ -331,6 +391,8 @@ def compute_annualized_momentum_sum(df: pd.DataFrame, window_sizes: List[int] = 
         Key metrics:
         - m: Weighted average of annualized momentum across all window sizes
         - a: Weighted average acceleration (rate of change of momentum) across window sizes
+        - sharpe: Robust annualized Sharpe ratio (excess returns over 4.5% risk-free rate, 
+          using Opdyke 2007 formula with skewness and kurtosis adjustments, min 60 observations)
         - combined_score: Sum of m + a, used for ranking
         - d0: Latest day-to-day percentage change
         - d6: 6-day percentage change (smallest window size)
@@ -370,6 +432,7 @@ def compute_annualized_momentum_sum(df: pd.DataFrame, window_sizes: List[int] = 
     macd_delta_values = {}
     current_prices = {}
     a = {}
+    sharpe_ratios = {}
     # Calculate acceleration for all window sizes except the last one
     acceleration_windows = window_sizes[:-1]  # Exclude the last window
     momentum_windows = window_sizes[1:]
@@ -589,6 +652,14 @@ def compute_annualized_momentum_sum(df: pd.DataFrame, window_sizes: List[int] = 
         weights = [1 / np.log(window) for window in acceleration_windows if f"a{window}" in symbol_accelerations]
         acceleration = sum([symbol_accelerations[f"{window}"] * weights[i] for i, window in enumerate(symbol_accelerations.keys())]) / sum(weights)
         a[symbol] = acceleration
+        
+        # Calculate Sharpe ratio after acceleration using robust method
+        if len(df[symbol]) >= 2:
+            returns = df[symbol].pct_change(fill_method=None).dropna()
+            sharpe_ratio, se_sharpe = calculate_sharpe_ratio_robust(returns)
+            sharpe_ratios[symbol] = sharpe_ratio
+        else:
+            sharpe_ratios[symbol] = np.nan
     # Create DataFrame with individual momentum and acceleration columns
     result_data = []
     for symbol in symbols:
@@ -596,6 +667,7 @@ def compute_annualized_momentum_sum(df: pd.DataFrame, window_sizes: List[int] = 
             "Symbol": symbol,
             "m": np.round(m[symbol], 4),
             "a": np.round(a[symbol], 4),
+            "sharpe": sharpe_ratios[symbol],
             "s0": s0_streaks[symbol],
             "s1": s_minus_1_streaks[symbol],
             "avg_s+": avg_s_plus[symbol],
@@ -638,8 +710,8 @@ def compute_annualized_momentum_sum(df: pd.DataFrame, window_sizes: List[int] = 
         if window in acceleration_windows:
             ordered_columns.append(f"a{window}")
 
-    # Add weighted average, acceleration, combined score, stride, streaks, average consecutive movements, average percentage movements, p, ema20, ema50, ema200, rsi, rsi_delta, macd, macd_delta, drawdown, and put-call ratio at the end
-    ordered_columns.extend(["m", "a", "combined_score", "stride", "s0", "s1", "avg_s+", "avg_s-", "avg%+", "avg%-", "p", "ema20", "ema50", "ema200", "rsi", "rsi_delta", "macd", "macd_delta", "drawdown"]) #, "pcr_m1"])
+    # Add weighted average, acceleration, sharpe ratio, combined score, stride, streaks, average consecutive movements, average percentage movements, p, ema20, ema50, ema200, rsi, rsi_delta, macd, macd_delta, drawdown, and put-call ratio at the end
+    ordered_columns.extend(["m", "a", "sharpe", "combined_score", "stride", "s0", "s1", "avg_s+", "avg_s-", "avg%+", "avg%-", "p", "ema20", "ema50", "ema200", "rsi", "rsi_delta", "macd", "macd_delta", "drawdown"]) #, "pcr_m1"])
 
     result_df = result_df[ordered_columns]
 

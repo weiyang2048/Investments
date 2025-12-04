@@ -27,7 +27,7 @@ def get_tickers_close_prices(tickers: List[str], period: str = "5y", normalize: 
     """
     ensembles = yf.Tickers(tickers)
     ensembles_hist = ensembles.history(period=period)
-    
+        
     # Extract Close price columns
     close_prices = [x for x in ensembles_hist.columns if "Close" in x]
     ensembles_hist_close = ensembles_hist[close_prices]

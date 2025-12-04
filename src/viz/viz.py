@@ -50,8 +50,8 @@ def create_momentum_ranking_display(
     
     # Acceleration data is already computed in compute_annualized_momentum_sum
     
-    # Create the desired row order: m first, then a, then p (second row), then ema20 (third row), then ema50 (fourth row), then ema200 (fifth row), then rsi_delta (sixth row), then rsi (seventh row), then macd_delta (eighth row), then macd (ninth row), then drawdown, then combined_score, then put-call ratio, then stride, then streak rows, then average consecutive movements, then average percentage movements, then momentum rows (hide individual acceleration rows)
-    ordered_rows = ["m"] + ["a"] + ["p"] + ["ema20"] + ["ema50"] + ["ema200"] + ["rsi_delta"] + ["rsi"] + ["macd_delta"] + ["macd"] + ["drawdown"] + ["combined_score"]  + ["stride", "s0", "s1", "avg_s+", "avg_s-", "avg%+", "avg%-"] + momentum_rows
+    # Create the desired row order: m first, then a, then sharpe, then p (second row), then ema20 (third row), then ema50 (fourth row), then ema200 (fifth row), then rsi_delta (sixth row), then rsi (seventh row), then macd_delta (eighth row), then macd (ninth row), then drawdown, then combined_score, then put-call ratio, then stride, then streak rows, then average consecutive movements, then average percentage movements, then momentum rows (hide individual acceleration rows)
+    ordered_rows = ["m"] + ["a"] + ["sharpe"] + ["p"] + ["ema20"] + ["ema50"] + ["ema200"] + ["rsi_delta"] + ["rsi"] + ["macd_delta"] + ["macd"] + ["drawdown"] + ["combined_score"]  + ["stride", "s0", "s1", "avg_s+", "avg_s-", "avg%+", "avg%-"] + momentum_rows
     
     # Filter to only include rows that exist in the dataframe
     existing_rows = [row for row in ordered_rows if row in transposed_df.index]
