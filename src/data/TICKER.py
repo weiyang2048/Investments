@@ -3,6 +3,7 @@ from src.data.P import get_tickers_close_prices
 import yfinance as yf
 
 import pandas as pd
+import numpy as np
 from typing import Union
 import src.indicators.INDICT as indict
 
@@ -24,6 +25,7 @@ class TICKERS:
         self.prices = get_tickers_close_prices(tickers, period, normalize=self.normalize)
         self.emas = {}
         self.rsis = {}
+        self.momentums = {}
         self.pct_changes = {ticker: {} for ticker in tickers}
         for ticker in tickers:
             ticker_df = self.prices[[ticker]].copy()
@@ -47,6 +49,100 @@ class TICKERS:
                 getattr(self, ticker)[f"RSI_{period}"] = df[ticker]
             self.rsis[period] = df
         return self.rsis[period]
+
+    def get_momentum(self, period: int = 14, log: bool = True) -> pd.DataFrame:
+        """
+        Calculate momentum for all tickers using calendar dates from the index.
+        
+        When log=True: calculates log momentum log(P_t / P_{t-period})
+        When log=False: calculates regular momentum (P_t / P_{t-period}) - 1
+        
+        Uses the latest index date as the current date and calculates momentum based on
+        calendar days (period days ago) rather than row positions.
+        
+        Args:
+            period: Number of calendar days to look back (default: 14)
+            log: If True, calculate log momentum; if False, calculate regular momentum (default: True)
+            
+        Returns:
+            DataFrame with momentum values for each ticker, indexed by date
+        """
+        cache_key = (period, log)
+        
+        if cache_key not in self.momentums:
+            if self.prices.empty:
+                return pd.DataFrame()
+            
+            # Get the latest index date as current date
+            latest_date = self.prices.index.max()
+            earliest_required_date = latest_date - pd.Timedelta(days=period)
+            
+            # Check if we have enough data based on calendar dates
+            if self.prices.index.min() > earliest_required_date:
+                raise ValueError(
+                    f"Need data from at least {period} calendar days ago. "
+                    f"Latest date: {latest_date.date()}, earliest available: {self.prices.index.min().date()}, "
+                    f"required: {earliest_required_date.date()}"
+                )
+            
+            df = pd.DataFrame(index=self.prices.index)
+            
+            for ticker in self.tickers:
+                if ticker not in self.prices.columns:
+                    continue
+                
+                prices_series = self.prices[ticker].dropna()
+                
+                if prices_series.empty:
+                    df[ticker] = np.nan
+                    continue
+                
+                # Check for non-positive prices
+                if (prices_series <= 0).any():
+                    raise ValueError(f"All prices must be positive for {ticker}")
+                
+                # Calculate momentum using calendar dates
+                momentum = pd.Series(index=self.prices.index, dtype=float)
+                momentum[:] = np.nan
+                
+                for current_date in prices_series.index:
+                    # Find the date that is 'period' calendar days ago
+                    target_date = current_date - pd.Timedelta(days=period)
+                    
+                    # Find the closest available price on or before the target date
+                    # Use forward fill to get the most recent available price
+                    available_dates = prices_series.index[prices_series.index <= target_date]
+                    
+                    if len(available_dates) == 0:
+                        # No data available before target date
+                        momentum[current_date] = np.nan
+                        continue
+                    
+                    # Get the price at the target date (or closest before it)
+                    past_price = prices_series.loc[available_dates[-1]]
+                    current_price = prices_series.loc[current_date]
+                    
+                    if pd.isna(past_price) or pd.isna(current_price) or past_price <= 0:
+                        momentum[current_date] = np.nan
+                        continue
+                    
+                    # Calculate momentum
+                    if log:
+                        # Log momentum: log(P_t / P_{t-period})
+                        momentum[current_date] = np.log(current_price / past_price)
+                    else:
+                        # Regular momentum: (P_t / P_{t-period}) - 1
+                        momentum[current_date] = (current_price / past_price) - 1
+                
+                df[ticker] = momentum
+                
+                # Also store in individual ticker dataframe
+                attr_name = f"log_momentum_{period}" if log else f"momentum_{period}"
+                getattr(self, ticker)[attr_name] = momentum
+            
+            self.momentums[cache_key] = df
+        
+        return self.momentums[cache_key]
 
     def is_strong(self):
         if "EMA_10" not in self.emas:
@@ -211,3 +307,40 @@ class TICKERS:
                 )
 
         return accelerators
+
+    def to_pivot(self) -> pd.DataFrame:
+        """
+        Convert prices DataFrame to pivot format with Date as a column.
+        
+        Returns:
+            DataFrame with Date column and ticker symbols as columns (pivot format)
+        """
+        df_pivot = self.prices.copy()
+        df_pivot.reset_index(inplace=True)
+        # The index column (Date) will be the first column after reset_index
+        # Rename it to "Date" if it's not already named
+        first_col = df_pivot.columns[0]
+        if first_col not in self.tickers:
+            df_pivot.rename(columns={first_col: "Date"}, inplace=True)
+        else:
+            # If first column is a ticker, insert Date column at the beginning
+            df_pivot.insert(0, "Date", self.prices.index)
+        return df_pivot
+
+    def get_dividend_yields(self) -> dict:
+        """
+        Fetch dividend yields for all tickers using yfinance.
+        
+        Returns:
+            Dictionary mapping ticker symbol to dividend yield (float or None)
+        """
+        yields = {}
+        for ticker in self.tickers:
+            try:
+                ticker_obj = yf.Ticker(ticker)
+                info = ticker_obj.info
+                dividend_yield = info.get('dividendYield')
+                yields[ticker] = dividend_yield
+            except Exception as e:
+                yields[ticker] = None
+        return yields

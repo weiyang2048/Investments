@@ -3,7 +3,7 @@ from src.configurations.yaml import register_resolvers
 import streamlit as st
 
 import hydra
-from src.data import pivot_data
+from src.data.TICKER import TICKERS
 from src.data.FearGreed import FearGreed
 from src.viz.viz import create_combined_performance_momentum_plot, create_momentum_ranking_display, create_price_ratio_plot
 from src.configurations.style_picker import get_random_style
@@ -15,8 +15,6 @@ from src.viz.streamlit_display import (
     display_table_of_contents,
     display_section_header,
 )
-import yfinance as yf
-
 pd.set_option("display.max_rows", None)
 
 # Window sizes are now computed dynamically from initial_lookback_days and lookback_factor
@@ -143,8 +141,9 @@ def sidebar(config):
 
 def _process_and_prepare_data(symbols, period, equity_config, streamlit=True):
     """Load, process data and create style dictionaries for given symbols."""
-    # Load and process data
-    df_pivot = pivot_data(list(symbols), period, streamlit=streamlit)
+    # Load and process data using TICKERS class
+    ticker_obj = TICKERS(list(symbols), period=period, normalize=False)
+    df_pivot = ticker_obj.to_pivot()
 
     # Create style dictionaries
     colors_dict = {symbol: equity_config.get(symbol, {}).get("color", get_random_style("color")) for symbol in symbols}
@@ -287,17 +286,9 @@ def _process_symbol_tab(
 
 
 def _fetch_dividend_yields(symbols):
-    """Fetch dividend yields for a list of symbols using yfinance."""
-    yields = {}
-    for symbol in symbols:
-        try:
-            ticker = yf.Ticker(symbol)
-            info = ticker.info
-            dividend_yield = info.get('dividendYield')
-            yields[symbol] = dividend_yield
-        except Exception as e:
-            yields[symbol] = None
-    return yields
+    """Fetch dividend yields for a list of symbols using TICKERS class."""
+    ticker_obj = TICKERS(list(symbols), period="1y", normalize=False)
+    return ticker_obj.get_dividend_yields()
 
 
 def _create_and_sort_momentum_data(df_pivot, window_sizes, momentum_df=None, sort_column="combined_score"):

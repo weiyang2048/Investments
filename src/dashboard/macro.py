@@ -589,58 +589,10 @@ def _plot_global_liquidity(
     st.plotly_chart(fig, config={"displayModeBar": False})
 
 
-def calculate_price_pct_change(price_data: pd.DataFrame, ticker: str, days_back: int) -> float:
-    """Calculate percent change in price over a specific number of days using provided price data."""
-    if price_data.empty or ticker not in price_data.columns:
-        return 0.0
-
-    end_date = pd.Timestamp.today()
-
-    # Filter to get data up to end_date
-    mask = price_data.index <= end_date
-    price_filtered = price_data.loc[mask].copy()
-
-    if price_filtered.empty:
-        return 0.0
-
-    # For 1 day change, use last 2 prices
-    if days_back <= 1:
-        if len(price_filtered) < 2:
-            return 0.0
-
-        latest = price_filtered[ticker].iloc[-1]
-        previous = price_filtered[ticker].iloc[-2]
-
-        if pd.isna(latest) or pd.isna(previous) or previous == 0:
-            return 0.0
-
-        pct_change = ((latest - previous) / previous) * 100
-        return pct_change
-
-    # For longer periods, find price from days_back ago
-    latest = price_filtered[ticker].iloc[-1] if len(price_filtered) > 0 else None
-    if latest is None or pd.isna(latest):
-        return 0.0
-
-    target_date = end_date - pd.Timedelta(days=days_back)
-    # Sort the index first to ensure proper chronological order
-    sorted_prices = price_filtered.sort_index()
-    past_prices = sorted_prices[sorted_prices.index <= target_date]
-
-    if past_prices.empty:
-        return 0.0
-
-    previous = past_prices[ticker].iloc[-1]
-
-    if pd.isna(latest) or pd.isna(previous) or previous == 0:
-        return 0.0
-
-    pct_change = ((latest - previous) / previous) * 100
-    return pct_change
 
 
 def _plot_dominance_pie_charts(
-    price_data: pd.DataFrame,
+    ticker_obj: TICKERS,
     ticker_colors: dict,
     tickers_config: dict,
     ticker_to_display: dict = None,
@@ -650,7 +602,7 @@ def _plot_dominance_pie_charts(
     """Plot multiple pie charts showing price percent changes for different time periods.
 
     Args:
-        price_data: DataFrame with price data
+        ticker_obj: TICKERS object with price data
         ticker_colors: Dictionary mapping tickers to colors
         tickers_config: Configuration dictionary for tickers
         ticker_to_display: Dictionary mapping ticker symbols to display names
@@ -665,7 +617,8 @@ def _plot_dominance_pie_charts(
         ("1 Year", 365),
     ]
 
-    # Get tickers from price_data and build asset info from ticker config
+    # Get tickers from ticker_obj and build asset info from ticker config
+    price_data = ticker_obj.prices
     available_tickers = list(price_data.columns)
     assets = {}
     default_colors = ["#1f77b4", "#2ca02c", "purple", "goldenrod"]
@@ -724,7 +677,9 @@ def _plot_dominance_pie_charts(
                 elif days_back == 7 and pct_change_1w is not None and ticker in pct_change_1w:
                     pct_change = pct_change_1w[ticker]
                 else:
-                    pct_change = calculate_price_pct_change(price_data, ticker, days_back)
+                    # Use TICKERS method for percent change calculation
+                    pct_changes = ticker_obj.calculate_price_pct_change(days_back)
+                    pct_change = pct_changes.get(ticker, 0.0)
 
                 if pct_change > 0.01 and not pd.isna(pct_change):
                     labels.append(info["name"])
@@ -1057,7 +1012,7 @@ def main():
         st.title("Dominance Shifts")
         st.markdown("% change in price over different time periods. ")
         _plot_dominance_pie_charts(
-            ticker_obj.prices, ticker_colors, tickers_config, ticker_to_display, pct_change_1d=pct_change_1d, pct_change_1w=pct_change_1w
+            ticker_obj, ticker_colors, tickers_config, ticker_to_display, pct_change_1d=pct_change_1d, pct_change_1w=pct_change_1w
         )
         st.markdown('<a id="markets-strength"></a>', unsafe_allow_html=True)
         st.title("Markets Strength")

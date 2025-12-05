@@ -39,7 +39,7 @@ def get_tickers_close_prices(tickers: List[str], period: str = "5y", normalize: 
     if hasattr(ensembles_hist_close.index, "tz") and ensembles_hist_close.index.tz is not None:
         ensembles_hist_close = ensembles_hist_close.tz_convert(None)
     
-    ensembles_hist_close.dropna(inplace=True, how="any")
+    # ensembles_hist_close.dropna(inplace=True, how="any")
     if normalize:
         ensembles_hist_close = ensembles_hist_close.div(ensembles_hist_close.iloc[0], axis=1)
 

@@ -15,32 +15,6 @@ class Tickers:
         self.df = self.ticker.history(period=period)
 
 
-class Ticker:
-    """
-    attributes:
-        * symbol: str
-        * ticker: yfinance.Ticker
-            * actions: pd.DataFrame; columns: Dividends, Stock Splits, [ETF] Capital Gains; index: Dates
-            * analyst_price_targets: [STOCK] dict; keys: current, high, low, mean, median
-            * balance_sheet, balancesheet: [STOCK] pd.DataFrame; columns: 5 Dates (yearly); index: financials 76 items
-            * calendar : [STOCK] dict; keys: Dividend/Ex-Dividend/Earnings Date, Earnings/Revem=nue High/Low/Average
-            * cash_flow, cashflow : [STOCK] pd.DataFrame; columns: 5 Dates (yearly); index: financials x items
-            * dividends: pd.Series; index: Dates
-            * earnings_dates: [STOCK] pd.DataFrame; columns: EPS Estimate, Reported EPS, Surprise(%); index: Earnings Dates
-            * earnings_estimate: [STOCK] pd.DataFrame; columns: avg, low, high, yearAgoEps, numberOfAnalysts, growth; index: period, 0q, +1q, 0y, +1y
-            * earnings_history: [STOCK] pd.DataFrame; columns: epsActual, epsEstimate, epsDifference, surprisePercent; index: quarter 4 yearly
-            * eps_revisions: [STOCK] pd.DataFrame; columns : upLast7days	upLast30days	downLast30days	downLast7Days; index : period, 0q, +1q, 0y, +1y
-            * eps_trend: columns current	7daysAgo	30daysAgo	60daysAgo	90daysAg; index period : 0q, +1q, 0y, +1y
-    """
-
-    def __init__(self, symbol: str):
-        self.symbol = symbol
-        self.ticker = yf.Ticker(symbol)
-
-    def get_daily_prices(self, period: str = "1mo") -> pd.DataFrame:
-        return self.ticker.history(period=period)
-
-
 def get_daily_prices(symbol: str, period: str = "1mo") -> pd.DataFrame:
     """
     Get daily price data for a single symbol using yfinance
@@ -97,24 +71,6 @@ def get_daily_prices_list(symbols: List[str], period: str = "1mo", streamlit: bo
     combined_df = combined_df[["Symbol"] + [col for col in combined_df.columns if col != "Symbol"]]
 
     return combined_df
-
-
-def pivot_data(symbols: List[str], period: str = "1mo", streamlit: bool = False) -> pd.DataFrame:
-    """
-    Transforms daily price data into a pivot table format.
-
-    Args:
-        symbols (List[str]): A list of stock symbols to fetch data for.
-        period (str): The time period for which to fetch data (default is "1mo").
-
-    Returns:
-        pd.DataFrame: A DataFrame pivoted to have dates as rows and symbols as columns,
-                      with closing prices as values.
-    """
-    df = get_daily_prices_list(symbols, period, streamlit)
-    df.reset_index(inplace=True)
-    return df.pivot(index="Date", columns="Symbol", values="Close").reset_index()
-
 
 def normalize_prices(df: pd.DataFrame, time_column: str = "Date") -> pd.DataFrame:
     """Normalize price data to start at 1.0."""
