@@ -8,6 +8,8 @@ from functools import lru_cache, cache
 import streamlit as st
 import numpy as np
 import pytz
+import yaml
+import os
 from scipy import stats
 from src.data.TICKER import TICKERS
 
@@ -376,7 +378,7 @@ def compute_momentum(
     return momentum_data, momentum_combined
 
 
-def compute_annualized_momentum_sum(df: pd.DataFrame, window_sizes: List[int] = [7, 30, 90, 180, 360], time_column: str = "Date") -> pd.DataFrame:
+def compute_annualized_momentum_sum(df: pd.DataFrame, window_sizes: List[int] = [7, 30, 90, 180, 360], time_column: str = "Date", metrics_order: List[str] = None, ticker_obj=None) -> pd.DataFrame:
     """
     Compute annualized momentum using TICKER.get_momentum with period [10,20,50,100,200].
 
@@ -402,8 +404,6 @@ def compute_annualized_momentum_sum(df: pd.DataFrame, window_sizes: List[int] = 
         - drawdown: Drop from maximum price observed in the data
         - stride: Compound growth factor based on average consecutive movements
         - s0, s1: Current and previous consecutive streaks
-        - avg_s+, avg_s-: Average consecutive up/down movements
-        - avg%+, avg%-: Average percentage up/down movements
     """
     symbols = df.select_dtypes(include=[np.number]).columns.tolist()
     
@@ -417,13 +417,19 @@ def compute_annualized_momentum_sum(df: pd.DataFrame, window_sizes: List[int] = 
     else:
         df_prices = df.copy()
     
-    # Create TICKERS object to compute momentum
-    # Calculate period from dataframe length (add some buffer for safety)
-    days_needed = max(200, len(df_prices) + 10)  # Need at least 200 days for momentum calculation
-    period_str = f"{days_needed}d"
-    ticker_obj = TICKERS(symbols, period=period_str, normalize=False)
-    # Replace prices with our dataframe (preserving index)
-    ticker_obj.prices = df_prices[symbols].copy()
+    # Use provided ticker_obj if available, otherwise create a new one
+    # This avoids duplicate price fetches when ticker_obj is already available
+    if ticker_obj is None:
+        # Create TICKERS object to compute momentum
+        # Calculate period from dataframe length (add some buffer for safety)
+        days_needed = max(200, len(df_prices) + 10)  # Need at least 200 days for momentum calculation
+        period_str = f"{days_needed}d"
+        ticker_obj = TICKERS(symbols, period=period_str, normalize=False)
+        # Replace prices with our dataframe (preserving index)
+        ticker_obj.prices = df_prices[symbols].copy()
+    else:
+        # Reuse existing ticker_obj, but ensure prices match our dataframe
+        ticker_obj.prices = df_prices[symbols].copy()
     # Update individual ticker dataframes to keep them in sync
     for ticker in symbols:
         if ticker in ticker_obj.prices.columns:
@@ -633,10 +639,6 @@ def compute_annualized_momentum_sum(df: pd.DataFrame, window_sizes: List[int] = 
             "sharpe": sharpe_ratios[symbol],
             "s0": s0_streaks[symbol],
             "s1": s_minus_1_streaks[symbol],
-            "avg_s+": avg_s_plus[symbol],
-            "avg_s-": avg_s_minus[symbol],
-            "avg%+": avg_plus_percent[symbol],
-            "avg%-": avg_minus_percent[symbol],
             "stride": stride[symbol],
             "d0": d0_latest_change[symbol],
             "p": current_prices[symbol],
@@ -660,8 +662,19 @@ def compute_annualized_momentum_sum(df: pd.DataFrame, window_sizes: List[int] = 
     result_df = result_df.sort_values("m", ascending=False).reset_index(drop=True)
     result_df["Rank"] = range(1, len(result_df) + 1)
 
-    # Create column order
-    ordered_columns = ["Rank", "Symbol", "m", "sharpe", "combined_score", "stride", "s0", "s1", "avg_s+", "avg_s-", "avg%+", "avg%-", "p", "ema20", "ema50", "ema200", "rsi", "rsi_delta", "macd", "macd_delta", "drawdown", "d0"]
+    # Load metrics_order from config if not provided
+    if metrics_order is None:
+        config_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "conf", "main.yaml")
+        try:
+            with open(config_path, "r") as f:
+                config = yaml.safe_load(f)
+                metrics_order = config.get("lenses", {}).get("metrics_order", ["m", "sharpe", "p", "ema20", "ema50", "ema200", "rsi_delta", "rsi", "macd_delta", "macd", "drawdown", "combined_score", "stride", "s0", "s1", "d0"])
+        except Exception:
+            # Fallback to default order
+            metrics_order = ["m", "sharpe", "p", "ema20", "ema50", "ema200", "rsi_delta", "rsi", "macd_delta", "macd", "drawdown", "combined_score", "stride", "s0", "s1", "d0"]
+
+    # Create column order: Rank and Symbol first, then metrics_order
+    ordered_columns = ["Rank", "Symbol"] + [col for col in metrics_order if col in result_df.columns]
 
     result_df = result_df[ordered_columns]
 

@@ -6,6 +6,7 @@ from typing import List, Dict, Optional
 import numpy as np
 import yaml
 import re
+import os
 from src.stats import Stats
 from src.data import normalize_prices, compute_annualized_momentum_sum
 from typing import Callable
@@ -112,10 +113,12 @@ def create_price_plot(
 def create_momentum_ranking_display(
     df: pd.DataFrame,
     window_sizes: List[int] = [7, 30, 90, 180, 360],
+    metrics_order: List[str] = None,
+    ticker_obj=None,
 ) -> pd.DataFrame:
     """Create a ranking display showing momentum (m) from TICKER.get_momentum with period [10,20,50,100,200]."""
     df_norm = normalize_prices(df)
-    ranking_df = compute_annualized_momentum_sum(df_norm, window_sizes)
+    ranking_df = compute_annualized_momentum_sum(df_norm, window_sizes, ticker_obj=ticker_obj)
     
     # Get all columns except Rank and Symbol for transposition
     columns_to_keep = [col for col in ranking_df.columns if col not in ["Rank", "Symbol"]]
@@ -124,9 +127,20 @@ def create_momentum_ranking_display(
     ranking_df = ranking_df[["Symbol"] + columns_to_keep]
     transposed_df = ranking_df.set_index("Symbol").T.round(2)
     
-    # Create the desired row order: m first, then sharpe, then p, then ema20, then ema50, then ema200, then rsi_delta, then rsi, then macd_delta, then macd, then drawdown, then combined_score, then stride, then streak rows
+    # Load metrics_order from config if not provided
+    if metrics_order is None:
+        config_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "conf", "main.yaml")
+        try:
+            with open(config_path, "r") as f:
+                config = yaml.safe_load(f)
+                metrics_order = config.get("lenses", {}).get("metrics_order", ["m", "sharpe", "p", "ema20", "ema50", "ema200", "rsi_delta", "rsi", "macd_delta", "macd", "drawdown", "combined_score", "stride", "s0", "s1", "d0"])
+        except Exception:
+            # Fallback to default order
+            metrics_order = ["m", "sharpe", "p", "ema20", "ema50", "ema200", "rsi_delta", "rsi", "macd_delta", "macd", "drawdown", "combined_score", "stride", "s0", "s1", "d0"]
+    
+    # Create the desired row order from metrics_order
     # Exclude individual momentum rows (m10, m50, m200, m400, etc.) and acceleration rows
-    ordered_rows = ["m"] + ["sharpe"] + ["p"] + ["ema20"] + ["ema50"] + ["ema200"] + ["rsi_delta"] + ["rsi"] + ["macd_delta"] + ["macd"] + ["drawdown"] + ["combined_score"] + ["stride", "s0", "s1", "avg_s+", "avg_s-", "avg%+", "avg%-", "d0"]
+    ordered_rows = metrics_order.copy()
     
     # Filter to only include rows that exist in the dataframe and exclude any individual momentum rows (m followed by numbers)
     existing_rows = [row for row in ordered_rows if row in transposed_df.index]

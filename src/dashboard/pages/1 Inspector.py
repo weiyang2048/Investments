@@ -58,10 +58,13 @@ def create_shared_symbol_selector(config) -> str:
         Selected symbol string
     """
     # Predefined popular funds/ETFs
+    # Access lenses.pages structure (main, stocks, etfs) and flatten all lens options
     portfolios = dict()
-    for lense in config["lenses"]:
-        for category in config["lenses"][lense]:
-            portfolios[category] = config["lenses"][lense][category]
+    pages = config["lenses"].get("pages", {})
+    for page_name, page_lenses in pages.items():
+        if page_lenses:  # Only process if page_lenses is not empty/None
+            for category, symbols in page_lenses.items():
+                portfolios[category] = symbols
     popular_funds = {portfolio: [fund for fund in portfolios[portfolio]] for portfolio in portfolios}
     # % Option 1: Select from popular categories
     fund_list = list(popular_funds.keys())

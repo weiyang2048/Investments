@@ -84,12 +84,16 @@ def parse_custom_symbols(symbols_text):
 
 
 def sidebar(config):
-    lenses = config["lenses"]
-    lense_option = st.sidebar.radio(
-        "Lenses",
-        lenses.keys(),
-        help="Choose the lense to display\n",
-        key="lense_option",
+    # Get page names from lenses.pages (main, stocks, etfs)
+    # These are the top-level options in the sidebar
+    pages = config["lenses"].get("pages", {})
+    page_names = list(pages.keys())
+    
+    selected_page = st.sidebar.radio(
+        "Pages",
+        page_names,
+        help="Choose the page to display\n",
+        key="page_option",
     )
 
     st.sidebar.markdown("<hr>", unsafe_allow_html=True)
@@ -111,7 +115,7 @@ def sidebar(config):
     )
     return (
         marchenko_pastur,
-        lense_option,
+        selected_page,
         custom_symbols,
     )
 
@@ -126,7 +130,7 @@ def _process_and_prepare_data(symbols, period, equity_config):
     colors_dict = {symbol: equity_config.get(symbol, {}).get("color", get_random_style("color")) for symbol in symbols}
     line_styles_dict = {symbol: equity_config.get(symbol, {}).get("line_style", get_random_style("line_style")) for symbol in symbols}
 
-    return df_prices, colors_dict, line_styles_dict
+    return df_prices, colors_dict, line_styles_dict, ticker_obj
 
 
 def _process_symbol_tab(
@@ -136,13 +140,14 @@ def _process_symbol_tab(
     equity_config,
     marchenko_pastur,
     log_col,
+    metrics_order=None,
 ):
     """Process a single symbol tab - handles both custom and regular symbols."""
     period = f"{look_back_days[-1]}d"
 
     # Load, process data and create style
     with st.spinner("Downloading and Processing data..."):
-        df_prices, colors_dict, line_styles_dict = _process_and_prepare_data(symbols, period, equity_config)
+        df_prices, colors_dict, line_styles_dict, ticker_obj = _process_and_prepare_data(symbols, period, equity_config)
     log_col.success(f"Data Loaded at {time.strftime('%Y-%m-%d %H:%M:%S')}")
 
     # Display momentum section
@@ -151,7 +156,7 @@ def _process_symbol_tab(
 
     # Create momentum ranking first (always needed for data analysis)
     with st.spinner("Computing momentum ranking..."):
-        momentum_ranking, _ = _create_and_sort_momentum_data(df_prices, look_back_days, sort_column="combined_score")
+        momentum_ranking, _ = _create_and_sort_momentum_data(df_prices, look_back_days, sort_column="combined_score", metrics_order=metrics_order, ticker_obj=ticker_obj)
 
     # Add yield row for Income lens
     if symbol_type == "Income":
@@ -237,12 +242,14 @@ def _process_symbol_tab(
 
 
 
-def _create_and_sort_momentum_data(df_prices, window_sizes, momentum_df=None, sort_column="combined_score"):
+def _create_and_sort_momentum_data(df_prices, window_sizes, momentum_df=None, sort_column="combined_score", metrics_order=None, ticker_obj=None):
     """Create momentum ranking and sort momentum dataframe by ranking values."""
     # Create momentum ranking
     momentum_ranking = create_momentum_ranking_display(
         df_prices,
         window_sizes=window_sizes,
+        metrics_order=metrics_order,
+        ticker_obj=ticker_obj,
     )
 
     # Sort momentum_df columns by momentum_ranking values if provided
@@ -268,6 +275,7 @@ def show_market_performance(
     marchenko_pastur: bool = True,
     custom_symbols: list = None,
     lookback_days: list = None,
+    metrics_order: list = None,
 ) -> None:
     """Function to show the market performance dashboard."""
     # Display Fear & Greed Index at the top
@@ -315,6 +323,7 @@ def show_market_performance(
             equity_config,
             marchenko_pastur,
             log_col=col3,
+            metrics_order=metrics_order,
         )
 
     # Bottom Table of Contents
@@ -334,11 +343,11 @@ if __name__ == "__main__":
         config = hydra.compose(config_name="main")
     (
         marchenko_pastur,
-        lense_option,
+        selected_page,
         custom_symbols,
     ) = setup_page_and_sidebar(config["style_conf"], add_to_sidebar=lambda: sidebar(config))
 
-    st.title(lense_option)
+    st.title(selected_page)
 
     # Display Fear & Greed Index at the top
     display_fear_and_greed_info()
@@ -348,12 +357,20 @@ if __name__ == "__main__":
     
     display_table_of_contents(sections=sections)
 
+    # Get the selected page's lens options
+    pages = config["lenses"].get("pages", {})
+    selected_page_lenses = pages.get(selected_page, {})
+    
+    # Get metrics_order separately (it's configuration, not a lens option)
+    metrics_order = config.get("lenses", {}).get("metrics_order", None)
+    
     show_market_performance(
         config["tickers"],
-        config["lenses"][lense_option],
+        selected_page_lenses,
         marchenko_pastur,
         custom_symbols,
         config.get("lookback_days", [14, 50, 100, 200, 400]),
+        metrics_order=metrics_order,
     )
 
 #  * lines : 11-28-25 16:34 390
