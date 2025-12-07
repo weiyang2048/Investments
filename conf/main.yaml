@@ -1,7 +1,9 @@
+lookback_days: [14, 50, 100, 200, 400]
+
 lenses:
   main:
-    Regions: ${union:${get_keys:tickers.regions},[DYNF,CORO],[GLTR,GDLC]}
-    Sectors: ${union:${get_keys:tickers.sectors},[INRO,SECT]}
+    Regions: ${union:${get_keys:tickers.regions},[GLTR,GDLC]}
+    Sectors: ${get_keys:tickers.sectors}
     # Income: ${get_keys:tickers.income}
     SWING: ${union:[LOUP,  TQQQ,  YGLD, GDX,MAGS, TESL, COIN]}
     Crypto: ["BTC-USD", "ETH-USD", "SOL-USD", "BNB-USD", "MON-USD","LTC-USD","BAT-USD","CRO-USD", "DOGE-USD", "XRP-USD", "ADA-USD", "BCH-USD"]
@@ -11,9 +13,9 @@ lenses:
     HODL: ${get_keys:tickers.H}
   stocks:
     adr500: ${get_keys:tickers.adr50}
-    sp500: ${get_keys:tickers.sp500}
     sp400: ${get_keys:tickers.sp400}
     sp600: ${get_keys:tickers.sp600}
+    sp500: ${get_keys:tickers.sp500}
   etfs:
     # ARK: ${get_keys:tickers.ark}
     invescoMomentum: ${get_keys:tickers.momentum}

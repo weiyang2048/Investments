@@ -5,7 +5,7 @@ import streamlit as st
 import hydra
 from src.data.TICKER import TICKERS
 from src.data.FearGreed import FearGreed
-from src.viz.viz import create_combined_performance_momentum_plot, create_momentum_ranking_display, create_price_ratio_plot
+from src.viz.viz import create_momentum_ranking_display, create_price_plot
 from src.configurations.style_picker import get_random_style
 from src.dashboard.create_page import setup_page_and_sidebar
 import pandas as pd
@@ -17,7 +17,7 @@ from src.viz.streamlit_display import (
 )
 pd.set_option("display.max_rows", None)
 
-# Window sizes are now computed dynamically from initial_lookback_days and lookback_factor
+# Window sizes are configured in conf/main.yaml as lookback_days
 
 
 def display_fear_and_greed_info():
@@ -31,11 +31,9 @@ def display_fear_and_greed_info():
     # Create a unified display with both metrics in one box
     stock_value = traditional_data["value"]
     stock_desc = traditional_data["description"]
-    stock_update = traditional_data["last_update_est_str"]
     
     crypto_value = crypto_data["value"]
     crypto_desc = crypto_data["description"]
-    crypto_update = crypto_data["last_update_est_str"]
     
     # Calculate colors for both metrics
     normalized_stock = stock_value / 100.0
@@ -105,25 +103,6 @@ def sidebar(config):
     custom_symbols = parse_custom_symbols(custom_symbols_text)
 
     st.sidebar.markdown("<hr>", unsafe_allow_html=True)
-    initial_lookback_days = st.sidebar.number_input(
-        "Initial Lookback Days",
-        min_value=1,
-        max_value=3650,
-        value=6,
-        step=1,
-        help="Enter the initial number of days for the analysis period.",
-        key="lookback_days_input",
-    )
-    lookback_factor = st.sidebar.number_input(
-        "Lookback Factor",
-        min_value=1,
-        max_value=10,
-        value=3,
-        step=1,
-        help="Enter the factor to multiply the lookback days.",
-        key="lookback_factor_input",
-    )
-    st.sidebar.markdown("<hr>", unsafe_allow_html=True)
     st.sidebar.markdown("Correlation Denoising")
     marchenko_pastur = st.sidebar.checkbox(
         "Marchenko Pastur",
@@ -132,24 +111,22 @@ def sidebar(config):
     )
     return (
         marchenko_pastur,
-        initial_lookback_days,
-        lookback_factor,
         lense_option,
         custom_symbols,
     )
 
 
-def _process_and_prepare_data(symbols, period, equity_config, streamlit=True):
+def _process_and_prepare_data(symbols, period, equity_config):
     """Load, process data and create style dictionaries for given symbols."""
     # Load and process data using TICKERS class
     ticker_obj = TICKERS(list(symbols), period=period, normalize=False)
-    df_pivot = ticker_obj.to_pivot()
+    df_prices = ticker_obj.prices.copy()
 
     # Create style dictionaries
     colors_dict = {symbol: equity_config.get(symbol, {}).get("color", get_random_style("color")) for symbol in symbols}
     line_styles_dict = {symbol: equity_config.get(symbol, {}).get("line_style", get_random_style("line_style")) for symbol in symbols}
 
-    return df_pivot, colors_dict, line_styles_dict
+    return df_prices, colors_dict, line_styles_dict
 
 
 def _process_symbol_tab(
@@ -158,8 +135,6 @@ def _process_symbol_tab(
     look_back_days,
     equity_config,
     marchenko_pastur,
-    dfs,
-    momentum_summaries,
     log_col,
 ):
     """Process a single symbol tab - handles both custom and regular symbols."""
@@ -167,9 +142,8 @@ def _process_symbol_tab(
 
     # Load, process data and create style
     with st.spinner("Downloading and Processing data..."):
-        df_pivot, colors_dict, line_styles_dict = _process_and_prepare_data(symbols, period, equity_config)
+        df_prices, colors_dict, line_styles_dict = _process_and_prepare_data(symbols, period, equity_config)
     log_col.success(f"Data Loaded at {time.strftime('%Y-%m-%d %H:%M:%S')}")
-    dfs[symbol_type] = df_pivot
 
     # Display momentum section
     st.write(len(symbols), "tickers",  look_back_days[-1], "max_lookback_days")
@@ -177,7 +151,7 @@ def _process_symbol_tab(
 
     # Create momentum ranking first (always needed for data analysis)
     with st.spinner("Computing momentum ranking..."):
-        momentum_ranking, _ = _create_and_sort_momentum_data(df_pivot, look_back_days, sort_column="combined_score")
+        momentum_ranking, _ = _create_and_sort_momentum_data(df_prices, look_back_days, sort_column="combined_score")
 
     # Add yield row for Income lens
     if symbol_type == "Income":
@@ -188,17 +162,17 @@ def _process_symbol_tab(
                 {symbol: yields.get(symbol, None) for symbol in momentum_ranking.columns},
                 name="yield"
             )
-            # Find the index of "a" row
-            if "a" in momentum_ranking.index:
-                a_index = momentum_ranking.index.get_loc("a")
-                # Insert yield row after "a"
+            # Find the index of "m" row
+            if "m" in momentum_ranking.index:
+                m_index = momentum_ranking.index.get_loc("m")
+                # Insert yield row after "m"
                 momentum_ranking = pd.concat([
-                    momentum_ranking.iloc[:a_index + 1],
+                    momentum_ranking.iloc[:m_index + 1],
                     pd.DataFrame([yield_row], index=["yield"]),
-                    momentum_ranking.iloc[a_index + 1:]
+                    momentum_ranking.iloc[m_index + 1:]
                 ])
             else:
-                # If "a" not found, append at the beginning
+                # If "m" not found, append at the beginning
                 momentum_ranking = pd.concat([
                     pd.DataFrame([yield_row], index=["yield"]),
                     momentum_ranking
@@ -206,53 +180,32 @@ def _process_symbol_tab(
 
     # Display momentum ranking table first
     display_dataframe(momentum_ranking, symbol_type, "am", vmin=-0.1, vmax=1, hide_rows=["combined_score"])
-    num_symbols = len(df_pivot.columns) - 1  # Subtract 1 for Date column
-    # Always create and display combined plot
-    if num_symbols > 100:
-        st.info(f"Number of symbols ({num_symbols}) is greater than 100. Displaying first 50 symbols.")
-        symbols = list(momentum_ranking.columns[:50])
-        momentum_ranking = momentum_ranking[symbols]
-        df_pivot = df_pivot[["Date"] + symbols]
-    with st.spinner("Creating combined performance & momentum plot..."):
-        combined_result = create_combined_performance_momentum_plot(
-            df_pivot,
-            symbols,
+
+    # Add price plot - show only top 5 ranked symbols
+    display_section_header("Price Performance")
+    if "combined_score" in momentum_ranking.index and len(momentum_ranking.columns) > 0:
+        combined_scores = momentum_ranking.loc["combined_score"]
+        top_5_symbols = combined_scores.nlargest(5).index.tolist()
+    else:
+        top_5_symbols = symbols[:5] if len(symbols) >= 5 else symbols
+    
+    with st.spinner("Creating price performance plot for top 5 symbols..."):
+        price_fig = create_price_plot(
+            df_prices,
+            top_5_symbols,
             look_back_days,
             colors_dict,
             line_styles_dict,
             equity_config,
-            momentum_ranking=momentum_ranking,
         )
-        combined_fig = combined_result["figure"]
-
-    st.plotly_chart(combined_fig, config={"displayModeBar": False})
-
-    # Add ratio plot - first symbol is denominator, others are numerators
-    if len(symbols) >= 2:
-        display_section_header("Ratio")
-        
-        with st.spinner("Creating price ratio plot..."):
-            denominator_symbol = symbols[0]
-            numerator_symbols = symbols[1:]  # All other symbols are numerators
-            ratio_fig = create_price_ratio_plot(
-                df_pivot,
-                denominator_symbol,
-                numerator_symbols,
-                colors_dict,
-                line_styles_dict,
-                equity_config,
-                look_back_days,
-                momentum_ranking=momentum_ranking,
-                top_n=5
-            )
-            st.plotly_chart(ratio_fig, config={"displayModeBar": False})
+        st.plotly_chart(price_fig, config={"displayModeBar": False})
 
     # Display correlation section
     display_section_header("Correlation")
 
     # Show correlation plot (clustermap) first and compute correlation matrix
     with st.spinner("Computing correlation plot..."):
-        corr_matrix = pivoted_to_corr(df=df_pivot, plot=True, streamlit=True, marchenko_pastur=marchenko_pastur)
+        corr_matrix = pivoted_to_corr(df=df_prices, plot=True, streamlit=True, marchenko_pastur=marchenko_pastur)
     
     # Display correlation matrix in a collapsible expander (collapsed by default)
     if "combined_score" in momentum_ranking.index and len(momentum_ranking.columns) > 1:
@@ -264,12 +217,12 @@ def _process_symbol_tab(
         if len(top_symbols) > 1:
             with st.expander(f"📊 Top {len(top_symbols)} Symbols by Momentum Correlation", expanded=False):
                 with st.spinner(f"Computing correlation for top {len(top_symbols)} symbols..."):
-                    # Filter df_pivot to top symbols
-                    top_df_pivot = df_pivot[["Date"] + top_symbols].copy()
+                    # Filter df_prices to top symbols
+                    top_df_prices = df_prices[top_symbols].copy()
                     
                     # Create correlation plot for top symbols
-                    top_corr_matrix = pivoted_to_corr(
-                        df=top_df_pivot, 
+                    pivoted_to_corr(
+                        df=top_df_prices, 
                         plot=True, 
                         streamlit=True, 
                         marchenko_pastur=marchenko_pastur
@@ -282,20 +235,13 @@ def _process_symbol_tab(
     
     # Add correlation plot for top 20 symbols by momentum in expander
 
-    # Performance section removed as requested
 
 
-def _fetch_dividend_yields(symbols):
-    """Fetch dividend yields for a list of symbols using TICKERS class."""
-    ticker_obj = TICKERS(list(symbols), period="1y", normalize=False)
-    return ticker_obj.get_dividend_yields()
-
-
-def _create_and_sort_momentum_data(df_pivot, window_sizes, momentum_df=None, sort_column="combined_score"):
+def _create_and_sort_momentum_data(df_prices, window_sizes, momentum_df=None, sort_column="combined_score"):
     """Create momentum ranking and sort momentum dataframe by ranking values."""
     # Create momentum ranking
     momentum_ranking = create_momentum_ranking_display(
-        df_pivot,
+        df_prices,
         window_sizes=window_sizes,
     )
 
@@ -320,9 +266,8 @@ def show_market_performance(
     equity_config: dict,
     portfolio_config: dict,
     marchenko_pastur: bool = True,
-    initial_lookback_days: int = 5,
-    lookback_factor: int = 3,
     custom_symbols: list = None,
+    lookback_days: list = None,
 ) -> None:
     """Function to show the market performance dashboard."""
     # Display Fear & Greed Index at the top
@@ -348,10 +293,10 @@ def show_market_performance(
             label_visibility="visible",
         )
 
-    # Generate look_back_days list based on user input
-    look_back_days = [int(initial_lookback_days * (lookback_factor**i)) for i in range(5)]
-    momentum_summaries = dict()
-    dfs = dict()
+    # Use calendar days for lookback periods from config
+    if lookback_days is None:
+        lookback_days = [14, 50, 100, 200, 400]  # Default fallback
+    look_back_days = lookback_days
 
     # Process the selected symbol type
     if selected_symbol_type == "Custom Symbols" and not custom_symbols:
@@ -369,13 +314,11 @@ def show_market_performance(
             look_back_days,
             equity_config,
             marchenko_pastur,
-            dfs,
-            momentum_summaries,
             log_col=col3,
         )
 
     # Bottom Table of Contents
-    sections = ["Momentum", "Ratio", "Correlation"]
+    sections = ["Momentum", "Price Performance", "Correlation"]
     
     display_table_of_contents(sections=sections)
 
@@ -391,8 +334,6 @@ if __name__ == "__main__":
         config = hydra.compose(config_name="main")
     (
         marchenko_pastur,
-        initial_lookback_days,
-        lookback_factor,
         lense_option,
         custom_symbols,
     ) = setup_page_and_sidebar(config["style_conf"], add_to_sidebar=lambda: sidebar(config))
@@ -403,7 +344,7 @@ if __name__ == "__main__":
     display_fear_and_greed_info()
 
     # Table of Contents
-    sections = ["Momentum", "Ratio", "Correlation"]
+    sections = ["Momentum", "Price Performance", "Correlation"]
     
     display_table_of_contents(sections=sections)
 
@@ -411,9 +352,8 @@ if __name__ == "__main__":
         config["tickers"],
         config["lenses"][lense_option],
         marchenko_pastur,
-        initial_lookback_days,
-        lookback_factor,
         custom_symbols,
+        config.get("lookback_days", [14, 50, 100, 200, 400]),
     )
 
 #  * lines : 11-28-25 16:34 390

@@ -184,9 +184,8 @@ HYDR:
 DMAT:
   name: Global X Disruptive Materials ETF
   color: rosybrown
-GOEX:
-  name: Global X Gold Explorers ETF
-  color: gold
+GDX:
+  name: VanEck Vectors Gold Miners ETF
 SLVP:
   name: iShares MSCI Global Silver and Metals Miners ETF
   color: silver

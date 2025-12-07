@@ -35,6 +35,7 @@ from src.strategies.ma_strat import (
     ema_x_rsi_strategy,
     ema_x_macd_rsi_strategy,
 )
+from src.indicators.INDICT import compute_rsi
 
 # Load Morningstar config
 with open("conf/mstar.yaml", "r") as f:
@@ -294,14 +295,6 @@ def main_fund_inspect_page(selections: str, config):
 
         st.plotly_chart(fig)
 
-    if "weiya" in os.path.expanduser("~"):
-        # if st.button("Show All Snapshot Data", key="show_all_snapshot_data"):
-        st.write({key: snap[key] for key in random.sample(list(snap.keys()), 30) if key not in mstar_config["not_useful_keys"][0]["snapshot"]})
-
-        if st.button("Show Config", key="show_config"):
-            keys = {key: config[key].keys() for key in config.keys()}
-            st.write(keys)
-
 
 # ============================================================================
 # STRATEGY BACKTEST FUNCTIONS
@@ -446,7 +439,7 @@ def calculate_performance_metrics(portfolio: pd.DataFrame, strategy_name: str) -
     # Annualized return
     days = (portfolio.index[-1] - portfolio.index[0]).days
     years = days / 365.25
-    annualized_return = ((portfolio["total"].iloc[-1] / portfolio["total"].iloc[0]) ** (1 / years) - 1) * 100 if years > 0 else 0
+    annualized_return = ((portfolio["total"].iloc[-1]  / portfolio["total"].iloc[0]) ** (1 / years) - 1) * 100 if years > 0 else 0
 
     # Volatility (annualized)
     volatility = returns.std() * np.sqrt(252) * 100
@@ -631,7 +624,15 @@ def optimize_rsi(
     return best_rsi_period, best_metrics, results_df
 
 
-def create_strategy_comparison_plot(data: pd.Series, strategies: Dict[str, Tuple[StrategyResult, pd.DataFrame]], symbol: str):
+def create_strategy_comparison_plot(
+    data: pd.Series, 
+    strategies: Dict[str, Tuple[StrategyResult, pd.DataFrame]], 
+    symbol: str,
+    rsi_indicator: Optional[pd.Series] = None,
+    macd_indicator: Optional[pd.Series] = None,
+    macd_signal: Optional[pd.Series] = None,
+    macd_histogram: Optional[pd.Series] = None,
+):
     """
     Create interactive Plotly visualization comparing multiple strategies.
 
@@ -639,6 +640,10 @@ def create_strategy_comparison_plot(data: pd.Series, strategies: Dict[str, Tuple
         data: Price series
         strategies: Dictionary mapping strategy names to (StrategyResult, portfolio) tuples
         symbol: Stock symbol
+        rsi_indicator: Optional RSI indicator series to always display
+        macd_indicator: Optional MACD indicator series to always display
+        macd_signal: Optional MACD signal line series to always display
+        macd_histogram: Optional MACD histogram series to always display
     """
     # Create subplots - 5 rows: Price/EMA, MACD, RSI, Portfolio, Drawdown
     fig = make_subplots(
@@ -671,43 +676,44 @@ def create_strategy_comparison_plot(data: pd.Series, strategies: Dict[str, Tuple
         col=1,
     )
 
-    # Add buy/sell signals for first strategy
-    first_strategy = list(strategies.values())[0][0]
-    buy_signals = first_strategy.get_buy_signals()
-    sell_signals = first_strategy.get_sell_signals()
+    # Add buy/sell signals for first strategy (if strategies exist)
+    if len(strategies) > 0:
+        first_strategy = list(strategies.values())[0][0]
+        buy_signals = first_strategy.get_buy_signals()
+        sell_signals = first_strategy.get_sell_signals()
 
-    if len(buy_signals) > 0:
-        buy_signals_in_data = buy_signals.intersection(data.index)
-        if len(buy_signals_in_data) > 0:
-            fig.add_trace(
-                go.Scatter(
-                    x=buy_signals_in_data,
-                    y=data.loc[buy_signals_in_data],
-                    mode="markers",
-                    name="Buy Signal",
-                    marker=dict(symbol="triangle-up", size=10, color="green"),
-                    showlegend=True,
-                    legendgroup="row1",
-                ),
-                row=1,
-                col=1,
-            )
-    if len(sell_signals) > 0:
-        sell_signals_in_data = sell_signals.intersection(data.index)
-        if len(sell_signals_in_data) > 0:
-            fig.add_trace(
-                go.Scatter(
-                    x=sell_signals_in_data,
-                    y=data.loc[sell_signals_in_data],
-                    mode="markers",
-                    name="Sell Signal",
-                    marker=dict(symbol="triangle-down", size=10, color="red"),
-                    showlegend=True,
-                    legendgroup="row1",
-                ),
-                row=1,
-                col=1,
-            )
+        if len(buy_signals) > 0:
+            buy_signals_in_data = buy_signals.intersection(data.index)
+            if len(buy_signals_in_data) > 0:
+                fig.add_trace(
+                    go.Scatter(
+                        x=buy_signals_in_data,
+                        y=data.loc[buy_signals_in_data],
+                        mode="markers",
+                        name="Buy Signal",
+                        marker=dict(symbol="triangle-up", size=10, color="green"),
+                        showlegend=True,
+                        legendgroup="row1",
+                    ),
+                    row=1,
+                    col=1,
+                )
+        if len(sell_signals) > 0:
+            sell_signals_in_data = sell_signals.intersection(data.index)
+            if len(sell_signals_in_data) > 0:
+                fig.add_trace(
+                    go.Scatter(
+                        x=sell_signals_in_data,
+                        y=data.loc[sell_signals_in_data],
+                        mode="markers",
+                        name="Sell Signal",
+                        marker=dict(symbol="triangle-down", size=10, color="red"),
+                        showlegend=True,
+                        legendgroup="row1",
+                    ),
+                    row=1,
+                    col=1,
+                )
 
     # Add EMA indicators (only on row 1)
     for strategy_name, (strategy_result, portfolio) in strategies.items():
@@ -765,6 +771,47 @@ def create_strategy_comparison_plot(data: pd.Series, strategies: Dict[str, Tuple
             )
 
     # Plot 2: MACD indicators
+    # Always plot MACD if provided, even if no strategies are selected
+    if macd_indicator is not None and macd_signal is not None:
+        fig.add_trace(
+            go.Scatter(
+                x=macd_indicator.index,
+                y=macd_indicator.values,
+                name="MACD",
+                line=dict(width=1.5, color="green"),
+                opacity=0.7,
+                legendgroup="row2",
+            ),
+            row=2,
+            col=1,
+        )
+        fig.add_trace(
+            go.Scatter(
+                x=macd_signal.index,
+                y=macd_signal.values,
+                name="Signal Line",
+                line=dict(width=1.5, color="red"),
+                opacity=0.7,
+                legendgroup="row2",
+            ),
+            row=2,
+            col=1,
+        )
+        if macd_histogram is not None:
+            fig.add_trace(
+                go.Bar(
+                    x=macd_histogram.index,
+                    y=macd_histogram.values,
+                    name="Histogram",
+                    opacity=0.3,
+                    marker_color="blue",
+                    legendgroup="row2",
+                ),
+                row=2,
+                col=1,
+            )
+    
+    # Also plot MACD from strategies if available
     for strategy_name, (strategy_result, portfolio) in strategies.items():
         indicators = strategy_result.indicators
         if "macd" in indicators.columns and "signal_line" in indicators.columns:
@@ -807,6 +854,22 @@ def create_strategy_comparison_plot(data: pd.Series, strategies: Dict[str, Tuple
                 )
 
     # Plot 3: RSI indicators
+    # Always plot RSI if provided, even if no strategies are selected
+    if rsi_indicator is not None:
+        fig.add_trace(
+            go.Scatter(
+                x=rsi_indicator.index,
+                y=rsi_indicator.values,
+                name="RSI",
+                line=dict(width=1.5, color="purple"),
+                opacity=0.7,
+                legendgroup="row3",
+            ),
+            row=3,
+            col=1,
+        )
+    
+    # Also plot RSI from strategies if available
     for strategy_name, (strategy_result, portfolio) in strategies.items():
         indicators = strategy_result.indicators
         if "rsi" in indicators.columns:
@@ -823,8 +886,8 @@ def create_strategy_comparison_plot(data: pd.Series, strategies: Dict[str, Tuple
                 col=1,
             )
 
-    # Add horizontal line at 50 (RSI threshold)
-    has_rsi = any("rsi" in strategy_result.indicators.columns for strategy_result, _ in strategies.values())
+    # Add horizontal line at 50 (RSI threshold) - always show if RSI is available
+    has_rsi = (rsi_indicator is not None) or any("rsi" in strategy_result.indicators.columns for strategy_result, _ in strategies.values())
     if has_rsi:
         fig.add_hline(
             y=50,
@@ -840,9 +903,13 @@ def create_strategy_comparison_plot(data: pd.Series, strategies: Dict[str, Tuple
     for strategy_name, (_, portfolio) in strategies.items():
         fig.add_trace(go.Scatter(x=portfolio.index, y=portfolio["total"], name=strategy_name, line=dict(width=2), legendgroup="row4"), row=4, col=1)
 
-    # Buy and hold baseline
-    first_portfolio = list(strategies.values())[0][1]
-    initial_value = first_portfolio["total"].iloc[0]
+    # Buy and hold baseline (always show)
+    if len(strategies) > 0:
+        first_portfolio = list(strategies.values())[0][1]
+        initial_value = first_portfolio["total"].iloc[0]
+    else:
+        # If no strategies, use a default initial value
+        initial_value = 100000.0
     buy_hold = initial_value * (data / data.iloc[0])
     fig.add_trace(go.Scatter(x=data.index, y=buy_hold, name="Buy & Hold", line=dict(dash="dash", width=2), opacity=0.7, legendgroup="row4"), row=4, col=1)
 
@@ -1168,6 +1235,18 @@ def run_backtest_workflow(
             # Fetch data
             data = fetch_data(symbol, period, str(end_date))
 
+            # Always compute RSI and MACD indicators regardless of strategy selection
+            with st.spinner("Computing RSI and MACD indicators..."):
+                # Compute RSI with default period (14)
+                rsi_indicator = compute_rsi(data, window=14)
+                
+                # Compute MACD with default parameters (12, 26, 9)
+                exp1 = data.ewm(span=12, adjust=False).mean()
+                exp2 = data.ewm(span=26, adjust=False).mean()
+                macd_indicator = exp1 - exp2
+                macd_signal_line = macd_indicator.ewm(span=9, adjust=False).mean()
+                macd_histogram = macd_indicator - macd_signal_line
+
             # Initialize strategy results and portfolios
             ema_cross_result = None
             ema_cross_portfolio = None
@@ -1286,10 +1365,11 @@ def run_backtest_workflow(
             if enable_ema_x_macd_rsi and ema_x_macd_rsi_portfolio is not None:
                 all_start_indices.append(ema_x_macd_rsi_portfolio.index[0])
 
+            # If no strategies selected, use data start index
             if not all_start_indices:
-                raise ValueError("No strategies were successfully run. Please check your strategy selections.")
-
-            common_start_idx = max(all_start_indices)
+                common_start_idx = data.index[0]
+            else:
+                common_start_idx = max(all_start_indices)
 
             # Trim portfolios and data to start at the same time
             data_display = data.loc[common_start_idx:]
@@ -1403,11 +1483,21 @@ def run_backtest_workflow(
                 buy_hold_return = (data_display.iloc[-1] / data_display.iloc[0] - 1) * 100
                 st.metric("Buy & Hold Return", f"{buy_hold_return:.2f}%")
 
+            # Align RSI and MACD indicators to common start index
+            rsi_aligned = rsi_indicator.loc[common_start_idx:] if common_start_idx in rsi_indicator.index else rsi_indicator
+            macd_aligned = macd_indicator.loc[common_start_idx:] if common_start_idx in macd_indicator.index else macd_indicator
+            macd_signal_aligned = macd_signal_line.loc[common_start_idx:] if common_start_idx in macd_signal_line.index else macd_signal_line
+            macd_hist_aligned = macd_histogram.loc[common_start_idx:] if common_start_idx in macd_histogram.index else macd_histogram
+
             # Store in session state
             st.session_state["data"] = data_display
             st.session_state["strategies"] = strategies_dict
             st.session_state["metrics"] = metrics_dict
             st.session_state["symbol"] = symbol
+            st.session_state["rsi_indicator"] = rsi_aligned
+            st.session_state["macd_indicator"] = macd_aligned
+            st.session_state["macd_signal"] = macd_signal_aligned
+            st.session_state["macd_histogram"] = macd_hist_aligned
 
             st.success("✅ Backtest completed successfully!")
 
@@ -1418,23 +1508,24 @@ def run_backtest_workflow(
 
 def display_backtest_results():
     """Display backtest results if available."""
-    if "strategies" not in st.session_state or "metrics" not in st.session_state:
+    if "data" not in st.session_state:
         return
 
     st.divider()
 
-    # Performance metrics comparison
-    st.header("📈 Performance Metrics")
-    metrics_df = pd.DataFrame([st.session_state["metrics"][k] for k in st.session_state["metrics"].keys()])
-    metrics_df = metrics_df.set_index("Strategy")
+    # Performance metrics comparison (only if strategies were run)
+    if "strategies" in st.session_state and "metrics" in st.session_state and len(st.session_state["metrics"]) > 0:
+        st.header("📈 Performance Metrics")
+        metrics_df = pd.DataFrame([st.session_state["metrics"][k] for k in st.session_state["metrics"].keys()])
+        metrics_df = metrics_df.set_index("Strategy")
 
-    # Format the dataframe for display
-    display_df = metrics_df.copy()
-    for col in display_df.columns:
-        if col != "Number of Trades":
-            display_df[col] = display_df[col].apply(lambda x: f"{x:.2f}" if isinstance(x, (int, float)) else x)
+        # Format the dataframe for display
+        display_df = metrics_df.copy()
+        for col in display_df.columns:
+            if col != "Number of Trades":
+                display_df[col] = display_df[col].apply(lambda x: f"{x:.2f}" if isinstance(x, (int, float)) else x)
 
-    st.dataframe(display_df, width="stretch")
+        st.dataframe(display_df, width="stretch")
 
     # Display optimization results if available
     if "simple_ema_optimization_results" in st.session_state:
@@ -1584,22 +1675,36 @@ def display_backtest_results():
 
     # Visualization
     st.header("📊 Strategy Comparison")
-    fig = create_strategy_comparison_plot(st.session_state["data"], st.session_state["strategies"], st.session_state["symbol"])
+    rsi_ind = st.session_state.get("rsi_indicator", None)
+    macd_ind = st.session_state.get("macd_indicator", None)
+    macd_sig = st.session_state.get("macd_signal", None)
+    macd_hist = st.session_state.get("macd_histogram", None)
+    strategies_dict = st.session_state.get("strategies", {})
+    fig = create_strategy_comparison_plot(
+        st.session_state["data"], 
+        strategies_dict, 
+        st.session_state["symbol"],
+        rsi_indicator=rsi_ind,
+        macd_indicator=macd_ind,
+        macd_signal=macd_sig,
+        macd_histogram=macd_hist,
+    )
     st.plotly_chart(fig, width="stretch")
 
-    # Detailed metrics
-    st.header("📋 Detailed Metrics")
-    col1, col2 = st.columns(2)
+    # Detailed metrics (only if strategies were run)
+    if "metrics" in st.session_state and len(st.session_state["metrics"]) > 0:
+        st.header("📋 Detailed Metrics")
+        col1, col2 = st.columns(2)
 
-    for idx, (strategy_name, metrics) in enumerate(st.session_state["metrics"].items()):
-        with col1 if idx % 2 == 0 else col2:
-            st.subheader(strategy_name)
-            for key, value in metrics.items():
-                if key != "Strategy":
-                    if isinstance(value, float):
-                        st.metric(key, f"{value:.2f}")
-                    else:
-                        st.metric(key, value)
+        for idx, (strategy_name, metrics) in enumerate(st.session_state["metrics"].items()):
+            with col1 if idx % 2 == 0 else col2:
+                st.subheader(strategy_name)
+                for key, value in metrics.items():
+                    if key != "Strategy":
+                        if isinstance(value, float):
+                            st.metric(key, f"{value:.2f}")
+                        else:
+                            st.metric(key, value)
 
 
 def main_strategy_backtest_page(shared_symbol: str):
@@ -1655,9 +1760,7 @@ def main_strategy_backtest_page(shared_symbol: str):
         enable_ema_x_macd_rsi,
     ) = page_controls(shared_symbol)
 
-    # Validate at least one strategy is enabled
-    if not (enable_ema_cross or enable_macd or enable_simple_ema or enable_ema50_macd or enable_rsi or enable_ema_x_rsi or enable_ema_x_macd_rsi):
-        st.warning("⚠️ Please enable at least one strategy to run the backtest.")
+    # Note: RSI and MACD indicators will always be computed and displayed even if no strategies are selected
 
     # Run backtest button
     if st.button("🚀 Run Backtest", type="primary", use_container_width=True):

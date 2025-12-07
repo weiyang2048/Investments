@@ -1,7 +1,7 @@
 period: "2y"
 rsi_period: 14
 normalize: true
-height: 1500
+height: 900
 line_width: 2
 accelerators_top_n: 10
 opacity: 0.7
@@ -21,14 +21,14 @@ reference_lines:
 
 use_alternative_tickers: False
 tickers:
-  US: [VOO, TOPT]
+  US: [VTI, TOPT]
   # --- 1st level ---
   Treasuries: [TLT, BNDW]
   # --- 2nd level ---
   ConsumerStaples: [KXI, PSL]
   Utilities: [JXI, AIPO]
   Healthcare: [IXJ, ARKG]
-  Metals: [GLTR, GOEX]
+  Metals: [GLTR, GOEX, HG=F]
   Crypto: [GDLC, BKCH]
   # --- 3rd level ---
   xUS: [VXUS, PIEQ]
@@ -46,3 +46,14 @@ tickers:
   Communication: [IXP, SIXG]
   ConsumerDiscretionary: [RXI, EBIZ]
   RealEstate: REET
+
+vs_pairs:
+  - [VTI,VXUS]
+  - [VEA, IEMG]
+  - [GLTR,GDLC]
+  - [HG=F,GC=F]
+  - [HYG, LQD]
+  - [VTI, GC=F]
+  
+
+  #  SMH/XLU, IWM/SPY, XLY/XLP, HYG/IEF,  SPY/TLT

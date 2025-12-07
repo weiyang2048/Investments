@@ -5,14 +5,14 @@ import yfinance as yf
 import pandas as pd
 import numpy as np
 from typing import Union
-import src.indicators.INDICT as indict
-
+import src.indicators as indict
+from tqdm import tqdm
 
 class TICKERS:
     """
     tickers = ["SPY", "QQQ"]
     ticker = TICKERS(tickers, period="486d", normalize=True)
-    # ticker.prices #@ P
+    # ✅ ticker.prices #@ P
     # ticker.get_ema(period=50) #@ EMA_50, df
     # ticker.get_rsi() #@ RSI_14, df
     # ticker.calculate_price_pct_change(days_back) #@ pct_changes, dict
@@ -20,6 +20,10 @@ class TICKERS:
 
     def __init__(self, tickers: List[str], period: str = "5y", normalize: bool = False):
         self.tickers = tickers
+        self.tickers_info = {}
+        # self.tickers_info = {ticker: yf.Ticker(ticker).info for ticker in tickers}
+        # for ticker in tickers:
+            # setattr(self, ticker, yf.Ticker(ticker))
         self.period = period
         self.normalize = normalize
         self.prices = get_tickers_close_prices(tickers, period, normalize=self.normalize)
@@ -308,39 +312,7 @@ class TICKERS:
 
         return accelerators
 
-    def to_pivot(self) -> pd.DataFrame:
-        """
-        Convert prices DataFrame to pivot format with Date as a column.
-        
-        Returns:
-            DataFrame with Date column and ticker symbols as columns (pivot format)
-        """
-        df_pivot = self.prices.copy()
-        df_pivot.reset_index(inplace=True)
-        # The index column (Date) will be the first column after reset_index
-        # Rename it to "Date" if it's not already named
-        first_col = df_pivot.columns[0]
-        if first_col not in self.tickers:
-            df_pivot.rename(columns={first_col: "Date"}, inplace=True)
-        else:
-            # If first column is a ticker, insert Date column at the beginning
-            df_pivot.insert(0, "Date", self.prices.index)
-        return df_pivot
-
-    def get_dividend_yields(self) -> dict:
-        """
-        Fetch dividend yields for all tickers using yfinance.
-        
-        Returns:
-            Dictionary mapping ticker symbol to dividend yield (float or None)
-        """
-        yields = {}
-        for ticker in self.tickers:
-            try:
-                ticker_obj = yf.Ticker(ticker)
-                info = ticker_obj.info
-                dividend_yield = info.get('dividendYield')
-                yields[ticker] = dividend_yield
-            except Exception as e:
-                yields[ticker] = None
-        return yields
+    def get_tickers_info(self) -> dict:
+        if not self.tickers_info:
+            self.tickers_info = {ticker: yf.Ticker(ticker).info for ticker in tqdm(self.tickers)}
+        return self.tickers_info

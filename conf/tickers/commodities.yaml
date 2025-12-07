@@ -44,3 +44,10 @@ BKCH:
   name: Global X Blockchain ETF
   color: purple
   line_style: dash
+# indices
+HG=F:
+  name: CME Group Copper Index
+  color: brown
+GC=F:
+  name: CME Group Gold Index
+  color: gold

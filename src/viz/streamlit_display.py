@@ -7,13 +7,15 @@ from pyhere import here
 
 
 def rg0_centered(value, center=0):
-    return [max(int(255 * abs(value - center)), 100) if value <= center else 0, max(int(255 * (value - center)), 100) if value > center else 0, 100]
+    return [max(int(255 * abs(value - center)), 200) if value <= center else 0, max(int(255 * (value - center)), 200) if value > center else 0, 200]
 
 
 def highlight_row(row, df=None):
     """Apply conditional formatting to DataFrame rows based on row type."""
     row_original = row.copy()
-    min_value_abs, max_value_abs = abs(row.min()), abs(row.max())
+
+    epsilon = 1e-10
+    min_value_abs, max_value_abs = abs(row.min()) + epsilon, abs(row.max()) + epsilon
     normalize_value_centered = [value / max_value_abs if value > 0 else value / min_value_abs for value in row]
     result = []
     if row.name in ["p", "ema20", "ema50", "ema200"]:
@@ -31,7 +33,10 @@ def highlight_row(row, df=None):
                 if row.name in ["ema20", "ema50"]:
                     ema_val = ema20_val if row.name == "ema20" else ema50_val
                     if p_val < ema_val:
-                        color = "background-color: rgb(220, 20, 60); color: white; font-weight: bold"  # crimson
+                        if row.name == "ema20":
+                            color = "background-color: rgb(255, 165, 0); color: white; font-weight: bold"  # orange for ema20
+                        else:
+                            color = "background-color: rgb(220, 20, 60); color: white; font-weight: bold"  # crimson for ema50
                     else:
                         color = "background-color: white; color: black; font-weight: bold"
                 elif row.name == "ema200":
@@ -48,7 +53,7 @@ def highlight_row(row, df=None):
                     color = "background-color: white; color: black; font-weight: bold"
                 result.append(color)
             return result
-    elif row.name in ["a", "rsi_delta", "macd_delta"]:  # * accelerations
+    elif row.name in ["a", "rsiΔ", "macdΔ"]:  # * accelerations
         for value, normalized_value in zip(row, normalize_value_centered):
             color = f"color: rgb({','.join(map(str, rg0_centered(normalized_value, center=0)))}); background-color: black; font-weight: bold;"
             result.append(color)
@@ -97,17 +102,6 @@ def highlight_row(row, df=None):
                 color = f"background-color: rgba(46, 139, 120, {intensity:.2f}); border: 1px solid rgba(46, 139, 87, {intensity:.2f})"
             else:
                 color = "background-color: white; color: black"
-            result.append(color)
-        return result
-
-    elif row.name in ["avg%+", "avg_s+", "avg_s-", "avg%-"]:
-        for value in row:
-            if pd.isnull(value):
-                result.append("")
-                continue
-            bg_color = "white" if row.name in ["avg%+", "avg%-"] else "black"
-            text_color = f"rgb(0, {value*255}, 0)" if row.name in ["avg%+", "avg_s+"] else f"rgb({abs(value)*255}, 0, 0)"
-            color = f"background-color: {bg_color}; color: {text_color}; font-weight: bold"
             result.append(color)
         return result
 
@@ -235,6 +229,9 @@ def display_dataframe(
     if hide_rows:
         df = df.drop(index=hide_rows, errors="ignore")
 
+    # Replace _delta with triangle symbol (Δ) in index names
+    df.index = df.index.str.replace("_delta", "Δ", regex=False)
+
     # Load yaml suffix mapping
     yaml_suffix_map = {}
     try:
@@ -316,10 +313,12 @@ def display_table_of_contents(sections: Optional[list] = None) -> None:
     cols = st.columns(min(len(sections), 3))
     for i, section in enumerate(sections):
         with cols[i % 3]:
-            st.markdown(f"- [{section}](#{section.lower()})")
+            anchor = section.lower().replace(" ", "-")
+            st.markdown(f"- [{section}](#{anchor})")
 
 
 def display_section_header(header: str, anchor: Optional[str] = None) -> None:
     """Display a section header with optional anchor for navigation."""
     anchor = anchor or header
-    st.markdown(f"<h3 id='{anchor.lower()}'>{header}</h3>", unsafe_allow_html=True)
+    anchor_id = anchor.lower().replace(" ", "-")
+    st.markdown(f"<h3 id='{anchor_id}'>{header}</h3>", unsafe_allow_html=True)

@@ -41,7 +41,11 @@ def get_tickers_close_prices(tickers: List[str], period: str = "5y", normalize: 
     
     # ensembles_hist_close.dropna(inplace=True, how="any")
     if normalize:
-        ensembles_hist_close = ensembles_hist_close.div(ensembles_hist_close.iloc[0], axis=1)
+        # Divide by the earliest non-missing value for each column
+        first_valid_values = ensembles_hist_close.apply(
+            lambda col: col[col.first_valid_index()] if col.first_valid_index() is not None else 1
+        )
+        ensembles_hist_close = ensembles_hist_close.div(first_valid_values, axis=1)
 
     return ensembles_hist_close
 

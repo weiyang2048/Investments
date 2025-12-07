@@ -38,7 +38,7 @@ def denoise_corr_marchenko_pastur(corr: pd.DataFrame, q: float = None) -> pd.Dat
 def pivoted_to_corr(df: pd.DataFrame, plot: bool = False, streamlit: bool = False, marchenko_pastur: bool = True, corr_matrix: pd.DataFrame = None) -> pd.DataFrame:
     df_pivot = df.copy()
     if corr_matrix is None:
-        df_pivot.drop(columns=["Date"], inplace=True)
+        # Date is already in the index, so we can work directly with the DataFrame
         df_pivot_count = df_pivot.apply(lambda x: x.count(), axis=0)
         # # show number of observations for each symbol and sort by number of observations
         df_pivot_count = df_pivot_count.sort_values(ascending=False)

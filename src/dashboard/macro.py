@@ -12,6 +12,7 @@ import pandas as pd
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 import re
+import random
 from matplotlib.colors import to_rgb
 
 import hydra
@@ -157,33 +158,51 @@ def _add_vs_pair_plot(
 
     # Add price information on primary axis with dotted lines
     if price_df is not None and not price_df.empty:
-        for ticker_symbol in [ticker1, ticker2]:
-            if ticker_symbol in price_df.columns:
-                color = ticker_colors.get(ticker_symbol, default_colors[0])
-                price_series = price_df[ticker_symbol].dropna()
-
-                # Align price data with RSI data index
-                price_aligned = price_series.reindex(rsi_df.index, method="ffill").dropna()
-                price_normalized = price_aligned * 30 - 25
-
-                fig.add_trace(
-                    go.Scatter(
-                        x=price_aligned.index,
-                        y=price_normalized,
-                        mode="lines",
-                        name=f"{ticker_symbol} Price",
-                        line=dict(
-                            color=color,
-                            width=2,
+        # Get both price series and find common start date
+        price_series1 = price_df[ticker1].dropna() if ticker1 in price_df.columns else pd.Series(dtype=float)
+        price_series2 = price_df[ticker2].dropna() if ticker2 in price_df.columns else pd.Series(dtype=float)
+        
+        if not price_series1.empty and not price_series2.empty:
+            # Align both to RSI data index
+            price_aligned1 = price_series1.reindex(rsi_df.index, method="ffill").dropna()
+            price_aligned2 = price_series2.reindex(rsi_df.index, method="ffill").dropna()
+            
+            # Find the earliest common date where both have data
+            common_index = price_aligned1.index.intersection(price_aligned2.index)
+            if not common_index.empty:
+                start_date = common_index[0]
+                
+                # Get starting values at the common start date
+                start_value1 = price_aligned1.loc[start_date]
+                start_value2 = price_aligned2.loc[start_date]
+                
+                # Normalize both to start at 1.0, then apply scaling/offset for display
+                price_normalized1 = (price_aligned1 / start_value1) * 30 - 25
+                price_normalized2 = (price_aligned2 / start_value2) * 30 - 25
+                
+                # Plot both price curves
+                for ticker_symbol, price_normalized, color in [
+                    (ticker1, price_normalized1, ticker_colors.get(ticker1, default_colors[0])),
+                    (ticker2, price_normalized2, ticker_colors.get(ticker2, default_colors[0])),
+                ]:
+                    fig.add_trace(
+                        go.Scatter(
+                            x=price_normalized.index,
+                            y=price_normalized,
+                            mode="lines",
+                            name=f"{ticker_symbol} Price",
+                            line=dict(
+                                color=color,
+                                width=2,
+                            ),
+                            opacity=0.7,
+                            showlegend=False,
+                            hovertemplate=f"{ticker_symbol} Price<br>%{{y:.1f}} (normalized)<extra></extra>",
                         ),
-                        opacity=0.7,
-                        showlegend=False,
-                        hovertemplate=f"{ticker_symbol} Price<br>%{{y:.1f}} (normalized)<extra></extra>",
-                    ),
-                    row=row,
-                    col=col,
-                    secondary_y=False,
-                )
+                        row=row,
+                        col=col,
+                        secondary_y=False,
+                    )
 
     # Calculate difference
     diff = rsi_df[ticker1] - rsi_df[ticker2]
@@ -806,9 +825,9 @@ def main():
                 # 3. Dict format: US: {ticker: TOPT} (ticker_value is a dict)
                 
                 if isinstance(ticker_value, list):
-                    # If list and use_alternative_tickers is True, use second item; otherwise use first
-                    if use_alternative_tickers and len(ticker_value) >= 2:
-                        actual_ticker = ticker_value[1]
+                    # If list and use_alternative_tickers is True, randomly pick from list; otherwise use first
+                    if use_alternative_tickers and len(ticker_value) >= 1:
+                        actual_ticker = random.choice(ticker_value)
                     elif len(ticker_value) >= 1:
                         actual_ticker = ticker_value[0]
                     else:
@@ -831,36 +850,62 @@ def main():
                 display_to_ticker[t] = t
                 ticker_to_display[t] = t
 
-        # Get champion and challengers from tickers config
-        # First ticker is champion, rest are challengers
-        if isinstance(tickers_config, dict) and len(tickers_config) > 0:
-            ticker_items = list(tickers_config.items())
-            champion_display = ticker_items[0][0]  # First display name
-            challenger_displays = [item[0] for item in ticker_items[1:]]  # Rest are challengers
+        # Get vs_pairs from rsi_config - only plot these pairs
+        vs_pairs = rsi_config.get("vs_pairs", [])
+        if not vs_pairs:
+            # Fallback: use old challenger logic if vs_pairs is not defined
+            if isinstance(tickers_config, dict) and len(tickers_config) > 0:
+                ticker_items = list(tickers_config.items())
+                champion_display = ticker_items[0][0]  # First display name
+                challenger_displays = [item[0] for item in ticker_items[1:]]  # Rest are challengers
+            else:
+                champion_display = "US"
+                challenger_displays = []
+            
+            champion = display_to_ticker.get(champion_display, champion_display)
+            challenger_tickers = set()
+            num_cols = 3  # Always use 3 columns
+
+            # Convert challengers list to list of dicts with row/col positions
+            challengers = []
+            for idx, challenger_display in enumerate(challenger_displays):
+                # Resolve display name to actual ticker
+                actual_challenger = display_to_ticker.get(challenger_display, challenger_display)
+                challenger_tickers.add(actual_challenger)
+                # Create challenger config dict with ticker and calculated position
+                challengers.append({
+                    "ticker": actual_challenger,
+                    "row": (idx // num_cols) + 1,
+                    "col": (idx % num_cols) + 1,
+                    "champion": champion,  # Store champion in config
+                })
+
+            # Ensure all tickers (champion and challengers) are included
+            all_tickers = list(set(actual_ticker_list + [champion] + list(challenger_tickers)))
         else:
-            # Fallback
-            champion_display = "US"
-            challenger_displays = []
-        
-        champion = display_to_ticker.get(champion_display, champion_display)
-        challenger_tickers = set()
-        num_cols = 3  # Always use 3 columns
-
-        # Convert challengers list to list of dicts with row/col positions
-        challengers = []
-        for idx, challenger_display in enumerate(challenger_displays):
-            # Resolve display name to actual ticker
-            actual_challenger = display_to_ticker.get(challenger_display, challenger_display)
-            challenger_tickers.add(actual_challenger)
-            # Create challenger config dict with ticker and calculated position
-            challengers.append({
-                "ticker": actual_challenger,
-                "row": (idx // num_cols) + 1,
-                "col": (idx % num_cols) + 1,
-            })
-
-        # Ensure all tickers (champion and challengers) are included
-        all_tickers = list(set(actual_ticker_list + [champion] + list(challenger_tickers)))
+            # Use vs_pairs: each pair [ticker1, ticker2] where ticker1 is challenger, ticker2 is champion
+            champion = None  # Not used when vs_pairs is defined, but initialize for safety
+            num_cols = 3  # Always use 3 columns
+            challengers = []
+            vs_pair_tickers = set()
+            
+            for idx, pair in enumerate(vs_pairs):
+                if not isinstance(pair, list) or len(pair) < 2:
+                    continue
+                ticker1 = pair[0].upper() if isinstance(pair[0], str) else str(pair[0]).upper()
+                ticker2 = pair[1].upper() if isinstance(pair[1], str) else str(pair[1]).upper()
+                vs_pair_tickers.add(ticker1)
+                vs_pair_tickers.add(ticker2)
+                # Create challenger config dict with ticker, champion, and calculated position
+                challengers.append({
+                    "ticker": ticker1,
+                    "champion": ticker2,  # Each pair has its own champion
+                    "row": (idx // num_cols) + 1,
+                    "col": (idx % num_cols) + 1,
+                })
+            
+            # Ensure all tickers from vs_pairs are included
+            all_tickers = list(set(actual_ticker_list + list(vs_pair_tickers)))
 
         # Load price and RSI data once - used for both Dominance Shifts and RSI plots
         ticker_obj = TICKERS(all_tickers, period=rsi_config.get("period", "360d"), normalize=rsi_config.get("normalize", True))
@@ -1028,12 +1073,13 @@ def main():
         actual_max_col = num_cols
 
         # Build subplot titles in row-major order
-        champion_display_name = ticker_to_display.get(champion, champion)
         subplot_titles = []
         for challenger in challengers:
             challenger_ticker = challenger.get("ticker", "")
+            pair_champion = challenger.get("champion", champion if champion is not None else "")
             # Get display names for titles
             challenger_display_name = ticker_to_display.get(challenger_ticker, challenger_ticker)
+            champion_display_name = ticker_to_display.get(pair_champion, pair_champion)
             title = challenger.get("title", f"{challenger_display_name} vs {champion_display_name} RSI")
             subplot_titles.append(title)
 
@@ -1165,11 +1211,13 @@ def main():
 
         # Add all challenger vs champion plots
         for challenger in challengers:
+            # Use pair-specific champion if available, otherwise fall back to global champion
+            pair_champion = challenger.get("champion", champion if champion is not None else "")
             _add_vs_pair_plot(
                 fig,
                 rsi_df_plot,
                 challenger,
-                champion,
+                pair_champion,
                 ticker_colors,
                 rsi_config,
                 default_colors,
@@ -1196,9 +1244,10 @@ def main():
         all_diff_values = []
         for challenger in challengers:
             challenger_ticker = challenger.get("ticker")
-            if challenger_ticker in rsi_df_plot.columns and champion in rsi_df_plot.columns:
-                all_rsi_values.extend([rsi_df_plot[challenger_ticker], rsi_df_plot[champion]])
-                diff = rsi_df_plot[challenger_ticker] - rsi_df_plot[champion]
+            pair_champion = challenger.get("champion", champion if champion is not None else "")
+            if challenger_ticker in rsi_df_plot.columns and pair_champion in rsi_df_plot.columns:
+                all_rsi_values.extend([rsi_df_plot[challenger_ticker], rsi_df_plot[pair_champion]])
+                diff = rsi_df_plot[challenger_ticker] - rsi_df_plot[pair_champion]
                 all_diff_values.append(diff)
 
         # Calculate global primary y-axis range (RSI)

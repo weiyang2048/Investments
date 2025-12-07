@@ -201,7 +201,7 @@ BMY:
 BR:
   name: Broadridge Financial Solutions, Inc.
 
-BRK.B:
+BRK.A:
   name: Berkshire Hathaway Inc.
 
 BRO:
@@ -392,9 +392,6 @@ DECK:
 
 DELL:
   name: Dell Technologies Inc.
-
-DFS:
-  name: Discover Financial Services
 
 DG:
   name: Dollar General Corporation
@@ -828,9 +825,6 @@ LDOS:
 LEN:
   name: Lennar Corporation
 
-LEN.B:
-  name: Lennar Corporation
-
 LH:
   name: Laboratory Corporation of America Holdings
 
@@ -957,9 +951,6 @@ MRK:
 MRNA:
   name: Moderna, Inc.
 
-MRO:
-  name: Marathon Oil Corporation
-
 MS:
   name: Morgan Stanley
 
@@ -1071,8 +1062,6 @@ OXY:
 PANW:
   name: Palo Alto Networks, Inc.
 
-PARA:
-  name: Paramount Global
 
 PAYC:
   name: Paycom Software, Inc.
@@ -1455,8 +1444,6 @@ WMT:
 WRB:
   name: W. R. Berkley Corporation
 
-WRK:
-  name: WestRock Company
 
 WST:
   name: West Pharmaceutical Services, Inc.

@@ -72,11 +72,11 @@ def get_daily_prices_list(symbols: List[str], period: str = "1mo", streamlit: bo
 
     return combined_df
 
-def normalize_prices(df: pd.DataFrame, time_column: str = "Date") -> pd.DataFrame:
+def normalize_prices(df: pd.DataFrame, time_column: str = None) -> pd.DataFrame:
     """Normalize price data to start at 1.0."""
     df = df.copy()
-    # sort by time column, ascending
-    df.sort_values(time_column, inplace=True, ascending=True)
+    # sort by index (Date), ascending
+    df.sort_index(inplace=True, ascending=True)
     # fill backward
     df = df.bfill()
     symbols = df.select_dtypes(include=[np.number]).columns
