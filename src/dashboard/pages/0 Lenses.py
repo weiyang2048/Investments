@@ -123,7 +123,7 @@ def sidebar(config):
 def _process_and_prepare_data(symbols, period, equity_config):
     """Load, process data and create style dictionaries for given symbols."""
     # Load and process data using TICKERS class
-    ticker_obj = TICKERS(list(symbols), period=period, normalize=False)
+    ticker_obj = TICKERS(list(symbols), period=period, normalize=True)
     df_prices = ticker_obj.prices.copy()
 
     # Create style dictionaries
@@ -186,22 +186,28 @@ def _process_symbol_tab(
     # Display momentum ranking table first
     display_dataframe(momentum_ranking, symbol_type, "am", vmin=-0.1, vmax=1, hide_rows=["combined_score"])
 
-    # Add price plot - show only top 5 ranked symbols
+    # Add price plot - show all symbols, but only top 5 visible by default
     display_section_header("Price Performance")
     if "combined_score" in momentum_ranking.index and len(momentum_ranking.columns) > 0:
         combined_scores = momentum_ranking.loc["combined_score"]
         top_5_symbols = combined_scores.nlargest(5).index.tolist()
+        # Get all symbols sorted by combined_score for the plot
+        all_symbols_sorted = combined_scores.sort_values(ascending=False).index.tolist()
     else:
         top_5_symbols = symbols[:5] if len(symbols) >= 5 else symbols
+        all_symbols_sorted = symbols
     
-    with st.spinner("Creating price performance plot for top 5 symbols..."):
+    with st.spinner("Creating price performance plot..."):
+        # Only plot the largest window
+        largest_window = [max(look_back_days)] if look_back_days else [200]
         price_fig = create_price_plot(
             df_prices,
-            top_5_symbols,
-            look_back_days,
+            all_symbols_sorted,
+            largest_window,
             colors_dict,
             line_styles_dict,
             equity_config,
+            visible_symbols=top_5_symbols,
         )
         st.plotly_chart(price_fig, config={"displayModeBar": False})
 
@@ -369,7 +375,7 @@ if __name__ == "__main__":
         selected_page_lenses,
         marchenko_pastur,
         custom_symbols,
-        config.get("lookback_days", [14, 50, 100, 200, 400]),
+        config.get("lenses", {}).get("lookback_days", [14, 50, 100, 200, 400]),
         metrics_order=metrics_order,
     )
 

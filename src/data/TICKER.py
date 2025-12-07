@@ -31,6 +31,7 @@ class TICKERS:
         self.emas = {}
         self.rsis = {}
         self.momentums = {}
+        self.sharpe_ratios = {}
         self.pct_changes = {ticker: {} for ticker in tickers}
         for ticker in tickers:
             ticker_df = self.prices[[ticker]].copy()
@@ -99,6 +100,59 @@ class TICKERS:
             self.momentums[cache_key] = momentums
         
         return self.momentums[cache_key]
+
+    def calculate_sharpe_ratio_robust(self, returns: pd.Series, risk_free_rate: float = 0.1, 
+                                     trading_days: int = 252, min_observations: int = 60) -> float:
+        """
+        Robust Sharpe ratio calculation.
+
+        Args:
+            returns: Series of daily returns
+            risk_free_rate: Annual risk-free rate (default 0.1 = 10%)
+            trading_days: Number of trading days per year (default 252)
+            min_observations: Minimum number of observations required (default 60)
+
+        Returns:
+            Sharpe ratio rounded to 2 decimal places, or np.nan if insufficient data
+        """
+        # Create cache key from parameters and returns data
+        # Use hash of returns values and index for uniqueness
+        returns_hash = hash((tuple(returns.index), tuple(returns.values), len(returns)))
+        cache_key = (returns_hash, risk_free_rate, trading_days, min_observations)
+        
+        # Check cache
+        if cache_key in self.sharpe_ratios:
+            return self.sharpe_ratios[cache_key]
+        
+        if len(returns) < min_observations:
+            result = np.nan
+        else:
+            # Calculate daily risk-free rate
+            daily_rf = (1 + risk_free_rate) ** (1/trading_days) - 1
+            
+            # Excess returns
+            excess_returns = returns - daily_rf
+            
+            # Remove NaN values
+            excess_returns = excess_returns.dropna()
+            
+            if len(excess_returns) < min_observations:
+                result = np.nan
+            else:
+                mean_excess = excess_returns.mean()
+                std_excess = excess_returns.std(ddof=1)  # Sample standard deviation
+                
+                if std_excess <= 0:
+                    result = np.nan
+                else:
+                    # Annualized Sharpe ratio
+                    sharpe_ratio = (mean_excess / std_excess) * np.sqrt(trading_days)
+                    result = round(sharpe_ratio, 2)
+        
+        # Store result in cache
+        self.sharpe_ratios[cache_key] = result
+        
+        return result
 
     def is_strong(self):
         if "EMA_10" not in self.emas:

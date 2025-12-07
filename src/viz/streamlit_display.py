@@ -18,10 +18,11 @@ def highlight_row(row, df=None):
     min_value_abs, max_value_abs = abs(row.min()) + epsilon, abs(row.max()) + epsilon
     normalize_value_centered = [value / max_value_abs if value > 0 else value / min_value_abs for value in row]
     result = []
-    if row.name in ["p", "ema20", "ema50", "ema200"]:
+    if row.name in ["p", "ema10", "ema20", "ema50", "ema200"]:
         if df is not None and "p" in df.index and "ema50" in df.index:
             for col in row_original.index:
                 p_val = df.loc["p", col] if "p" in df.index else None
+                ema10_val = df.loc["ema10", col] if "ema10" in df.index and row.name == "ema10" else None
                 ema20_val = df.loc["ema20", col] if "ema20" in df.index and row.name == "ema20" else None
                 ema50_val = df.loc["ema50", col] if "ema50" in df.index else None
                 ema200_val = df.loc["ema200", col] if "ema200" in df.index and row.name == "ema200" else None
@@ -30,10 +31,12 @@ def highlight_row(row, df=None):
                     result.append("")
                     continue
 
-                if row.name in ["ema20", "ema50"]:
-                    ema_val = ema20_val if row.name == "ema20" else ema50_val
+                if row.name in ["ema10", "ema20", "ema50"]:
+                    ema_val = ema10_val if row.name == "ema10" else (ema20_val if row.name == "ema20" else ema50_val)
                     if p_val < ema_val:
-                        if row.name == "ema20":
+                        if row.name == "ema10":
+                            color = "background-color: rgb(255, 218, 185); color: black; font-weight: bold"  # light orange for ema10
+                        elif row.name == "ema20":
                             color = "background-color: rgb(255, 165, 0); color: white; font-weight: bold"  # orange for ema20
                         else:
                             color = "background-color: rgb(220, 20, 60); color: white; font-weight: bold"  # crimson for ema50
@@ -53,7 +56,7 @@ def highlight_row(row, df=None):
                     color = "background-color: white; color: black; font-weight: bold"
                 result.append(color)
             return result
-    elif row.name in ["a", "rsiΔ", "macdΔ"]:  # * accelerations
+    elif row.name in ["d0", "rsiΔ", "macdΔ"]:  # * accelerations
         for value, normalized_value in zip(row, normalize_value_centered):
             color = f"color: rgb({','.join(map(str, rg0_centered(normalized_value, center=0)))}); background-color: black; font-weight: bold;"
             result.append(color)
@@ -102,17 +105,6 @@ def highlight_row(row, df=None):
                 color = f"background-color: rgba(46, 139, 120, {intensity:.2f}); border: 1px solid rgba(46, 139, 87, {intensity:.2f})"
             else:
                 color = "background-color: white; color: black"
-            result.append(color)
-        return result
-
-    elif row.name == "stride":
-        for value in row:
-            if pd.isnull(value):
-                result.append("")
-                continue
-            color = (
-                f"background-color: rgb({abs(value)*255 if value < 0 else 0}, {value*255 if value > 0 else 0}, 0); color: white; font-weight: bold"
-            )
             result.append(color)
         return result
 
@@ -165,8 +157,11 @@ def highlight_row(row, df=None):
             if pd.isnull(value):
                 result.append("")
                 continue
-            red_intensity = int(np.clip(value, 0, 1) * 255)
-            color = f"background-color: white; color: rgb({red_intensity}, 0, 0); font-weight: bold"
+            # Drawdown is now in percentage (0-100), convert back to 0-1 for opacity calculation
+            # Higher drawdown (more negative) = higher opacity red background
+            drawdown_normalized = abs(value) / 100.0  # Normalize to 0-1 range
+            opacity = np.clip(drawdown_normalized, 0.1, 1.0)  # Opacity between 0.1 and 1.0
+            color = f"background-color: rgba(255, 0, 0, {opacity:.2f}); color: white; font-weight: bold"
             result.append(color)
         return result
 

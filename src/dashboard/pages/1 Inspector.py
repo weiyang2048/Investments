@@ -253,21 +253,33 @@ def main_fund_inspect_page(selections: str, config):
         st.markdown(basic_info, unsafe_allow_html=True)
 
     with col2:
-        style_box_breakdown = snap.get("Portfolios")[0].get("StyleBoxBreakdown")[0].get("BreakdownValues")
-        # Prepare matrix
-        matrix = [[None for _ in range(3)] for _ in range(3)]  # rows: Large/Mid/Small, cols: Value/Blend/Growth
-        labels_row = ["Large", "Mid", "Small"]
-        labels_col = ["Value", "Blend", "Growth"]
-        for i, cell in enumerate(style_box_breakdown):
-            row = i // 3
-            col = i % 3
-            matrix[row][col] = cell["Value"]
-        style_box_df = pd.DataFrame(matrix, index=labels_row, columns=labels_col)
-        st.markdown("<span class='field'>Style Box Breakdown </span>", unsafe_allow_html=True)
-        st.dataframe(
-            style_box_df.style.format("{:.2f}").background_gradient(cmap="Reds", axis=None),
-            width=250,
-        )
+        portfolios = snap.get("Portfolios")
+        if portfolios and len(portfolios) > 0:
+            portfolio = portfolios[0]
+            style_box_breakdown_data = portfolio.get("StyleBoxBreakdown")
+            if style_box_breakdown_data and len(style_box_breakdown_data) > 0:
+                style_box_breakdown = style_box_breakdown_data[0].get("BreakdownValues")
+                if style_box_breakdown:
+                    # Prepare matrix
+                    matrix = [[None for _ in range(3)] for _ in range(3)]  # rows: Large/Mid/Small, cols: Value/Blend/Growth
+                    labels_row = ["Large", "Mid", "Small"]
+                    labels_col = ["Value", "Blend", "Growth"]
+                    for i, cell in enumerate(style_box_breakdown):
+                        row = i // 3
+                        col = i % 3
+                        matrix[row][col] = cell["Value"]
+                    style_box_df = pd.DataFrame(matrix, index=labels_row, columns=labels_col)
+                    st.markdown("<span class='field'>Style Box Breakdown </span>", unsafe_allow_html=True)
+                    st.dataframe(
+                        style_box_df.style.format("{:.2f}").background_gradient(cmap="Reds", axis=None),
+                        width=250,
+                    )
+                else:
+                    st.info("Style Box Breakdown data not available")
+            else:
+                st.info("Style Box Breakdown data not available")
+        else:
+            st.info("Portfolio data not available")
 
     with col3:
         investment_strategy = snap.get("InvestmentStrategy") or snap.get("Investment Strategy")

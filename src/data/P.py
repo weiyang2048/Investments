@@ -2,24 +2,26 @@ import yfinance as yf
 import pandas as pd
 import streamlit as st
 from typing import List, Union
+
+
 def get_tickers_close_prices(tickers: List[str], period: str = "5y", normalize: bool = False) -> pd.DataFrame:
     """
     Fetch close prices for multiple tickers using yfinance.
-    
+
     Parameters
     ----------
     tickers : List[str]
         List of ticker symbols to fetch (e.g., ["BTC-USD", "IOO"]).
     period : str, optional
-        Period to fetch data for (default: "5y"). Options: "1d", "5d", "1mo", 
+        Period to fetch data for (default: "5y"). Options: "1d", "5d", "1mo",
         "3mo", "6mo", "1y", "2y", "5y", "10y", "ytd", "max".
-    
+
     Returns
     -------
     pd.DataFrame
         DataFrame with close prices for each ticker. Columns are ticker symbols,
         index is datetime. Timezone is removed to match liquidity index format.
-    
+
     Examples
     --------
     >>> df = get_tickers_close_prices(["BTC-USD", "IOO"], period="5y")
@@ -27,27 +29,26 @@ def get_tickers_close_prices(tickers: List[str], period: str = "5y", normalize: 
     """
     ensembles = yf.Tickers(tickers)
     ensembles_hist = ensembles.history(period=period)
-        
+
     # Extract Close price columns
     close_prices = [x for x in ensembles_hist.columns if "Close" in x]
     ensembles_hist_close = ensembles_hist[close_prices]
-    
+
     # Clean column names: remove "Close" prefix, keep ticker symbol
     ensembles_hist_close.columns = [x[1] for x in close_prices]
-    
+
     # Align timezone with liquidity index (use tz-naive)
     if hasattr(ensembles_hist_close.index, "tz") and ensembles_hist_close.index.tz is not None:
         ensembles_hist_close = ensembles_hist_close.tz_convert(None)
-    
+
     # ensembles_hist_close.dropna(inplace=True, how="any")
     if normalize:
         # Divide by the earliest non-missing value for each column
-        first_valid_values = ensembles_hist_close.apply(
-            lambda col: col[col.first_valid_index()] if col.first_valid_index() is not None else 1
-        )
+        first_valid_values = ensembles_hist_close.apply(lambda col: col[col.first_valid_index()] if col.first_valid_index() is not None else 1)
         ensembles_hist_close = ensembles_hist_close.div(first_valid_values, axis=1)
 
     return ensembles_hist_close
+
 
 @st.cache_resource(show_spinner=True)
 def st_get_tickers_close_prices(tickers: List[str], period: str = "5y") -> pd.DataFrame:
