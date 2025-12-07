@@ -6,6 +6,7 @@ import pandas as pd
 import numpy as np
 from typing import Union
 import src.indicators as indict
+from src.indicators.momemtum import compute_momentum
 from tqdm import tqdm
 
 class TICKERS:
@@ -54,42 +55,30 @@ class TICKERS:
             self.rsis[period] = df
         return self.rsis[period]
 
-    def get_momentum(self, period: int = 14, log: bool = True) -> pd.DataFrame:
+    def get_momentum(self, period: Union[int, List[int]] = 14) -> dict:
         """
-        Calculate momentum for all tickers using calendar dates from the index.
+        Calculate annualized momentum for each ticker.
         
-        When log=True: calculates log momentum log(P_t / P_{t-period})
-        When log=False: calculates regular momentum (P_t / P_{t-period}) - 1
-        
-        Uses the latest index date as the current date and calculates momentum based on
-        calendar days (period days ago) rather than row positions.
+        Uses compute_momentum from src.indicators.momemtum which calculates
+        annualized momentum based on row positions (trading days).
+        When a list of periods is provided, computes momentum for each and returns the average.
         
         Args:
-            period: Number of calendar days to look back (default: 14)
-            log: If True, calculate log momentum; if False, calculate regular momentum (default: True)
+            period: Number of periods to look back, or list of periods (default: 14)
             
         Returns:
-            DataFrame with momentum values for each ticker, indexed by date
+            Dictionary mapping ticker symbols to their annualized momentum values.
+            Returns empty dict if no valid momentum can be calculated.
         """
-        cache_key = (period, log)
+        # Convert period to hashable cache key (tuple if list, otherwise keep as int)
+        cache_key = tuple(period) if isinstance(period, list) else period
         
         if cache_key not in self.momentums:
             if self.prices.empty:
-                return pd.DataFrame()
+                self.momentums[cache_key] = {}
+                return {}
             
-            # Get the latest index date as current date
-            latest_date = self.prices.index.max()
-            earliest_required_date = latest_date - pd.Timedelta(days=period)
-            
-            # Check if we have enough data based on calendar dates
-            if self.prices.index.min() > earliest_required_date:
-                raise ValueError(
-                    f"Need data from at least {period} calendar days ago. "
-                    f"Latest date: {latest_date.date()}, earliest available: {self.prices.index.min().date()}, "
-                    f"required: {earliest_required_date.date()}"
-                )
-            
-            df = pd.DataFrame(index=self.prices.index)
+            momentums = {}
             
             for ticker in self.tickers:
                 if ticker not in self.prices.columns:
@@ -98,53 +87,16 @@ class TICKERS:
                 prices_series = self.prices[ticker].dropna()
                 
                 if prices_series.empty:
-                    df[ticker] = np.nan
                     continue
                 
-                # Check for non-positive prices
-                if (prices_series <= 0).any():
-                    raise ValueError(f"All prices must be positive for {ticker}")
-                
-                # Calculate momentum using calendar dates
-                momentum = pd.Series(index=self.prices.index, dtype=float)
-                momentum[:] = np.nan
-                
-                for current_date in prices_series.index:
-                    # Find the date that is 'period' calendar days ago
-                    target_date = current_date - pd.Timedelta(days=period)
-                    
-                    # Find the closest available price on or before the target date
-                    # Use forward fill to get the most recent available price
-                    available_dates = prices_series.index[prices_series.index <= target_date]
-                    
-                    if len(available_dates) == 0:
-                        # No data available before target date
-                        momentum[current_date] = np.nan
-                        continue
-                    
-                    # Get the price at the target date (or closest before it)
-                    past_price = prices_series.loc[available_dates[-1]]
-                    current_price = prices_series.loc[current_date]
-                    
-                    if pd.isna(past_price) or pd.isna(current_price) or past_price <= 0:
-                        momentum[current_date] = np.nan
-                        continue
-                    
-                    # Calculate momentum
-                    if log:
-                        # Log momentum: log(P_t / P_{t-period})
-                        momentum[current_date] = np.log(current_price / past_price)
-                    else:
-                        # Regular momentum: (P_t / P_{t-period}) - 1
-                        momentum[current_date] = (current_price / past_price) - 1
-                
-                df[ticker] = momentum
-                
-                # Also store in individual ticker dataframe
-                attr_name = f"log_momentum_{period}" if log else f"momentum_{period}"
-                getattr(self, ticker)[attr_name] = momentum
+                try:
+                    momentum = compute_momentum(prices_series, period=period)
+                    if not pd.isna(momentum):
+                        momentums[ticker] = momentum
+                except (ValueError, IndexError):
+                    continue
             
-            self.momentums[cache_key] = df
+            self.momentums[cache_key] = momentums
         
         return self.momentums[cache_key]
 
