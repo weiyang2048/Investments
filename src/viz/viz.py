@@ -125,7 +125,7 @@ def create_momentum_ranking_display(
     
     # Keep all relevant columns and transpose
     ranking_df = ranking_df[["Symbol"] + columns_to_keep]
-    transposed_df = ranking_df.set_index("Symbol").T.round(2)
+    transposed_df = ranking_df.set_index("Symbol").T
     
     # Load metrics_order from config if not provided
     if metrics_order is None:
@@ -150,6 +150,11 @@ def create_momentum_ranking_display(
     
     integer_columns = ["s0", "s1"]
     transposed_df.loc[integer_columns] = transposed_df.loc[integer_columns].astype(int)
+    
+    # Multiply d0 by 100 and format to 1 decimal place
+    if "d0" in transposed_df.index:
+        transposed_df.loc["d0"] = (transposed_df.loc["d0"] * 100).round(2)
+    
     result_df = transposed_df.loc[existing_rows]
     # Replace _delta with triangle symbol (Δ) in index names
     result_df.index = result_df.index.str.replace("_delta", "Δ", regex=False)

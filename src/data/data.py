@@ -493,7 +493,7 @@ def compute_annualized_momentum_sum(df: pd.DataFrame, window_sizes: List[int] = 
         # Calculate d0 (latest day-to-day change)
         if len(df_prices[symbol]) >= 2:
             latest_change = (df_prices[symbol].iloc[-1] / df_prices[symbol].iloc[-2] - 1) 
-            d0_latest_change[symbol] = np.round(latest_change, 2)
+            d0_latest_change[symbol] = latest_change
         else:
             d0_latest_change[symbol] = np.nan
 
