@@ -9,6 +9,7 @@ import streamlit as st
 import numpy as np
 import pytz
 from scipy import stats
+from src.data.TICKER import TICKERS
 
 
 @st.cache_data(ttl="1h")
@@ -377,40 +378,63 @@ def compute_momentum(
 
 def compute_annualized_momentum_sum(df: pd.DataFrame, window_sizes: List[int] = [7, 30, 90, 180, 360], time_column: str = "Date") -> pd.DataFrame:
     """
-    Compute the sum of annualized momentum across all window sizes for each symbol.
+    Compute annualized momentum using TICKER.get_momentum with period [10,20,50,100,200].
 
     Args:
-        df: DataFrame with price data (normalized or raw)
-        window_sizes: List of window sizes in days for momentum calculation
-        time_column: Name of the time column
+        df: DataFrame with price data (normalized or raw), index should be datetime
+        window_sizes: List of window sizes in days (kept for compatibility, not used for momentum)
+        time_column: Name of the time column (not used if df index is datetime)
 
     Returns:
-        DataFrame with symbols, individual window annualized momentum columns,
-        weighted average momentum (m), acceleration (a), and rank.
+        DataFrame with symbols, single momentum (m), and all other stats/indicators.
         
         Key metrics:
-        - m: Weighted average of annualized momentum across all window sizes
-        - a: Weighted average acceleration (rate of change of momentum) across window sizes
+        - m: Annualized momentum from TICKER.get_momentum with period [10,20,50,100,200]
         - sharpe: Robust annualized Sharpe ratio (excess returns over 4.5% risk-free rate, 
           using Opdyke 2007 formula with skewness and kurtosis adjustments, min 60 observations)
-        - combined_score: Sum of m + a, used for ranking
+        - combined_score: Same as m (for backward compatibility), used for ranking
         - d0: Latest day-to-day percentage change
-        - d6: 6-day percentage change (smallest window size)
         - p: Current price
         - ema20: 20-day exponential moving average
         - ema50: 50-day exponential moving average
-        - rsi: Relative Strength Index with period 9
-        - drawdown: Drop from maximum price observed in the data (1 - current/max, where 1.0 = 100% drop, 0.76 = 76% drop, 0.05 = 5% drop)
+        - ema200: 200-day exponential moving average
+        - rsi: Relative Strength Index with period 14
+        - drawdown: Drop from maximum price observed in the data
         - stride: Compound growth factor based on average consecutive movements
         - s0, s1: Current and previous consecutive streaks
         - avg_s+, avg_s-: Average consecutive up/down movements
         - avg%+, avg%-: Average percentage up/down movements
-        - pcr_m1: Put-call ratio for next month expiration
     """
-    symbols = df.select_dtypes(include=[np.number]).columns
-    m = {}
-    individual_momentum = {}
-    individual_accelerations = {}
+    symbols = df.select_dtypes(include=[np.number]).columns.tolist()
+    
+    # Prepare price dataframe for TICKERS (ensure datetime index)
+    if df.index.dtype != 'datetime64[ns]':
+        if time_column in df.columns:
+            df_prices = df.set_index(time_column)
+        else:
+            df_prices = df.copy()
+            df_prices.index = pd.to_datetime(df_prices.index)
+    else:
+        df_prices = df.copy()
+    
+    # Create TICKERS object to compute momentum
+    # Calculate period from dataframe length (add some buffer for safety)
+    days_needed = max(200, len(df_prices) + 10)  # Need at least 200 days for momentum calculation
+    period_str = f"{days_needed}d"
+    ticker_obj = TICKERS(symbols, period=period_str, normalize=False)
+    # Replace prices with our dataframe (preserving index)
+    ticker_obj.prices = df_prices[symbols].copy()
+    # Update individual ticker dataframes to keep them in sync
+    for ticker in symbols:
+        if ticker in ticker_obj.prices.columns:
+            ticker_df = ticker_obj.prices[[ticker]].copy()
+            ticker_df.rename(columns={ticker: "P"}, inplace=True)
+            setattr(ticker_obj, ticker, ticker_df)
+    
+    # Get momentum using TICKER.get_momentum with period [10,20,50,100,200]
+    momentum_dict = ticker_obj.get_momentum(period=[10, 20, 50, 100, 200])
+    
+    # Initialize all other metrics
     s0_streaks = {}
     s_minus_1_streaks = {}
     avg_s_plus = {}
@@ -418,7 +442,6 @@ def compute_annualized_momentum_sum(df: pd.DataFrame, window_sizes: List[int] = 
     avg_plus_percent = {}
     avg_minus_percent = {}
     stride = {}
-    pct_change_smallest_window = {}
     d0_latest_change = {}
     drawdown = {}
     ema20_values = {}
@@ -431,61 +454,21 @@ def compute_annualized_momentum_sum(df: pd.DataFrame, window_sizes: List[int] = 
     macd1_values = {}
     macd_delta_values = {}
     current_prices = {}
-    a = {}
     sharpe_ratios = {}
-    # Calculate acceleration for all window sizes except the last one
-    acceleration_windows = window_sizes[:-1]  # Exclude the last window
-    momentum_windows = window_sizes[1:]
+    
     for symbol in symbols:
-        total_annualized_momentum = 0
-        total_weight = 0
-        symbol_momentum = {}
-        symbol_accelerations = {}
-
-        for window in momentum_windows:
-            # Use the shared momentum calculation function
-            momentum = _compute_momentum_for_symbol(df, symbol, window)
-
-            if len(momentum) > 0:
-                if len(momentum) == 1:
-                    last_momentum = momentum.iloc[-1]
-                else:
-                    last_momentum = momentum.iloc[-6:].sum() / 6
-                # Annualize the momentum: (1 + momentum)^(252/window) - 1, cap at 2
-                annualized_momentum = min((1 + last_momentum) ** (252 / window) - 1, 1)
-                symbol_momentum[f"m{window}"] = np.round(annualized_momentum, 4)
-
-                weight = 1 / np.log(window)
-                weighted_momentum = annualized_momentum * weight
-                total_weight += weight
-                total_annualized_momentum += weighted_momentum
-            else:
-                symbol_momentum[f"m{window}"] = np.nan
-
-            # Calculate acceleration for this window if it's not the last one
-            if window in acceleration_windows:
-                if len(momentum) >= 3:  # Need at least 3 values for meaningful moving average
-                    # Calculate momentum differences (A[i] - A[i-1])
-                    momentum_diffs = momentum.diff().dropna()
-                    ma_window = 3
-                    acceleration = momentum_diffs.rolling(window=ma_window).mean().iloc[-1]
-                    acceleration = (1 + acceleration) ** (252 / window) - 1
-                    symbol_accelerations[f"a{window}"] = np.round(acceleration, 2)
-                else:
-                    symbol_accelerations[f"a{window}"] = np.nan
-
         # Calculate consecutive streaks
-        last_streak, previous_streak = _compute_consecutive_streaks(df, symbol)
+        last_streak, previous_streak = _compute_consecutive_streaks(df_prices, symbol)
         s0_streaks[symbol] = last_streak
         s_minus_1_streaks[symbol] = previous_streak
 
         # Calculate average consecutive movements
-        avg_up, avg_down = _compute_average_consecutive_movements(df, symbol)
+        avg_up, avg_down = _compute_average_consecutive_movements(df_prices, symbol)
         avg_s_plus[symbol] = np.round(avg_up, 2)
         avg_s_minus[symbol] = np.round(avg_down, 2)
 
         # Calculate average percentage movements
-        avg_up_pct, avg_down_pct = _compute_average_percentage_movements(df, symbol)
+        avg_up_pct, avg_down_pct = _compute_average_percentage_movements(df_prices, symbol)
         avg_plus_percent[symbol] = np.round(avg_up_pct, 2)
         avg_minus_percent[symbol] = np.round(avg_down_pct, 2)
 
@@ -493,62 +476,55 @@ def compute_annualized_momentum_sum(df: pd.DataFrame, window_sizes: List[int] = 
         avg_s_plus_val = avg_s_plus[symbol]
         avg_s_minus_val = avg_s_minus[symbol]
         sum_s = avg_s_plus_val + avg_s_minus_val
-        avg_plus_pct_val = avg_plus_percent[symbol]
-        avg_minus_pct_val = avg_minus_percent[symbol]
-        
-        stride_value = ((1 + avg_plus_pct_val/100) ** avg_s_plus_val * (1 - abs(avg_minus_pct_val)/100) ** avg_s_minus_val) ** (252/sum_s)
-        
-        stride[symbol] = np.round(stride_value-1, 2)
-
-        # Calculate %change for the smallest window size
-        smallest_window = min(window_sizes)
-        smallest_window_momentum = _compute_momentum_for_symbol(df, symbol, smallest_window)
-        if len(smallest_window_momentum) > 0:
-            pct_change_smallest_window[symbol] = np.round(smallest_window_momentum.iloc[-1], 2)
+        if sum_s > 0:
+            avg_plus_pct_val = avg_plus_percent[symbol]
+            avg_minus_pct_val = avg_minus_percent[symbol]
+            stride_value = ((1 + avg_plus_pct_val/100) ** avg_s_plus_val * (1 - abs(avg_minus_pct_val)/100) ** avg_s_minus_val) ** (252/sum_s)
+            stride[symbol] = np.round(stride_value-1, 2)
         else:
-            pct_change_smallest_window[symbol] = np.nan
+            stride[symbol] = np.nan
 
         # Calculate d0 (latest day-to-day change)
-        if len(df[symbol]) >= 2:
-            latest_change = (df[symbol].iloc[-1] / df[symbol].iloc[-2] - 1) 
+        if len(df_prices[symbol]) >= 2:
+            latest_change = (df_prices[symbol].iloc[-1] / df_prices[symbol].iloc[-2] - 1) 
             d0_latest_change[symbol] = np.round(latest_change, 2)
         else:
             d0_latest_change[symbol] = np.nan
 
         # Calculate current price (p)
-        if len(df[symbol]) > 0:
-            current_price = df[symbol].iloc[-1]
+        if len(df_prices[symbol]) > 0:
+            current_price = df_prices[symbol].iloc[-1]
             current_prices[symbol] = np.round(current_price, 2)
         else:
             current_prices[symbol] = np.nan
 
         # Calculate EMA20
-        if len(df[symbol]) >= 20:
-            ema20 = df[symbol].ewm(span=20, adjust=False).mean()
+        if len(df_prices[symbol]) >= 20:
+            ema20 = df_prices[symbol].ewm(span=20, adjust=False).mean()
             current_ema20 = ema20.iloc[-1]
             ema20_values[symbol] = np.round(current_ema20, 2)
         else:
             ema20_values[symbol] = np.nan
 
         # Calculate EMA50
-        if len(df[symbol]) >= 50:
-            ema50 = df[symbol].ewm(span=50, adjust=False).mean()
+        if len(df_prices[symbol]) >= 50:
+            ema50 = df_prices[symbol].ewm(span=50, adjust=False).mean()
             current_ema50 = ema50.iloc[-1]
             ema50_values[symbol] = np.round(current_ema50, 2)
         else:
             ema50_values[symbol] = np.nan
 
         # Calculate EMA200
-        if len(df[symbol]) >= 200:
-            ema200 = df[symbol].ewm(span=200, adjust=False).mean()
+        if len(df_prices[symbol]) >= 200:
+            ema200 = df_prices[symbol].ewm(span=200, adjust=False).mean()
             current_ema200 = ema200.iloc[-1]
             ema200_values[symbol] = np.round(current_ema200, 2)
         else:
             ema200_values[symbol] = np.nan
 
-        # Calculate RSI with period 9 using Wilder's smoothing method
-        if len(df[symbol]) >= 15:  # Need at least 15 values for RSI(14)
-            prices = df[symbol]
+        # Calculate RSI with period 14 using Wilder's smoothing method
+        if len(df_prices[symbol]) >= 15:
+            prices = df_prices[symbol]
             delta = prices.diff()
             gain = delta.where(delta > 0, 0)
             loss = -delta.where(delta < 0, 0)
@@ -592,8 +568,8 @@ def compute_annualized_momentum_sum(df: pd.DataFrame, window_sizes: List[int] = 
             rsi_delta_values[symbol] = np.nan
 
         # Calculate MACD (12, 26, 9)
-        if len(df[symbol]) >= 35:  # Need at least 35 values for MACD(12,26,9): 26 for slow EMA + 9 for signal line
-            prices = df[symbol]
+        if len(df_prices[symbol]) >= 35:  # Need at least 35 values for MACD(12,26,9): 26 for slow EMA + 9 for signal line
+            prices = df_prices[symbol]
             # Normalize prices so that average price is 100
             avg_price = prices.mean()
             if avg_price > 0:
@@ -630,43 +606,30 @@ def compute_annualized_momentum_sum(df: pd.DataFrame, window_sizes: List[int] = 
             macd1_values[symbol] = np.nan
             macd_delta_values[symbol] = np.nan
 
-        # Calculate drawdown (drop from maximum price observed in the data)
-        if len(df[symbol]) > 0:
-            max_price = df[symbol].max()
-            current_price = df[symbol].iloc[-1]
+        # Calculate drawdown
+        if len(df_prices[symbol]) > 0:
+            max_price = df_prices[symbol].max()
+            current_price = df_prices[symbol].iloc[-1]
             if max_price > 0:
                 drawdown[symbol] = np.round(1 - (current_price / max_price), 2)
             else:
                 drawdown[symbol] = np.nan
         else:
             drawdown[symbol] = np.nan
-
-        # Calculate put-call ratio
-        # pcr = get_pcr_m1(symbol)
-        # pcr_m1s[symbol] = pcr if pcr is not None else np.nan
-
-        # Weighted average of annualized momentum by window size
-        m[symbol] = total_annualized_momentum / total_weight if total_weight != 0 else 0
-        individual_momentum[symbol] = symbol_momentum
-        individual_accelerations[symbol] = symbol_accelerations
-        weights = [1 / np.log(window) for window in acceleration_windows if f"a{window}" in symbol_accelerations]
-        acceleration = sum([symbol_accelerations[f"{window}"] * weights[i] for i, window in enumerate(symbol_accelerations.keys())]) / sum(weights)
-        a[symbol] = acceleration
         
-        # Calculate Sharpe ratio after acceleration using robust method
-        if len(df[symbol]) >= 2:
-            returns = df[symbol].pct_change(fill_method=None).dropna()
+        # Calculate Sharpe ratio
+        if len(df_prices[symbol]) >= 2:
+            returns = df_prices[symbol].pct_change(fill_method=None).dropna()
             sharpe_ratio, se_sharpe = calculate_sharpe_ratio_robust(returns)
             sharpe_ratios[symbol] = sharpe_ratio
         else:
             sharpe_ratios[symbol] = np.nan
-    # Create DataFrame with individual momentum and acceleration columns
+    # Create DataFrame
     result_data = []
     for symbol in symbols:
         row = {
             "Symbol": symbol,
-            "m": np.round(m[symbol], 4),
-            "a": np.round(a[symbol], 4),
+            "m": np.round(momentum_dict.get(symbol, np.nan), 4),
             "sharpe": sharpe_ratios[symbol],
             "s0": s0_streaks[symbol],
             "s1": s_minus_1_streaks[symbol],
@@ -675,9 +638,7 @@ def compute_annualized_momentum_sum(df: pd.DataFrame, window_sizes: List[int] = 
             "avg%+": avg_plus_percent[symbol],
             "avg%-": avg_minus_percent[symbol],
             "stride": stride[symbol],
-            # "pcr_m1": pcr_m1s[symbol],
             "d0": d0_latest_change[symbol],
-            f"d{min(window_sizes)}": pct_change_smallest_window[symbol],
             "p": current_prices[symbol],
             "ema20": ema20_values[symbol],
             "ema50": ema50_values[symbol],
@@ -688,30 +649,19 @@ def compute_annualized_momentum_sum(df: pd.DataFrame, window_sizes: List[int] = 
             "macd_delta": macd_delta_values[symbol],
             "drawdown": drawdown[symbol],
         }
-        row.update(individual_momentum[symbol])
-        row.update(individual_accelerations[symbol])
         result_data.append(row)
 
     result_df = pd.DataFrame(result_data)
 
-    # Calculate combined score (m + a) for ranking
-    result_df["combined_score"] = result_df["m"] + result_df.get("a", 0).fillna(0)
+    # Use m as combined_score for ranking
+    result_df["combined_score"] = result_df["m"].fillna(0)
     
-    # Sort by combined score in descending order and add rank
-    result_df = result_df.sort_values("combined_score", ascending=False).reset_index(drop=True)
+    # Sort by m (momentum) in descending order and add rank
+    result_df = result_df.sort_values("m", ascending=False).reset_index(drop=True)
     result_df["Rank"] = range(1, len(result_df) + 1)
 
-    # Create column order: Rank, Symbol, then momentum-acceleration pairs, then weighted average, then streaks
-    ordered_columns = ["Rank", "Symbol"]
-
-    # Add momentum-acceleration pairs for each window (except last)
-    for window in momentum_windows:
-        ordered_columns.append(f"m{window}")
-        if window in acceleration_windows:
-            ordered_columns.append(f"a{window}")
-
-    # Add weighted average, acceleration, sharpe ratio, combined score, stride, streaks, average consecutive movements, average percentage movements, p, ema20, ema50, ema200, rsi, rsi_delta, macd, macd_delta, drawdown, and put-call ratio at the end
-    ordered_columns.extend(["m", "a", "sharpe", "combined_score", "stride", "s0", "s1", "avg_s+", "avg_s-", "avg%+", "avg%-", "p", "ema20", "ema50", "ema200", "rsi", "rsi_delta", "macd", "macd_delta", "drawdown"]) #, "pcr_m1"])
+    # Create column order
+    ordered_columns = ["Rank", "Symbol", "m", "sharpe", "combined_score", "stride", "s0", "s1", "avg_s+", "avg_s-", "avg%+", "avg%-", "p", "ema20", "ema50", "ema200", "rsi", "rsi_delta", "macd", "macd_delta", "drawdown", "d0"]
 
     result_df = result_df[ordered_columns]
 

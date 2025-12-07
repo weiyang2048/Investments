@@ -5,8 +5,9 @@ from plotly.subplots import make_subplots
 from typing import List, Dict, Optional
 import numpy as np
 import yaml
+import re
 from src.stats import Stats
-from src.data import normalize_prices, compute_momentum, compute_annualized_momentum_sum
+from src.data import normalize_prices, compute_annualized_momentum_sum
 from typing import Callable
 from src.configurations import get_random_style
 
@@ -112,7 +113,7 @@ def create_momentum_ranking_display(
     df: pd.DataFrame,
     window_sizes: List[int] = [7, 30, 90, 180, 360],
 ) -> pd.DataFrame:
-    """Create a ranking display showing the sum of annualized momentum across all windows."""
+    """Create a ranking display showing momentum (m) from TICKER.get_momentum with period [10,20,50,100,200]."""
     df_norm = normalize_prices(df)
     ranking_df = compute_annualized_momentum_sum(df_norm, window_sizes)
     
@@ -123,17 +124,16 @@ def create_momentum_ranking_display(
     ranking_df = ranking_df[["Symbol"] + columns_to_keep]
     transposed_df = ranking_df.set_index("Symbol").T.round(2)
     
-    # Reorder rows: am first, then momentum rows, then acceleration rows, then average acceleration
-    momentum_rows = [f"m{window}" for window in window_sizes]
-    acceleration_rows = [f"a{window}" for window in window_sizes[1:-1]]  # Exclude last window
+    # Create the desired row order: m first, then sharpe, then p, then ema20, then ema50, then ema200, then rsi_delta, then rsi, then macd_delta, then macd, then drawdown, then combined_score, then stride, then streak rows
+    # Exclude individual momentum rows (m10, m50, m200, m400, etc.) and acceleration rows
+    ordered_rows = ["m"] + ["sharpe"] + ["p"] + ["ema20"] + ["ema50"] + ["ema200"] + ["rsi_delta"] + ["rsi"] + ["macd_delta"] + ["macd"] + ["drawdown"] + ["combined_score"] + ["stride", "s0", "s1", "avg_s+", "avg_s-", "avg%+", "avg%-", "d0"]
     
-    # Acceleration data is already computed in compute_annualized_momentum_sum
-    
-    # Create the desired row order: m first, then sharpe, then p (second row), then ema20 (third row), then ema50 (fourth row), then ema200 (fifth row), then rsi_delta (sixth row), then rsi (seventh row), then macd_delta (eighth row), then macd (ninth row), then drawdown, then combined_score, then put-call ratio, then stride, then streak rows, then momentum rows (hide individual acceleration rows)
-    ordered_rows = ["m"] + ["sharpe"] + ["p"] + ["ema20"] + ["ema50"] + ["ema200"] + ["rsi_delta"] + ["rsi"] + ["macd_delta"] + ["macd"] + ["drawdown"] + ["combined_score"]  + ["stride", "s0", "s1"] + momentum_rows
-    
-    # Filter to only include rows that exist in the dataframe
+    # Filter to only include rows that exist in the dataframe and exclude any individual momentum rows (m followed by numbers)
     existing_rows = [row for row in ordered_rows if row in transposed_df.index]
+    # Also filter out any remaining momentum rows that match pattern m\d+ (like m10, m50, m200, m400)
+    momentum_pattern = re.compile(r'^m\d+$')
+    existing_rows = [row for row in existing_rows if not momentum_pattern.match(row)]
+    
     integer_columns = ["s0", "s1"]
     transposed_df.loc[integer_columns] = transposed_df.loc[integer_columns].astype(int)
     result_df = transposed_df.loc[existing_rows]
