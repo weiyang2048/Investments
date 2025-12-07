@@ -35,7 +35,7 @@ from src.strategies.ma_strat import (
     ema_x_rsi_strategy,
     ema_x_macd_rsi_strategy,
 )
-from src.indicators.INDICT import compute_rsi
+from src.indicators.rsi import compute_rsi
 
 # Load Morningstar config
 with open("conf/mstar.yaml", "r") as f:
