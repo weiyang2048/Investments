@@ -156,7 +156,7 @@ def _process_symbol_tab(
 
     # Create momentum ranking first (always needed for data analysis)
     with st.spinner("Computing momentum ranking..."):
-        momentum_ranking, _ = _create_and_sort_momentum_data(df_prices, look_back_days, sort_column="combined_score", metrics_order=metrics_order, ticker_obj=ticker_obj)
+        momentum_ranking, _ = _create_and_sort_momentum_data(df_prices, look_back_days, sort_column="m", metrics_order=metrics_order, ticker_obj=ticker_obj)
 
     # Add yield row for Income lens
     if symbol_type == "Income":
@@ -188,21 +188,22 @@ def _process_symbol_tab(
 
     # Add price plot - show all symbols, but only top 5 visible by default
     display_section_header("Price Performance")
-    if "combined_score" in momentum_ranking.index and len(momentum_ranking.columns) > 0:
-        combined_scores = momentum_ranking.loc["combined_score"]
-        top_5_symbols = combined_scores.nlargest(5).index.tolist()
-        # Get all symbols sorted by combined_score for the plot
-        all_symbols_sorted = combined_scores.sort_values(ascending=False).index.tolist()
+    # Use the table's column order (symbol order) for the plot legend
+    table_symbol_order = momentum_ranking.columns.tolist()
+    if "m" in momentum_ranking.index and len(momentum_ranking.columns) > 0:
+        m_scores = momentum_ranking.loc["m"]
+        top_5_symbols = m_scores.nlargest(5).index.tolist()
     else:
         top_5_symbols = symbols[:5] if len(symbols) >= 5 else symbols
-        all_symbols_sorted = symbols
+        # If no momentum ranking, use original symbol order
+        table_symbol_order = symbols
     
     with st.spinner("Creating price performance plot..."):
         # Only plot the largest window
         largest_window = [max(look_back_days)] if look_back_days else [200]
         price_fig = create_price_plot(
             df_prices,
-            all_symbols_sorted,
+            table_symbol_order,
             largest_window,
             colors_dict,
             line_styles_dict,
@@ -219,11 +220,11 @@ def _process_symbol_tab(
         corr_matrix = pivoted_to_corr(df=df_prices, plot=True, streamlit=True, marchenko_pastur=marchenko_pastur)
     
     # Display correlation matrix in a collapsible expander (collapsed by default)
-    if "combined_score" in momentum_ranking.index and len(momentum_ranking.columns) > 1:
-    # Get top symbols by combined_score (momentum)
-        combined_scores = momentum_ranking.loc["combined_score"]
-        top_n = min(20, len(combined_scores))
-        top_symbols = combined_scores.nlargest(top_n).index.tolist()
+    if "m" in momentum_ranking.index and len(momentum_ranking.columns) > 1:
+    # Get top symbols by m (momentum)
+        m_scores = momentum_ranking.loc["m"]
+        top_n = min(20, len(m_scores))
+        top_symbols = m_scores.nlargest(top_n).index.tolist()
         
         if len(top_symbols) > 1:
             with st.expander(f"📊 Top {len(top_symbols)} Symbols by Momentum Correlation", expanded=False):
@@ -248,7 +249,7 @@ def _process_symbol_tab(
 
 
 
-def _create_and_sort_momentum_data(df_prices, window_sizes, momentum_df=None, sort_column="combined_score", metrics_order=None, ticker_obj=None):
+def _create_and_sort_momentum_data(df_prices, window_sizes, momentum_df=None, sort_column="m", metrics_order=None, ticker_obj=None):
     """Create momentum ranking and sort momentum dataframe by ranking values."""
     # Create momentum ranking
     momentum_ranking = create_momentum_ranking_display(
